@@ -11,6 +11,12 @@ import BottomNav from "./components/Navbar";
 import Login from "./components/Login";
 import Test1 from "./components/test";
 import Test2 from "./components/test2";
+import AuthPage from "./features/live/AuthPage";
+import LiveParties from "./features/live/LiveParties";
+import LivePartyDetail from "./features/live/LivePartyDetail";
+import LiveRequests from "./features/live/LiveRequests";
+import LiveProfile from "./features/live/LiveProfile";
+import "./features/profiles/profiles.css";
 import PlayerProfile from "./features/profiles/PlayerProfile";
 import PartyRequests from "./features/profiles/PartyRequests";
 import PartyHub from "./features/parties/PartyHub";
@@ -55,15 +61,20 @@ function AppRoutes() {
       {shouldShowNav && <BottomNav />}
       <Routes>
         
-        <Route path="/login" element={<Login />} />
-        <Route path="/signUp" element={<SignUp />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/signUp" element={<AuthPage signup />} />
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/partybuffet/:id" element={<Partybuffet />} />
         <Route path="/partyrole/:id" element={<PartyRole />} />
-        <Route path="/team" element={<PartyHub />} />
-        <Route path="/players/:playerId" element={<PlayerProfile />} />
-        <Route path="/party-requests" element={<PartyRequests />} />
+        <Route path="/team" element={<LiveParties />} />
+        <Route path="/players/:playerId" element={<LiveProfile />} />
+        <Route path="/demo/party-requests" element={<PartyRequests />} />
+        <Route path="/demo/team" element={<PartyHub />} />
+        <Route path="/demo/players/:playerId" element={<PlayerProfile />} />
+        <Route path="/profile" element={<LiveProfile own />} />
+        <Route path="/parties/:partyId" element={<LivePartyDetail />} />
+        <Route path="/party-requests/:partyId" element={<LiveRequests />} />
         <Route path="/legacy/team" element={<FindCreateParty />} />
         <Route path="/Findandcreate" element={<FindandCreate />} />
         <Route path="/test/:id" element={<Test2 />} />

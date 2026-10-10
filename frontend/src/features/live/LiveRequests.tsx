@@ -1,0 +1,14 @@
+import { useEffect,useState } from 'react';
+import { Link,useParams } from 'react-router-dom';
+import { api,type LiveParty } from '@/lib/api';
+import { positions } from '../parties/party-model';
+import { ApiError } from './LiveParties';
+export default function LiveRequests(){
+ const {partyId}=useParams(); const [party,setParty]=useState<LiveParty|null>(null);const [error,setError]=useState('');const [busy,setBusy]=useState(false);const [loading,setLoading]=useState(true);const [reload,setReload]=useState(0);
+ useEffect(()=>{let active=true;setLoading(true);setError('');api<LiveParty>(`/api/v2/parties/${partyId}/requests`).then(data=>{if(active)setParty(data);}).catch(error=>{if(active)setError(error.message);}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[partyId,reload]);
+ const decide=async(id:string,decision:string)=>{if(busy)return;setBusy(true);setError('');try{setParty(await api<LiveParty>(`/api/v2/parties/${partyId}/requests/${id}`,{method:'PATCH',body:JSON.stringify({decision})}));}catch(error){setError((error as Error).message);}finally{setBusy(false);}};
+ if(loading)return <main className="party-app"><p role="status">กำลังโหลดคำขอ…</p></main>;
+ if(!party)return <main className="party-app"><ApiError message={error} retry={()=>setReload(value=>value+1)}/></main>;
+ const pending=party.join_requests.filter(request=>request.status==='pending');
+ return <main className="party-app party-create-page"><Link className="party-back" to={`/parties/${partyId}`}>← กลับไปดูปาร์ตี้</Link><span className="party-kicker">HOST DESK</span><h1>คำขอเข้าร่วมทีม</h1><p className="player-caption">{party.party_name} · รออนุมัติ {pending.length} คน</p><p className="party-draft-note">เปิดโปรไฟล์ก่อนรับคนเข้าทีม ระบบจะตรวจตำแหน่งว่างอีกครั้งตอนอนุมัติ</p>{error&&<p role="alert" className="party-error">{error}</p>}<div className="request-list">{pending.map(request=><article className="request-card" key={request._id}><Link className="player-row" to={`/players/${request.user_id}`} state={{from:`/party-requests/${partyId}`}}><span className="player-mini-avatar">{request.name.slice(0,1)}</span><span><strong>{request.name}</strong><small>{positions.find(position=>position.code===request.position)?.name||'ไม่ล็อคตำแหน่ง'}</small></span><span className="player-view">ดูโปรไฟล์ ↗</span></Link><div className="request-actions"><button disabled={busy} onClick={()=>decide(request._id,'declined')}>ปฏิเสธ</button><button disabled={busy} onClick={()=>decide(request._id,'approved')}>อนุมัติ</button></div></article>)}</div>{!pending.length&&<div className="party-empty"><h2>ไม่มีคำขอรออนุมัติ</h2></div>}<button className="kh-button kh-dark kh-full" disabled={busy} onClick={()=>setReload(value=>value+1)}>อัปเดตคำขอ</button></main>;
+}

@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema(
       enum: ["owner", "user"],
       default: "user",
     },
+    bio: { type: String, maxlength: 600, default: "" },
+    area: { type: String, maxlength: 100, default: "" },
+    preferred_position: { type: String, enum: ["GK", "DF", "MF", "FW", ""], default: "" },
+    level: { type: String, enum: ["beginner", "casual", "experienced"], default: "casual" },
     profile_photo: { type: String, default: "" },
     status: {
       type: String,

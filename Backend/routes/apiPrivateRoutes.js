@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const authenticateToken = require("../middleware/authMiddleware");
-const { MongoClient } = require("mongodb");
+const Field = require("../models/Field");
+const { objectId } = require("../services/partyService");
+function ownerOnly(req,res,next) { if(req.user.role !== "owner") return res.status(403).json({message:"เฉพาะเจ้าของสนามเท่านั้น"}); next(); }
+async function ownsField(req,res,next) { objectId(req.params.id); const field=await Field.findOne({_id:req.params.id,owner_id:req.user._id}); if(!field)return res.status(403).json({message:"คุณไม่ได้เป็นเจ้าของสนามนี้"}); next(); }
 const {
   addField,
   getAllFields,
@@ -37,23 +40,11 @@ router.get("/test", authenticateToken, (req, res) => {
   });
 });
 
-router.get("/user", authenticateToken, async (req, res) => {
-  const client = new MongoClient("mongodb://localhost:27017");
-  try {
-    await client.connect();
-    const db = client.db("kickhub");
-    const collection = db.collection("users");
-    const users = await collection.find().toArray();
-    res.status(200).json({ users });
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  } finally {
-    await client.close();
-  }
+router.get("/user", authenticateToken, (req, res) => {
+  res.json({ users: [{ _id: req.user._id, name: req.user.name, email: req.user.email, role: req.user.role, profile_photo: req.user.profile_photo }] });
 });
 
-router.post("/add-fields", authenticateToken, async (req, res) => {
+router.post("/add-fields", authenticateToken, ownerOnly, async (req, res) => {
   try {
     const fieldData = {
       ...req.body,
@@ -64,7 +55,7 @@ router.post("/add-fields", authenticateToken, async (req, res) => {
     if (result.success) {
       res
         .status(201)
-        .json({ message: "Field added successfully" }, result.data);
+        .json(result.data);
     } else {
       res.status(400).json({ error: result.error.message });
     }
@@ -100,7 +91,7 @@ router.get("/fields/:id", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/owner-fields", authenticateToken, async (req, res) => {
+router.get("/owner-fields", authenticateToken, ownerOnly, async (req, res) => {
   try {
     const ownerId = req.user._id;
     const result = await getFieldbyownerID(ownerId);
@@ -114,15 +105,16 @@ router.get("/owner-fields", authenticateToken, async (req, res) => {
   }
 });
 
-router.put("/update-fields/:id", authenticateToken, async (req, res) => {
+router.put("/update-fields/:id", authenticateToken, ownerOnly, ownsField, async (req, res) => {
   try {
     const fieldId = req.params.id;
-    const fieldData = req.body;
+    const fieldData = {};
+    for(const key of ["field_name","field_type","mobile_number","address","price","open","close","facilities","description","google_map","is_active"]) if(key in req.body) fieldData[key]=req.body[key];
     const result = await updateField(fieldId, fieldData);
     if (result.success) {
       res
         .status(200)
-        .json({ message: "Field updated successfully" }, result.data);
+        .json(result.data);
     } else {
       res.status(400).json({ error: result.error.message });
     }
@@ -131,7 +123,7 @@ router.put("/update-fields/:id", authenticateToken, async (req, res) => {
   }
 });
 
-router.delete("/delete-fields/:id", authenticateToken, async (req, res) => {
+router.delete("/delete-fields/:id", authenticateToken, ownerOnly, ownsField, async (req, res) => {
   try {
     const fieldId = req.params.id;
     const result = await deleteField(fieldId);
@@ -241,6 +233,7 @@ router.post("/create-post/:id", authenticateToken, async (req, res) => {
     const user_id = req.user._id;
     const postdata = req.body;
     const post = await newPost(user_id, field_id, postdata);
+    if (!post.success) return res.status(post.error.status || 400).json({ message: post.error.message });
     res.status(201).json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -260,7 +253,8 @@ router.get("/posts/joiner", authenticateToken, async (req, res) => {
 router.get("/post/:id", authenticateToken, async (req, res) => {
   try {
     const post_id = req.params.id;
-    const post = await getPostbyID(post_id);
+    const post = await getPostbyID(post_id, req.user._id);
+    if (!post.success) return res.status(post.error.status || 400).json({ message: post.error.message });
     res.status(200).json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -270,7 +264,7 @@ router.get("/post/:id", authenticateToken, async (req, res) => {
 router.delete("/delete-post/:id", authenticateToken, async (req, res) => {
   try {
     const post_id = req.params.id;
-    const result = await deletePost(post_id);
+    const result = await deletePost(post_id, req.user._id);
     if (result.success) {
       res.status(200).json({ message: "Post deleted successfully" });
     } else {
@@ -285,7 +279,7 @@ router.put("/update-post/:id", authenticateToken, async (req, res) => {
   try {
     const post_id = req.params.id;
     const postdata = req.body;
-    const result = await updatePost(post_id, postdata);
+    const result = await updatePost(post_id, postdata, req.user._id);
     if (result.success) {
       res
         .status(200)

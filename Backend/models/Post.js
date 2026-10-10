@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const postSchema = new mongoose.Schema(
   {
     party_name: { type: String, required: true },
+    access: { type: String, enum: ["open", "approval"], default: "open" },
+    join_requests: [{ user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, name: String, position: { type: String, enum: ["GK", "FW", "DF", "MF", null], default: null }, status: { type: String, enum: ["pending", "approved", "declined", "cancelled"], default: "pending" }, requested_at: { type: Date, default: Date.now }, reviewed_at: Date }],
 
     mode: {
       type: String,
@@ -62,7 +64,7 @@ const postSchema = new mongoose.Schema(
     price: { type: Number, required: true },
     google_map: { type: String, required: true },
   },
-  { timestamps: true }
+  { timestamps: true, optimisticConcurrency: true }
 );
 
 module.exports = mongoose.model("Post", postSchema);

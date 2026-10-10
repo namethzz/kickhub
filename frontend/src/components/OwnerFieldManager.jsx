@@ -4,7 +4,7 @@ import { FaMapMarkerAlt, FaClock, FaInfoCircle } from "react-icons/fa";
 import styled from "styled-components";
 import OwnerField from "../../public/สนามของเรา.png";
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_URL || "";
 
 export default function OwnerFieldManager() {
   const [fields, setFields] = useState([]);
@@ -63,6 +63,7 @@ export default function OwnerFieldManager() {
       const res = await fetch(`${API_BASE}/api/owner-fields`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (!res.ok) throw new Error("โหลดสนามไม่ได้ กรุณาตรวจสอบบัญชีเจ้าของสนาม");
       const data = await res.json();
       setFields(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -73,12 +74,12 @@ export default function OwnerFieldManager() {
   // 🧩 โหลดสนามทั้งหมดของเจ้าของเมื่อเปิดหน้า
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log(token);
+
     if (!token) return;
     fetch(`${API_BASE}/api/owner-fields`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
+      .then((res) => { if (!res.ok) throw new Error("บัญชีไม่มีสิทธิ์ดูสนาม"); return res.json(); })
       .then((data) => setFields(Array.isArray(data) ? data : []))
       .catch((err) => console.error("Error fetching fields:", err));
   }, [token]);
@@ -147,6 +148,7 @@ export default function OwnerFieldManager() {
           },
           body: JSON.stringify(body),
         });
+        if (!res.ok) throw new Error("แก้ไขสนามไม่ได้");
         const updated = await res.json();
 
         // ✅ ถ้ามีข้อมูล field กลับมา
@@ -167,6 +169,7 @@ export default function OwnerFieldManager() {
           },
           body: JSON.stringify(body),
         });
+        if (!res.ok) throw new Error("เพิ่มสนามไม่ได้ กรุณาตรวจสอบข้อมูลและสิทธิ์บัญชี");
         const added = await res.json();
         if (added && added._id) {
           setFields((prev) => [added, ...prev]);
@@ -178,7 +181,7 @@ export default function OwnerFieldManager() {
       resetForm();
       setShowForm(false);
     } catch (err) {
-      console.error("Error saving field:", err);
+      alert(err.message);
     }
   };
 

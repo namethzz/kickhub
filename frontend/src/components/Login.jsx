@@ -1,3 +1,4 @@
+import { api } from '../lib/api';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -28,16 +29,16 @@ export default function Login() {
 
     try {
       // แก้เป็นเลขเครื่องตัวเองนะ
-      const res = await fetch("http://172.20.10.4:3000/login/", {
+      const result = await api("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: raw,
       });
-      const result = await res.json();
+
       if (result.status === "ok") {
         localStorage.setItem("token", result.token);
         alert("Login Successful!");
-        navigate("/test");
+        navigate("/team");
       } else {
         alert("Login Failed: " + result.message);
       }

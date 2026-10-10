@@ -1,0 +1,14 @@
+require('dotenv').config();
+const express=require('express');
+const cors=require('cors');
+const app=express();
+app.use(cors({origin:(process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',')}));
+app.use(express.json({limit:'1mb'}));
+app.use('/api/auth/login',require('./routes/apiAuthRoutes'));
+app.use('/api/auth/register',require('./routes/apiRegister'));
+app.use('/api/v2',require('./routes/partyRoutes'));
+app.use('/api',require('./routes/apiPrivateRoutes'));
+app.use('/register',require('./routes/apiRegister'));
+app.use('/login',require('./routes/apiAuthRoutes'));
+app.use((error,req,res,next)=>{const status=error.status||(['ValidationError','CastError'].includes(error.name)?400:500);res.status(status).json({message:status===500?'ระบบไม่พร้อมใช้งาน กรุณาลองใหม่':error.message});});
+module.exports=app;

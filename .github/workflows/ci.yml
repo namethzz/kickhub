@@ -1,0 +1,40 @@
+name: KickHub checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7.0
+        ports: ['27017:27017']
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping:1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            Backend/package-lock.json
+            frontend/package-lock.json
+      - run: npm ci --ignore-scripts
+        working-directory: Backend
+      - run: npm test
+        working-directory: Backend
+      - run: npm run test:integration
+        working-directory: Backend
+        env:
+          TEST_MONGODB_URI: mongodb://127.0.0.1:27017/kickhub_test
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend

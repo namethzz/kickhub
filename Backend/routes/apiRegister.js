@@ -1,31 +1,10 @@
-const express = require("express");
-const router = express.Router();
-const Users = require("../models/User");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const SECRET_KEY = process.env.SECRET_KEY;
-
-// Register a new user in the database
-router.post("/", async (req, res) => {
-  const { name, email, password, role } = req.body;
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new Users({ name, email, password: hashedPassword, role });
-    const savedUser = await user.save();
-    if (savedUser) {
-      const token = jwt.sign({ id: savedUser.id }, SECRET_KEY, {
-        expiresIn: "1h",
-      });
-      res
-        .status(200)
-        .json({ status: "ok", message: "User registered successfully", token });
-    } else {
-      console.error("Error inserting user:", error);
-      return res.status(500).json({ message: "Error registering user" });
-    }
-  } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).json({ message: "Error registering user" });
-  }
+const router=require('express').Router();
+const User=require('../models/User');
+const bcrypt=require('bcryptjs');
+const jwt=require('jsonwebtoken');
+router.post('/',async(req,res)=>{
+  const {name,email,password,role='user'}=req.body;
+  if(typeof name!=='string'||!name.trim()||name.length>100||typeof email!=='string'||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||typeof password!=='string'||password.length<8||password.length>128||!['owner','user'].includes(role))return res.status(400).json({message:'กรุณากรอกข้อมูลให้ครบ และใช้รหัสผ่านอย่างน้อย 8 ตัวอักษร'});
+  try{const user=await User.create({name:name.trim(),email:email.trim().toLowerCase(),password:await bcrypt.hash(password,10),role});res.status(201).json({status:'ok',token:jwt.sign({_id:user._id},process.env.SECRET_KEY,{expiresIn:'24h'})});}catch(error){if(error.code===11000)return res.status(409).json({message:'อีเมลนี้มีบัญชีแล้ว'});throw error;}
 });
-module.exports = router;
+module.exports=router;

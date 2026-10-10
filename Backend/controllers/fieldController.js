@@ -45,6 +45,7 @@ const updateField = async (id, fieldData) => {
   try {
     const updatedField = await Field.findByIdAndUpdate(id, fieldData, {
       new: true,
+      runValidators: true,
     });
     return { success: true, data: updatedField };
   } catch (error) {

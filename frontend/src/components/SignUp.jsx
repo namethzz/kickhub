@@ -1,3 +1,4 @@
+import { api } from '../lib/api';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -31,20 +32,21 @@ export default function SignUp() {
 
     try {
       // แก้เป็นเลขเครื่องตัวเองนะ
-      const res = await fetch("http://192.168.1.26:3000/register/", {
+      const result = await api("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: raw,
       });
 
-      if (res.ok) {
+      if (result.status === "ok") {
         alert("Sign Up Successful!");
-        navigate("/Login");
+        localStorage.setItem("token", result.token);
+        navigate("/profile");
       } else {
         alert("Sign Up Failed!");
       }
     } catch (err) {
-      console.error(err);
+      alert(err.message);
     }
   };
 

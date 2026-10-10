@@ -17,7 +17,7 @@ export const previewParties: PreviewParty[] = matches.map((item, index) => index
   ? { ...item, mode: 'fixed', access: 'approval', slots: { GK: 1, DF: 1, MF: 0, FW: 0 } }
   : { ...item, mode: 'flexible', access: 'open', capacity: index === 0 ? 24 : 20, players: index === 0 ? 18 : 14, price: index === 0 ? 100 : 90 });
 export type PartyDraft = {
-  id: string; title: string; mode: PartyMode; access: Access; fieldId: string;
+  id: string; title: string; fieldName?: string; price?: number; mode: PartyMode; access: Access; fieldId: string;
   date: string; time: string; duration: number; capacity: number; totalCost: number;
   hostPosition: Position | ''; slots: Record<Position, number>; description: string; createdAt: string;
 };
