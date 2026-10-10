@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authenticateToken = require("../middleware/authMiddleware");
 const Field = require("../models/Field");
+const { fieldInput } = require("../services/fieldService");
 const { objectId } = require("../services/partyService");
 function ownerOnly(req,res,next) { if(req.user.role !== "owner") return res.status(403).json({message:"เฉพาะเจ้าของสนามเท่านั้น"}); next(); }
 async function ownsField(req,res,next) { objectId(req.params.id); const field=await Field.findOne({_id:req.params.id,owner_id:req.user._id}); if(!field)return res.status(403).json({message:"คุณไม่ได้เป็นเจ้าของสนามนี้"}); next(); }
@@ -47,7 +48,7 @@ router.get("/user", authenticateToken, (req, res) => {
 router.post("/add-fields", authenticateToken, ownerOnly, async (req, res) => {
   try {
     const fieldData = {
-      ...req.body,
+      ...fieldInput(req.body),
       owner_id: req.user._id,
     };
 
@@ -60,7 +61,7 @@ router.post("/add-fields", authenticateToken, ownerOnly, async (req, res) => {
       res.status(400).json({ error: result.error.message });
     }
   } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+    res.status(err.status || 500).json({ message: err.status ? err.message : "Internal server error" });
   }
 });
 
@@ -108,8 +109,7 @@ router.get("/owner-fields", authenticateToken, ownerOnly, async (req, res) => {
 router.put("/update-fields/:id", authenticateToken, ownerOnly, ownsField, async (req, res) => {
   try {
     const fieldId = req.params.id;
-    const fieldData = {};
-    for(const key of ["field_name","field_type","mobile_number","address","price","open","close","facilities","description","google_map","is_active"]) if(key in req.body) fieldData[key]=req.body[key];
+    const fieldData = fieldInput(req.body, true);
     const result = await updateField(fieldId, fieldData);
     if (result.success) {
       res
@@ -119,7 +119,7 @@ router.put("/update-fields/:id", authenticateToken, ownerOnly, ownsField, async 
       res.status(400).json({ error: result.error.message });
     }
   } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+    res.status(err.status || 500).json({ message: err.status ? err.message : "Internal server error" });
   }
 });
 

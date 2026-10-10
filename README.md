@@ -92,3 +92,7 @@ npm run test:integration
 GitHub Actions (`.github/workflows/ci.yml`) เปิด MongoDB service แยกและรันทั้ง unit, integration และ frontend build บนทุก push/PR ยังไม่ได้ทดสอบภาพและ interaction ด้วย browser บน iPhone/iPad จริงใน environment นี้
 
 Repository: https://github.com/namethzz/kickhub
+
+### Owner dashboard
+
+`/Owner` is the mobile-first live owner dashboard: create/edit owned fields, search and filter, and pause/reopen availability. Owners can also enter from their profile. Active fields appear in party creation; pausing a field does not cancel existing parties. Field photos currently use publicly accessible HTTP(S) image URLs; file uploads and reservation/payment management are not included in this step. The backend validates field data and ignores client-supplied owner identity.

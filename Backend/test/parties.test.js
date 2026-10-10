@@ -63,5 +63,16 @@ test('field management requires owner role and field ownership',async()=>{
  assert.equal((await call('/api/add-fields',firstToken,'POST',body)).status,403);
  const result=await call('/api/add-fields',hostToken,'POST',body);assert.equal(result.status,201);assert.equal(result.data.owner_id,String(host._id));
  assert.equal((await call(`/api/update-fields/${field._id}`,firstToken,'PUT',{price:1})).status,403);
+ const id=result.data._id;
+ const image='https://example.com/pitch.jpg';
+ const edited=await call(`/api/update-fields/${id}`,hostToken,'PUT',{image,is_active:false,owner_id:String(first._id)});
+ assert.equal(edited.status,200);assert.equal(edited.data.image,image);assert.equal(edited.data.owner_id,String(host._id));
+ assert.equal((await call('/api/v2/fields',firstToken)).data.some(item=>item._id===id),false);
+ assert.equal((await call('/api/v2/parties',hostToken,'POST',{...payload(),field_id:id})).status,404);
+ assert.equal((await call(`/api/update-fields/${id}`,hostToken,'PUT',{is_active:true})).status,200);
+ assert.equal((await call('/api/v2/fields',firstToken)).data.some(item=>item._id===id),true);
+ assert.equal((await call(`/api/update-fields/${id}`,hostToken,'PUT',{price:-1})).status,400);
+ assert.equal((await call(`/api/update-fields/${id}`,hostToken,'PUT',{image:'blob:temporary'})).status,400);
+
 });
 test('banned users cannot authenticate',async()=>{await User.findByIdAndUpdate(second._id,{status:'banned'});assert.equal((await call('/api/v2/me',secondToken)).status,401);});

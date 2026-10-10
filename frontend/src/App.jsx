@@ -36,7 +36,7 @@ import CreateParty from "./components/CreateParty";
 import CreateParty2 from "./components/CreateParty2";
 import Field from "./components/field";
 import CountdownTimer from "./components/CountdownTimer";
-import Owner from "./components/OwnerFieldManager";
+import Owner from "./features/owner/OwnerDashboard";
 
 function AppRoutes() {
   const location = useLocation();
