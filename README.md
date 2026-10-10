@@ -69,15 +69,37 @@ Backend ยังไม่ได้ปรับใน step นี้: frontend �
 
 เป้าหมายจากภาพคือ https://github.com/namethzz/kickhub โค้ด frontend ที่ปรับใหม่และ backend เดิมอยู่ใน repository นี้ ไม่รวม `.git` เก่า, node_modules, build output หรือ .env
 
-## Hero update: layered parallax
+## Hero integration: supplied TypeScript component
 
-ใช้รูปที่แนบ `frontend/public/hero-kickhub.jpg` แบบไม่แก้ไขไฟล์ภาพ ครอปด้วย CSS เฉพาะส่วนลูกบอล/สนามเพื่อหลีกเลี่ยงข้อความ BORCELLE ในภาพ โค้ด JSX เหมาะกับ React/Vite เดิม ไม่ต้องเปลี่ยนโปรเจกต์ทั้งหมดเป็น TypeScript
+ใช้โครงสร้าง `parallax`, `parallax__header`, `data-parallax-layers`, ชั้น 1–4, `parallax__fade` และ `parallax__content` จาก component ที่ส่งมา คงค่า `yPercent` 70/55/40/10 และ `scrub: 0` ทุก breakpoint ยกเว้น reduced motion
 
-- `frontend/src/components/ui/parallax-scrolling.jsx`: component ที่ดัดแปลงจากตัวอย่าง GSAP/ScrollTrigger + Lenis
-- `frontend/src/components/ui/parallax-scrolling.css`: desktop, iPad, iPhone และ landscape
-- `home.jsx`: เรียก Hero ใหม่และกำหนด target ของปุ่มเลือกแมตช์; dialog ป้องกัน Lenis จัดการ scroll ภายใน
-- `package.json`/`package-lock.json`: เพิ่ม `gsap` และ `lenis` (ชื่อปัจจุบันของแพ็กเกจในตัวอย่าง)
+- Component: `frontend/src/components/ui/parallax-scrolling.tsx`
+- Styles: `frontend/src/components/ui/parallax-scrolling.css`
+- Demo: `frontend/src/demos/default.tsx` (ใช้ภายใน Router เดิม)
+- Hero ใช้รูปที่ส่งมา `/hero-kickhub.jpg` ไม่ต้องใช้ภาพ stock ที่ไม่เกี่ยวกับฟุตบอล ภาพเป็นภาพเดียวจึงใช้ CSS แสงและเส้นสนามเป็นชั้นเสริม ไม่ใช่ภาพ cutout ที่สร้างขึ้น
+- ข้อความภาพ BORCELLE ถูกครอปด้วย CSS ไฟล์รูปต้นฉบับไม่เปลี่ยน
+- Hooks: useEffect/useRef; ไม่มี store หรือ provider ใหม่ ใช้ Router ที่ App มีอยู่แล้ว
+- props: imageSrc (optional, default รูปของคุณ), targetRef (optional, เลื่อนไป section หาแมตช์)
+- Desktop ใช้ Lenis; iPhone/iPad คง touch scroll native พร้อม responsive portrait/landscape และ reduced motion
+- Cleanup ถอด ticker, ทำลาย Lenis และ revert เฉพาะ GSAP context ของ Hero ไม่ kill trigger ของ component อื่น
 
-Touch scrolling คงเป็น native; parallax บน touch เบากว่า desktop ไม่มี pin หรือบังคับหน้าจอเต็ม ปิด animation และ smooth scrolling เมื่อเลือก reduced motion ใช้ GSAP matchMedia เพื่อ cleanup เฉพาะ animation ของ Hero และถอด ticker/Lenis เมื่อ unmount หรือเปลี่ยน breakpoint ไม่ฆ่า ScrollTrigger ของ component อื่น
+### TypeScript / Tailwind / shadcn structure
 
-หลังแทนไฟล์ ให้รัน `npm ci` แล้ว `npm run dev` ใหม่ ยังไม่ได้ทดสอบภาพ/interaction บนอุปกรณ์จริงหรือ browser ใน environment นี้
+เดิมเป็น JavaScript และ Tailwind v4; เพิ่ม TypeScript แบบรองรับ JSX เดิม (`allowJs: true`, ไม่ตรวจ legacy JS) มี strict type checking สำหรับ TS/TSX พร้อม build gate `npm run typecheck`
+
+Default components: `frontend/src/components`; UI: `frontend/src/components/ui`; global styles: `frontend/src/index.css`; utility: `frontend/src/lib/utils.ts`
+
+`components.json` กำหนด shadcn CLI, Tailwind v4 tokens และ alias `@/*` ใน Vite/tsconfig ไว้แล้ว โฟลเดอร์ ui ทำให้ CLI วาง reusable components ที่เดียวกัน และใช้ import ตามตัวอย่าง `@/components/ui/...` ได้
+
+```bash
+cd frontend
+npm ci
+npm run typecheck
+npm run dev
+# เพิ่ม shadcn component ในอนาคต (ไม่จำเป็นสำหรับ Hero):
+npx shadcn@latest add button
+```
+
+ติดตั้ง `gsap`, `@studio-freight/lenis`, `lucide-react`, `typescript`, `@types/node`, `clsx`, `tailwind-merge`, `tw-animate-css` แล้ว แพ็กเกจ @studio-freight/lenis เป็นชื่อเก่าที่ deprecated แต่ใช้ตาม dependency ที่ระบุใน component รอบนี้
+
+Build/typecheck ต้องผ่านก่อนขึ้น GitHub ยังไม่ได้ทดสอบภาพหรือ scroll บนอุปกรณ์จริง/browser ใน environment นี้

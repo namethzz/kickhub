@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { FiArrowRight, FiArrowUpRight, FiMapPin, FiClock, FiSearch, FiX, FiCheck, FiSliders, FiCalendar } from 'react-icons/fi';
 import { TbBallFootball, TbSoccerField } from 'react-icons/tb';
 import { matches, fields } from '../data/discovery';
-import { ParallaxComponent } from './ui/parallax-scrolling';
+import { ParallaxComponent } from '@/components/ui/parallax-scrolling';
 
 function DetailDialog({ item, kind, onClose }) {
   const dialog = useRef(null);
