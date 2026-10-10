@@ -25,9 +25,16 @@ router.patch('/me', async (req,res) => {
   const user = await User.findByIdAndUpdate(req.user._id, { $set: update }, {new:true,runValidators:true});
   res.json({ ...publicProfile(user), email: user.email });
 });
-router.get('/fields', async (req,res) => res.json(await Field.find({is_active:true}).select('field_name address price image google_map')));
+router.get('/fields', async (req,res) => res.json(await Field.find({is_active:true}).select('field_name field_type address price image open close facilities').sort({createdAt:-1})));
+router.get('/fields/:id', async (req,res) => {
+  service.objectId(req.params.id);
+  const field = await Field.findOne({_id:req.params.id,is_active:true}).select('field_name field_type address price image open close facilities description google_map mobile_number owner_id');
+  if (!field) service.fail(404,'ไม่พบสนาม หรือสนามนี้พักการเปิดรับแล้ว');
+  res.json(field);
+});
 router.get('/parties', async (req,res) => {
   const filter = { end_datetime: { $gt: new Date() } };
+  if (req.query.field) { service.objectId(req.query.field); filter.field_id = req.query.field; }
   if (req.query.mine === 'host') filter.user_id = req.user._id;
   else if (req.query.mine === 'joined') filter['participants.user_id'] = req.user._id;
   else if (req.query.mine === 'requested') filter.join_requests = { $elemMatch: { user_id: req.user._id, status: 'pending' } };

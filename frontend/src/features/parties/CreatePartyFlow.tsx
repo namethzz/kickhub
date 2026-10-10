@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, ShieldCheck, Users } from 'lucide-react';
 import { api, type LiveField, type LiveParty } from '@/lib/api';
 import { ModePicker } from './ModePicker';
@@ -7,6 +7,8 @@ import { estimateShare, modeInfo, positions, saveDraft, type Access, type PartyD
 import './parties.css';
 function localToday() { const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`; }
 export default function CreatePartyFlow() {
+  const [searchParams] = useSearchParams();
+  const selectedField = searchParams.get('field') || '';
   const [step, setStep] = useState(0);
   const [mode, setMode] = useState<PartyMode>('flexible');
   const [access, setAccess] = useState<Access>('open');
@@ -18,7 +20,7 @@ export default function CreatePartyFlow() {
   const [price, setPrice] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [published, setPublished] = useState('');
-  useEffect(() => { let active=true; api<LiveField[]>('/api/v2/fields').then(data=>{if(active){const mapped=data.map(field=>({id:field._id,name:field.field_name,area:field.address,price:field.price}));setFields(mapped);setFieldId(mapped[0]?.id||'');}}).catch(error=>{if(active)setFieldsError(error.message);}).finally(()=>{if(active)setFieldsLoading(false);});return()=>{active=false;};}, []);
+  useEffect(() => { let active=true;setFieldsLoading(true);setFieldsError(''); api<LiveField[]>('/api/v2/fields').then(data=>{if(active){const mapped=data.map(field=>({id:field._id,name:field.field_name,area:field.address,price:field.price}));setFields(mapped);setFieldId(selectedField || mapped[0]?.id || '');if(selectedField && !mapped.some(field=>field.id===selectedField))setFieldsError('สนามที่เลือกไม่เปิดรับแล้ว กรุณาเลือกสนามใหม่');}}).catch(error=>{if(active)setFieldsError(error.message);}).finally(()=>{if(active)setFieldsLoading(false);});return()=>{active=false;};}, [selectedField]);
   const [date, setDate] = useState('');
   const [time, setTime] = useState('18:00');
   const [duration, setDuration] = useState(2);
@@ -29,7 +31,7 @@ export default function CreatePartyFlow() {
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
-  const field = fields.find(item => item.id === fieldId) || fields[0];
+  const field = fields.find(item => item.id === fieldId);
   const capacity = mode === 'flexible' ? count : Object.values(slots).reduce((total, value) => total + value, 0);
   const totalCost = (field?.price || 0) * duration;
   const share = estimateShare(totalCost, capacity);
@@ -60,7 +62,7 @@ export default function CreatePartyFlow() {
     } catch (error) { setError((error as Error).message); } finally { setBusy(false); }
   };
   if (fieldsLoading) return <main className="party-app"><p role="status">กำลังโหลดสนาม…</p></main>;
-  if (!field) return <main className="party-app"><div className="party-empty"><h1>ยังสร้างปาร์ตี้ไม่ได้</h1><p role="alert">{fieldsError || 'ยังไม่มีสนามที่เปิดใช้งาน ให้เจ้าของสนามเพิ่มสนามก่อน'}</p><Link className="kh-button kh-primary" to={localStorage.getItem('token') ? '/team' : '/login'}>{localStorage.getItem('token') ? 'กลับไปค้นหา' : 'เข้าสู่ระบบ'}</Link></div></main>;
+  if (!field) return <main className="party-app"><div className="party-empty"><h1>ยังสร้างปาร์ตี้ไม่ได้</h1><p role="alert">{fieldsError || 'ยังไม่มีสนามที่เปิดใช้งาน ให้เจ้าของสนามเพิ่มสนามก่อน'}</p><Link className="kh-button kh-primary" to={localStorage.getItem('token') ? '/team' : '/login'}>{localStorage.getItem('token') ? 'กลับไปค้นหา' : 'เข้าสู่ระบบ'}</Link><Link className="party-back" to="/field">เลือกสนามใหม่ →</Link></div></main>;
   if (published) return <main className="party-app party-create-page"><div className="party-saved"><span><Check size={36}/></span><h1>เผยแพร่ปาร์ตี้แล้ว</h1><p>ผู้เล่นสามารถค้นหาและเข้าร่วมตามเงื่อนไขที่คุณตั้งไว้ การเผยแพร่นี้ยังไม่ใช่การจองหรือชำระค่าสนาม</p><Link className="kh-button kh-primary kh-full" to={`/parties/${published}`}>ดูปาร์ตี้ของฉัน</Link></div></main>;
   if (saved) return <main className="party-app party-create-page"><div className="party-saved"><span><Check size={36} /></span><h1>ฉบับร่างพร้อมแล้ว</h1><p>เก็บไว้ในเบราว์เซอร์นี้ ยังไม่ได้เผยแพร่หรือจองสนาม</p><div><strong>{title}</strong><p>{modeInfo[mode].title} · {capacity} คน</p><p>{mode === 'fixed' ? `ตำแหน่งของคุณ: ${positions.find(item => item.code === hostPosition)?.name}` : 'ไม่ล็อคตำแหน่ง'}</p><p>ประมาณ ฿{share}/คน เมื่อครบจำนวน</p></div><Link className="kh-button kh-primary kh-full" to="/demo/team?tab=drafts">ดูฉบับร่างของฉัน <ArrowRight size={18} /></Link></div></main>;
   return <main className="party-app party-create-page"><Link className="party-back" to="/team"><ArrowLeft size={18} />กลับไปค้นหาปาร์ตี้</Link><div className="party-page-head"><div><span className="party-kicker">START YOUR OWN GAME</span><h1 ref={heading} tabIndex={-1}>สร้างปาร์ตี้ของคุณ</h1><p>ชวนคนที่ชอบฟุตบอลเหมือนกันมาลงสนาม</p></div></div><ol className="party-steps" aria-label="ขั้นตอนสร้างปาร์ตี้">{['เลือกโหมด', 'จัดปาร์ตี้', 'ตรวจสอบ'].map((label, index) => <li key={label} aria-current={step === index ? 'step' : undefined} className={step >= index ? 'active' : ''}><span>{step > index ? <Check size={15} /> : index + 1}</span>{label}</li>)}</ol><p className="party-draft-note">ตั้งค่าปาร์ตี้ ตรวจสอบ แล้วเผยแพร่ให้เพื่อนค้นหาได้</p>

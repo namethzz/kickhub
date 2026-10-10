@@ -9,4 +9,5 @@ export type PublicPlayer = { _id: string; name: string; bio: string; area: strin
 export type Member = { user_id: string; name: string; position: string | null };
 export type JoinRequest = Member & { _id: string; status: 'pending'|'approved'|'declined'|'cancelled' };
 export type LiveParty = { _id: string; party_name: string; mode: 'fixed'|'flexible'; access: 'open'|'approval'; field_id: string; field_name: string; address: string; user_id: string; host_name: string; description: string; start_datetime: string; end_datetime: string; price: number; google_map: string; capacity: number; required_positions: {position:string;amount:number}[]; participants: Member[]; join_requests: JoinRequest[] };
-export type LiveField = { _id: string; field_name: string; address: string; price: number };
+export type LiveField = { _id: string; field_name: string; address: string; price: number; field_type: string; image?: string; open: string; close: string; facilities?: string[] | Record<string, boolean> };
+export type FieldDetail = LiveField & { description?: string; google_map: string; mobile_number: string; owner_id: string };

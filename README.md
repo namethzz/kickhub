@@ -61,7 +61,7 @@ Vite proxy ส่ง `/api` ไป `http://127.0.0.1:3000` หน้า login/re
 | `/profile` | ดูและแก้ไขบัญชีตนเอง |
 | `/demo/team`, `/demo/players/:playerId`, `/demo/party-requests` | ข้อมูลสาธิตแยกจากระบบจริง |
 
-ฉบับร่างยังเก็บเฉพาะในเบราว์เซอร์ที่ใช้ (localStorage) และไม่เผยแพร่ให้ผู้อื่นค้นหา หน้า `/home` และ `/field` ยังเป็น discovery ตัวอย่าง ส่วน dashboard เจ้าของสนาม/การจอง/ประวัติเก่ายังต้องรีโนเวทต่อ ไม่มีระบบอัปโหลดรูปโปรไฟล์หรือปาร์ตี้ใหม่ในรอบนี้
+ฉบับร่างยังเก็บเฉพาะในเบราว์เซอร์ที่ใช้ (localStorage) และไม่เผยแพร่ให้ผู้อื่นค้นหา หน้า `/home` ยังเป็น discovery ตัวอย่าง ส่วนการจอง/ประวัติเก่ายังต้องรีโนเวทต่อ ไม่มีระบบอัปโหลดรูปโปรไฟล์หรือปาร์ตี้ใหม่ในรอบนี้
 
 ## โครงสร้าง UI
 
@@ -96,3 +96,7 @@ Repository: https://github.com/namethzz/kickhub
 ### Owner dashboard
 
 `/Owner` is the mobile-first live owner dashboard: create/edit owned fields, search and filter, and pause/reopen availability. Owners can also enter from their profile. Active fields appear in party creation; pausing a field does not cancel existing parties. Field photos currently use publicly accessible HTTP(S) image URLs; file uploads and reservation/payment management are not included in this step. The backend validates field data and ignores client-supplied owner identity.
+
+### Live field discovery
+
+`/field` lists active MongoDB fields with name/area search, field-type filtering, and price sorting. `/fields/:fieldId` shows details, amenities, contact/map links, and the owner profile. Creating a party from a field preselects that field; paused or missing selections are rejected rather than silently substituted. `/team?field=<id>` filters parties by field. These live routes currently require login. This step does not create a booking or process payments.

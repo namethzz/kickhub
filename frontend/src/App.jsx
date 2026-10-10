@@ -12,6 +12,8 @@ import Login from "./components/Login";
 import Test1 from "./components/test";
 import Test2 from "./components/test2";
 import AuthPage from "./features/live/AuthPage";
+import LiveFields from "./features/fields/LiveFields";
+import LiveFieldDetail from "./features/fields/LiveFieldDetail";
 import LiveParties from "./features/live/LiveParties";
 import LivePartyDetail from "./features/live/LivePartyDetail";
 import LiveRequests from "./features/live/LiveRequests";
@@ -84,7 +86,8 @@ function AppRoutes() {
         <Route path="/create-party" element={<CreatePartyFlow />} />
         <Route path="/legacy/create-party" element={<CreateParty />} />
         <Route path="/create-party2" element={<CreateParty2 />} />
-        <Route path="/field" element={<Home />} />
+        <Route path="/field" element={<LiveFields />} />
+        <Route path="/fields/:fieldId" element={<LiveFieldDetail />} />
         <Route path="/legacy/field" element={<Field />} />
         <Route path="/countdown" element={<CountdownTimer />} />
         <Route path="/Owner" element={<Owner />} />

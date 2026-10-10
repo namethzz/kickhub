@@ -75,4 +75,19 @@ test('field management requires owner role and field ownership',async()=>{
  assert.equal((await call(`/api/update-fields/${id}`,hostToken,'PUT',{image:'blob:temporary'})).status,400);
 
 });
+test('field discovery exposes active details and filters parties by field',async()=>{
+ assert.equal((await call(`/api/v2/fields/${field._id}`,null)).status,401);
+ const detail=await call(`/api/v2/fields/${field._id}`,firstToken);
+ assert.equal(detail.status,200);assert.equal(detail.data.field_name,'Test field');assert.equal(detail.data.mobile_number,'0000000000');assert.equal(detail.data.owner_id,String(host._id));assert.equal(detail.data.__v,undefined);
+ assert.equal((await call('/api/v2/fields/invalid',firstToken)).status,400);
+ const alternate=await Field.create({owner_id:host._id,field_name:'Second field',field_type:'Indoor',mobile_number:'0000000000',address:'Bangkok',price:900,open:'08:00',close:'22:00',google_map:'https://maps.google.com/'});
+ const created=await call('/api/v2/parties',hostToken,'POST',payload({field_id:String(alternate._id)}));assert.equal(created.status,201);
+ const filtered=await call(`/api/v2/parties?field=${alternate._id}`,firstToken);
+ assert.equal(filtered.status,200);assert.equal(filtered.data.length,1);assert.equal(filtered.data[0]._id,created.data._id);
+ assert.equal((await call('/api/v2/parties?field=invalid',firstToken)).status,400);
+ await Field.findByIdAndUpdate(alternate._id,{is_active:false});
+ assert.equal((await call(`/api/v2/fields/${alternate._id}`,firstToken)).status,404);
+ assert.equal((await call('/api/v2/fields',firstToken)).data.some(item=>item._id===String(alternate._id)),false);
+ assert.equal((await call('/api/v2/fields',firstToken)).data.some(item=>'mobile_number' in item),false);
+});
 test('banned users cannot authenticate',async()=>{await User.findByIdAndUpdate(second._id,{status:'banned'});assert.equal((await call('/api/v2/me',secondToken)).status,401);});
