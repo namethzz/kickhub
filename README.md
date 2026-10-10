@@ -131,3 +131,7 @@ Typecheck/build ใช้ตรวจ source; ยังไม่มี browser/d
 Backend เดิมมี mode fixed/flexible และ required_positions แต่ยังไม่มี approval workflow และตรวจสิทธิ์/capacity/ตำแหน่งครบ จึงยังไม่เปิดปุ่มเข้าร่วมจริงใน UI ใหม่ ขั้นต่อไปต้องเชื่อม authentication, MongoDB list/create endpoints, slot allocation แบบ atomic และอนุมัติคำขอฝั่ง server
 
 Implementation: `frontend/src/features/parties/` (PartyHub, CreatePartyFlow, ModePicker, model, styles) พร้อม route/nav ใหม่
+
+### Public profiles and host approval preview
+
+Party cards and the sample-player tab link to public demo profiles at `/players/:playerId`. Profiles show a biography, preferred position, area and sample parties without email/phone details. `/party-requests` is explicitly a host-view demo: approve/reject actions change local React state only and reset on leaving. No membership or database writes occur. Real approvals must validate host ownership, party and position capacity on the server before accepting a request. Profile layouts stack on phones and use two columns on wider screens.

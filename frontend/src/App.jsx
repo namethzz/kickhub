@@ -11,6 +11,8 @@ import BottomNav from "./components/Navbar";
 import Login from "./components/Login";
 import Test1 from "./components/test";
 import Test2 from "./components/test2";
+import PlayerProfile from "./features/profiles/PlayerProfile";
+import PartyRequests from "./features/profiles/PartyRequests";
 import PartyHub from "./features/parties/PartyHub";
 import CreatePartyFlow from "./features/parties/CreatePartyFlow";
 import Home from "./components/home";
@@ -60,6 +62,8 @@ function AppRoutes() {
         <Route path="/partybuffet/:id" element={<Partybuffet />} />
         <Route path="/partyrole/:id" element={<PartyRole />} />
         <Route path="/team" element={<PartyHub />} />
+        <Route path="/players/:playerId" element={<PlayerProfile />} />
+        <Route path="/party-requests" element={<PartyRequests />} />
         <Route path="/legacy/team" element={<FindCreateParty />} />
         <Route path="/Findandcreate" element={<FindandCreate />} />
         <Route path="/test/:id" element={<Test2 />} />

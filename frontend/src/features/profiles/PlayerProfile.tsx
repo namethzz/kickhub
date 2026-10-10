@@ -1,0 +1,12 @@
+import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft, MapPin, ShieldCheck, Users, ArrowUpRight } from 'lucide-react';
+import { findPlayer } from './player-model';
+import { previewParties, modeInfo } from '../parties/party-model';
+import './profiles.css';
+export default function PlayerProfile() {
+  const { playerId } = useParams();
+  const player = findPlayer(playerId);
+  if (!player) return <main className="party-app"><div className="party-empty"><h1>ไม่พบโปรไฟล์นี้</h1><Link className="kh-button kh-primary" to="/team">กลับไปค้นหาปาร์ตี้</Link></div></main>;
+  const parties = previewParties.filter(party => player.parties.includes(party.id));
+  return <main className="party-app player-page"><Link className="party-back" to="/team"><ArrowLeft size={18} />กลับไปค้นหาปาร์ตี้</Link><div className="player-layout"><section className="player-card"><div className="player-cover"><span>MEET YOUR NEXT TEAMMATE</span></div><div className="player-card-content"><div className="player-avatar" aria-hidden="true">{player.initials}</div><span className="party-pill">โปรไฟล์สาธิต</span><h1>{player.name}</h1><p className="party-location"><MapPin size={16} />{player.area}</p><p className="player-bio">{player.bio}</p><div className="player-tags">{player.tags.map(tag => <span key={tag}>{tag}</span>)}</div><dl className="player-facts"><div><dt>ตำแหน่งที่ชอบ</dt><dd>{player.position}</dd></div><div><dt>ระดับการเล่น</dt><dd>{player.level}</dd></div></dl><div className="party-access-note"><ShieldCheck size={20} /><p>แสดงเฉพาะข้อมูลสาธารณะของผู้เล่น ไม่แสดงเบอร์โทรหรืออีเมล</p></div></div></section><section className="player-history"><span className="party-kicker">ON THE PITCH</span><h2>ปาร์ตี้ของ {player.name}</h2><p className="player-caption">รายการตัวอย่าง ยังไม่ใช่ประวัติการเข้าร่วมจริง</p>{parties.length ? parties.map(party => <Link key={party.id} className="player-party" to={`/team?party=${party.id}`}><span className="party-pill">{modeInfo[party.mode].title}</span><h3>{party.title}</h3><p>{party.field}</p><div><span><Users size={15} />{party.players}/{party.capacity} คน</span><ArrowUpRight size={19} /></div></Link>) : <div className="party-empty"><Users /><h3>ยังไม่มีปาร์ตี้ที่แสดง</h3><p>เมื่อเชื่อมระบบจริง จะแสดงปาร์ตี้ที่อนุญาตให้เปิดเผย</p></div>}<p className="party-preview-note">โปรไฟล์นี้เป็นข้อมูลตัวอย่าง การแก้ไขโปรไฟล์และประวัติจาก MongoDB ยังอยู่ในขั้นตอนถัดไป</p></section></div></main>;
+}
