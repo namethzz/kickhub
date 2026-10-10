@@ -4,6 +4,7 @@ import { Plus, MapPin, Clock, Search, ArrowLeft, Pencil, CircleCheck, Pause, Fla
 import { api, type PublicPlayer } from '@/lib/api';
 import { ApiError } from '../live/LiveParties';
 import './owner.css';
+import { facilityLabels } from '../fields/facilities';
 
 type Field = {
   _id: string; field_name: string; field_type: string; address: string; mobile_number: string;
@@ -12,7 +13,6 @@ type Field = {
 };
 type Draft = Omit<Field, '_id' | 'price' | 'facilities'> & { price: string; facilities: string[] };
 const amenities = ['ไฟส่องสว่าง', 'ที่จอดรถ', 'ห้องน้ำ', 'ร้านค้า', 'Wi-Fi ฟรี', 'ห้องเปลี่ยนเสื้อผ้า'];
-const oldAmenities: Record<string, string> = { lights: 'ไฟส่องสว่าง', parking: 'ที่จอดรถ', restroom: 'ห้องน้ำ', shop: 'ร้านค้า', wifi: 'Wi-Fi ฟรี' };
 const blank = (): Draft => ({ field_name: '', field_type: 'หญ้าเทียม', address: '', mobile_number: '', price: '', open: '09:00', close: '23:00', google_map: '', image: '', description: '', facilities: [], is_active: true });
 function FieldImage({ src, name }: { src?: string; name: string }) {
   const [failed, setFailed] = useState(false);
@@ -52,7 +52,7 @@ export default function OwnerDashboard() {
   useEffect(() => { if (draft) heading.current?.focus(); }, [!!draft]);
   const openForm = (field?: Field) => {
     setError(''); setNotice(''); setEditingId(field?._id || null);
-    setDraft(field ? { ...field, price: String(field.price), image: /^https?:\/\//.test(field.image || '') ? field.image : '', facilities: Array.isArray(field.facilities) ? field.facilities : Object.entries(field.facilities || {}).filter(([, value]) => value).map(([key]) => oldAmenities[key] || key) } : blank());
+    setDraft(field ? { ...field, price: String(field.price), image: /^https?:\/\//.test(field.image || '') ? field.image : '', facilities: facilityLabels(field.facilities) } : blank());
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
   const change = <K extends keyof Draft>(key: K, value: Draft[K]) => setDraft(current => current && { ...current, [key]: value });

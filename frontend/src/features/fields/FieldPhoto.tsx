@@ -3,10 +3,7 @@ import { Flag } from 'lucide-react';
 export function safeWebLink(value?: string) {
   try { const url = new URL(value || ''); return ['https:', 'http:'].includes(url.protocol) ? url.href : ''; } catch { return ''; }
 }
-export function facilityLabels(value?: string[] | Record<string, boolean>) {
-  const labels: Record<string, string> = { lights: 'ไฟส่องสว่าง', parking: 'ที่จอดรถ', restroom: 'ห้องน้ำ', shop: 'ร้านค้า', wifi: 'Wi-Fi ฟรี', aircon: 'ห้องปรับอากาศ' };
-  return Array.isArray(value) ? value : Object.entries(value || {}).filter(([, present]) => present).map(([key]) => labels[key] || key);
-}
+export { facilityLabels } from './facilities';
 export default function FieldPhoto({ src, name }: { src?: string; name: string }) {
   const [failed, setFailed] = useState(false);
   useEffect(() => setFailed(false), [src]);
