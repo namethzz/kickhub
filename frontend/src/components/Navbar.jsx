@@ -1,9 +1,10 @@
 import { NavLink, Link } from 'react-router-dom';
-import { FiHome, FiUsers, FiMapPin, FiArrowUpRight, FiUser } from 'react-icons/fi';
+import { FiHome, FiUsers, FiMapPin, FiArrowUpRight, FiUser, FiPlusCircle } from 'react-icons/fi';
 import { TbBallFootball } from 'react-icons/tb';
 const items = [
   { name: 'หน้าหลัก', icon: FiHome, path: '/home' },
-  { name: 'หาเพื่อนเตะบอล', icon: FiUsers, path: '/team' },
+  { name: 'ค้นหาปาร์ตี้', icon: FiUsers, path: '/team' },
+  { name: 'สร้างปาร์ตี้', icon: FiPlusCircle, path: '/create-party' },
   { name: 'ค้นหาสนาม', icon: FiMapPin, path: '/field' },
 ];
 export default function Navbar() {

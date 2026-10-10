@@ -115,3 +115,19 @@ Hero หน้า home เต็ม viewport ด้วย 100svh และเต
 Asset prompt: edit the supplied stadium, remove all printed text and labels, preserve roof/floodlights/stands/green turf; wide 16:9, smaller football lower right, open center/left for HTML text, no UI or text.
 
 Typecheck/build ใช้ตรวจ source; ยังไม่มี browser/device visual QA ใน environment นี้
+
+## Mobile user party flow
+
+งานหลักของ user: ค้นหาปาร์ตี้ `/team`, สร้างปาร์ตี้ `/create-party` พร้อม bottom navigation ให้สร้างได้โดยตรง ใช้ card แบบแอพ, segmented mode picker, bottom sheet, form input 16px ลดการ auto zoom บน iPhone และขั้นตอนสร้าง 3 ขั้น
+
+- Buffet (`flexible`): ไม่เลือกตำแหน่ง รับคนหลายคน ค่าเฉลี่ยลดลงเมื่อค่าสนามรวมเท่าเดิมและคนหารเพิ่ม ไม่รับประกันว่าถูกกว่าเสมอ
+- Locked positions (`fixed`): เลือกตำแหน่ง GK/DF/MF/FW ของตัวเอง พร้อมจำนวนรวมแต่ละตำแหน่งนับรวมเจ้าของ
+- Private ในรอบนี้แปลเป็นตัวเลือก approval-required (ค่าตั้งต้นของ fixed); ยังไม่ใช่ invite-only/ซ่อนรายการค้นหา สามารถปรับตามข้อกำหนดรอบต่อไปได้
+- ค้นหาด้วยชื่อ/ย่าน/พื้นที่ และตำแหน่งที่ยังว่างในโหมด fixed
+- สร้างฉบับร่างเลือกเวลาในอนาคต ค่าสนาม/คนคำนวณจากราคาสนามตัวอย่าง × ระยะเวลา / จำนวนรวม ปัดขึ้นเป็นบาท; ไม่ใช่ราคาเรียกเก็บจริง
+- ฉบับร่างเก็บใน localStorage ของ browser นี้และมีหน้าดู/ลบ ไม่เผยแพร่ใน MongoDB ไม่ส่งคำขอ join/approval และไม่มีการจองหรือชำระเงินจริง
+- หน้าสร้างปาร์ตี้เดิมยังอยู่ `/legacy/create-party`
+
+Backend เดิมมี mode fixed/flexible และ required_positions แต่ยังไม่มี approval workflow และตรวจสิทธิ์/capacity/ตำแหน่งครบ จึงยังไม่เปิดปุ่มเข้าร่วมจริงใน UI ใหม่ ขั้นต่อไปต้องเชื่อม authentication, MongoDB list/create endpoints, slot allocation แบบ atomic และอนุมัติคำขอฝั่ง server
+
+Implementation: `frontend/src/features/parties/` (PartyHub, CreatePartyFlow, ModePicker, model, styles) พร้อม route/nav ใหม่

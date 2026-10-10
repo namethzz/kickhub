@@ -6,10 +6,13 @@ import {
   matchPath,
 } from "react-router-dom";
 import "./discovery.css";
+import "./features/parties/parties.css";
 import BottomNav from "./components/Navbar";
 import Login from "./components/Login";
 import Test1 from "./components/test";
 import Test2 from "./components/test2";
+import PartyHub from "./features/parties/PartyHub";
+import CreatePartyFlow from "./features/parties/CreatePartyFlow";
 import Home from "./components/home";
 import Party from "./components/party";
 import Reserve from "./components/reserve";
@@ -56,14 +59,15 @@ function AppRoutes() {
         <Route path="/home" element={<Home />} />
         <Route path="/partybuffet/:id" element={<Partybuffet />} />
         <Route path="/partyrole/:id" element={<PartyRole />} />
-        <Route path="/team" element={<Home />} />
+        <Route path="/team" element={<PartyHub />} />
         <Route path="/legacy/team" element={<FindCreateParty />} />
         <Route path="/Findandcreate" element={<FindandCreate />} />
         <Route path="/test/:id" element={<Test2 />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/historybuffet/:id" element={<Partybuffet />} />
         <Route path="/historyrole/:id" element={<PartyRole />} />
-        <Route path="/create-party" element={<CreateParty />} />
+        <Route path="/create-party" element={<CreatePartyFlow />} />
+        <Route path="/legacy/create-party" element={<CreateParty />} />
         <Route path="/create-party2" element={<CreateParty2 />} />
         <Route path="/field" element={<Home />} />
         <Route path="/legacy/field" element={<Field />} />
