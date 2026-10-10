@@ -1,0 +1,29 @@
+.kh-parallax{position:relative;isolation:isolate;overflow:hidden;border-radius:20px;background:#081d16;color:#fff;min-height:620px;min-height:clamp(580px,77svh,790px)}
+.kh-parallax__layers{position:relative;min-height:inherit}
+.kh-parallax__photo{position:absolute;inset:-12% -8%;background-image:url('/hero-kickhub.jpg');background-repeat:no-repeat;background-size:auto 260%;background-position:32% bottom;will-change:transform;filter:brightness(.86) saturate(.8)}
+.kh-parallax__atmosphere{position:absolute;inset:-12%;background:radial-gradient(ellipse at 83% 12%,#8ec1db2b,transparent 54%),radial-gradient(ellipse at 80% 85%,#cff36c2a,transparent 42%);will-change:transform;pointer-events:none}
+.kh-parallax__shade{position:absolute;inset:0;background:linear-gradient(90deg,#071d16f5 0%,#0b231be6 29%,#0b231b80 58%,#0c201523 100%),linear-gradient(0deg,#081d16e0,transparent 45%,#07150b28);pointer-events:none}
+.kh-parallax__content{position:relative;z-index:2;padding:64px 56px 114px;max-width:760px;will-change:transform}
+.kh-parallax__eyebrow{font-size:10px;font-weight:650;letter-spacing:2px;display:flex;align-items:center;gap:10px;color:#d0ddc9;line-height:1.8}
+.kh-parallax__eyebrow i,.kh-parallax__bottom i{width:6px;height:6px;flex-shrink:0;background:#cdf46c;border-radius:50%}
+.kh-parallax__wordmark{font-family:Arial,Helvetica,sans-serif;display:block;font-size:clamp(68px,7.7vw,108px);line-height:.95;font-weight:900;letter-spacing:-6px;font-style:italic;margin:33px 0 22px;color:white}
+.kh-parallax__wordmark>span{color:#cdf46c}
+.kh-parallax h1{font-size:clamp(28px,3.3vw,43px);font-weight:750;line-height:1.5;letter-spacing:-1.4px;margin:0 0 17px}
+.kh-parallax h1>span{display:block;color:#e8f0df}
+.kh-parallax__content p{font-size:13px;line-height:1.95;color:#c0d0c2;margin:0;max-width:440px}
+.kh-parallax__actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.kh-parallax__actions .kh-button{min-height:48px;padding:14px 21px}
+.kh-parallax__benefits{display:flex;gap:22px;margin-top:23px;flex-wrap:wrap;color:#c7d9be;font-size:10px}
+.kh-parallax__benefits span{display:flex;align-items:center;gap:6px}.kh-parallax__benefits svg{color:#cdf46c}
+.kh-parallax__foreground{position:absolute;z-index:1;bottom:100px;right:45px;display:flex;flex-direction:column;align-items:flex-end;gap:24px;color:#e7f3d8;pointer-events:none}
+.kh-parallax__foreground>span{writing-mode:vertical-rl;letter-spacing:2px;font-size:9px;opacity:.65}
+.kh-parallax__foreground>svg{font-size:44px;opacity:.7}
+.kh-parallax__bottom{position:absolute;z-index:3;bottom:0;left:40px;right:40px;border-top:1px solid #ffffff26;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:70px}
+.kh-parallax__bottom>span{display:flex;align-items:center;gap:8px;color:#bdccbf;letter-spacing:1.5px;font-size:9px}
+.kh-parallax__bottom button{border:0;background:transparent;color:#d6e2cd;display:flex;align-items:center;gap:12px;font-size:11px;padding:13px 0;min-height:44px}.kh-parallax__bottom button svg{font-size:17px}
+html.lenis{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}.lenis.lenis-stopped{overflow:hidden}
+@media(min-width:761px) and (max-width:1024px){.kh-parallax{min-height:650px}.kh-parallax__content{padding:64px 38px 112px;max-width:660px}.kh-parallax__wordmark{font-size:85px}.kh-parallax h1{font-size:37px}.kh-parallax__photo{background-size:auto 265%;background-position:37% bottom}.kh-parallax__shade{background:linear-gradient(90deg,#071d16ef,#0b231ba8 62%,#0c201540),linear-gradient(0deg,#081d16d9,transparent 55%)}.kh-parallax__foreground{right:26px}}
+@media(max-width:760px){.kh-parallax{border-radius:16px;min-height:640px}.kh-parallax__content{padding:35px 24px 220px;max-width:none}.kh-parallax__eyebrow{font-size:8px;letter-spacing:1.2px;gap:7px}.kh-parallax__wordmark{font-size:clamp(54px,13.7vw,90px);letter-spacing:-3.4px;margin:27px 0 21px}.kh-parallax h1{font-size:clamp(25px,6.8vw,36px);line-height:1.5;letter-spacing:-.8px}.kh-parallax__content p{font-size:12px;line-height:1.9}.kh-parallax__actions{gap:9px;margin-top:23px}.kh-parallax__actions .kh-button{padding:12px 15px;font-size:12px!important;min-height:46px}.kh-parallax__benefits{font-size:9px;gap:13px;margin-top:18px}.kh-parallax__photo{background-size:auto 270%;background-position:47% bottom;filter:brightness(.78) saturate(.85)}.kh-parallax__shade{background:linear-gradient(180deg,#071d16f5 0%,#071d16de 30%,#071d16ad 57%,#0c20152b 82%,#081d16b3),linear-gradient(90deg,#071d1638,transparent)}.kh-parallax__bottom{left:23px;right:23px;min-height:65px}.kh-parallax__bottom>span{font-size:7px;letter-spacing:.7px;max-width:65%;line-height:1.8}.kh-parallax__bottom button{font-size:10px;gap:7px}.kh-parallax__foreground{right:23px;bottom:89px;gap:12px}.kh-parallax__foreground>span{writing-mode:horizontal-tb;font-size:7px;letter-spacing:.8px}.kh-parallax__foreground>svg{font-size:27px}}
+@media(max-width:360px){.kh-parallax__content{padding-left:19px;padding-right:19px}.kh-parallax__actions{gap:8px}.kh-parallax__actions .kh-button{font-size:11px!important;padding:12px}.kh-parallax__benefits{gap:9px;font-size:8px}.kh-parallax__break{display:none}}
+@media(max-height:550px) and (orientation:landscape){.kh-parallax{min-height:540px}.kh-parallax__content{padding-top:35px;padding-bottom:115px}.kh-parallax__wordmark{font-size:70px;margin:22px 0 17px}.kh-parallax__foreground{bottom:82px}}
+@media(prefers-reduced-motion:reduce){.kh-parallax__photo,.kh-parallax__atmosphere,.kh-parallax__content{will-change:auto}.kh-parallax .kh-button:hover{transform:none}}

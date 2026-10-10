@@ -67,7 +67,7 @@ Backend ยังไม่ได้ปรับใน step นี้: frontend �
 
 ## Repository
 
-เป้าหมายจากภาพคือ https://github.com/namethzz/kickhub ยังไม่ได้ push โค้ด ใช้โฟลเดอร์นี้เป็น source สำหรับ repository ใหม่ ไม่รวม `.git` เก่า, node_modules, build output หรือ .env
+เป้าหมายจากภาพคือ https://github.com/namethzz/kickhub โค้ด frontend ที่ปรับใหม่และ backend เดิมอยู่ใน repository นี้ ไม่รวม `.git` เก่า, node_modules, build output หรือ .env
 
 ## Hero update: layered parallax
 

@@ -1,0 +1,36 @@
+/* ทำให้ทั้งหน้าเป็นพื้นหลังขาว */
+body, html {
+  height: 100%;
+  margin: 0;
+  background-color: white;
+  font-family: Arial, sans-serif;
+}
+
+.headhome h1 {
+  font-size: 30px;
+  color: white    ;
+}
+.headhome h3 {
+  font-size: 20px;
+  color: white;
+}
+.headhome {
+  background-color: #16A34A;
+  margin: 0px;
+  padding: 20px;
+  border-radius: 0px 0px 10px 10px;
+}
+.homepage h1 {
+  padding: 10px 20px 20px 20px;
+  color: black;
+  font-size: 25 px;
+}
+
+.girl img {
+  position: absolute; /* ทำให้สามารถวางบน div อื่นได้ */
+  top: 0; /* ปรับตำแหน่งตามต้องการ */
+  left: 220px;
+  width: 200px; /* ปรับขนาดภาพ */
+  height: auto; /* รักษาสัดส่วน */
+  z-index: 10; /* ลอยอยู่บน element อื่น */
+}
