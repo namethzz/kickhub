@@ -11,3 +11,5 @@ export type JoinRequest = Member & { _id: string; status: 'pending'|'approved'|'
 export type LiveParty = { _id: string; party_name: string; mode: 'fixed'|'flexible'; access: 'open'|'approval'; field_id: string; field_name: string; address: string; user_id: string; host_name: string; description: string; start_datetime: string; end_datetime: string; price: number; google_map: string; capacity: number; required_positions: {position:string;amount:number}[]; participants: Member[]; join_requests: JoinRequest[] };
 export type LiveField = { _id: string; field_name: string; address: string; price: number; field_type: string; image?: string; open: string; close: string; facilities?: string[] | Record<string, boolean> };
 export type FieldDetail = LiveField & { description?: string; google_map: string; mobile_number: string; owner_id: string };
+export type DiscoveryParty = Pick<LiveParty, '_id' | 'party_name' | 'mode' | 'access' | 'field_id' | 'field_name' | 'address' | 'start_datetime' | 'end_datetime' | 'price' | 'capacity'> & { player_count: number };
+export type DiscoveryFeed = { fields: LiveField[]; parties: DiscoveryParty[] };

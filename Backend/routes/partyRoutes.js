@@ -4,7 +4,15 @@ const User = require('../models/User');
 const Post = require('../models/Post');
 const Field = require('../models/Field');
 const service = require('../services/partyService');
+const { partyCard } = require('../services/discoveryService');
 const publicProfile = user => ({ _id: user._id, name: user.name, bio: user.bio, area: user.area, preferred_position: user.preferred_position, level: user.level, role: user.role });
+router.get('/discover', async (req, res) => {
+  const [fields, parties] = await Promise.all([
+    Field.find({ is_active: true }).select('field_name field_type address price image open close facilities').sort({ createdAt: -1 }),
+    Post.find({ start_datetime: { $gt: new Date() } }).select('party_name mode access field_id field_name address start_datetime end_datetime price required_positions total_required_players participants').sort({ start_datetime: 1 }).limit(100),
+  ]);
+  res.json({ fields, parties: parties.map(partyCard) });
+});
 router.get('/profiles/:id', async (req, res) => {
   service.objectId(req.params.id);
   const user = await User.findOne({ _id: req.params.id, status: 'active' });

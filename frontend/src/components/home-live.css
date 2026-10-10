@@ -1,0 +1,11 @@
+.kh-home-tabs{display:flex;gap:8px;margin:0 0 18px}
+.kh-home-tabs button{display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:12px 22px;border:1px solid var(--kh-line);border-radius:12px;background:white;color:var(--kh-muted);font:inherit;font-size:14px;cursor:pointer}
+.kh-home-tabs button.active{background:var(--kh-ink);border-color:var(--kh-ink);color:white}
+.kh-live-field-photo{display:block}
+.kh-main--home .kh-card-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px}
+.kh-main--home .kh-match-card h3,.kh-main--home .kh-field-card h3,.kh-main--home .kh-card-area{overflow-wrap:anywhere}
+.kh-main--home .kh-card-place{align-items:flex-start}
+.kh-main--home .kh-card-place svg{flex-shrink:0;margin-top:3px}
+.kh-main--home .kh-field-body h3{margin-top:18px}
+.kh-home-tabs button:focus-visible{outline:3px solid #91b65b;outline-offset:3px}
+@media(max-width:760px){.kh-home-tabs button{flex:1;padding:12px 10px;font-size:13px}.kh-main--home .kh-filter-chips button{min-height:44px}.kh-main--home .kh-match-time{flex-wrap:wrap;gap:8px}.kh-main--home .kh-section-heading>.kh-button{width:100%}}

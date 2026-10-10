@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Plus, Search, MapPin, Users, ArrowUpRight } from 'lucide-react';
 import { api, type LiveParty } from '@/lib/api';
 import { ModePicker } from '../parties/ModePicker';
 import { modeInfo, type PartyMode } from '../parties/party-model';
 export const when = (value: string) => new Date(value).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' });
-export function ApiError({ message, retry }: { message: string; retry?: () => void }) { return <div className="party-empty"><p role="alert">{message}</p>{localStorage.getItem('token') ? retry && <button className="kh-button kh-dark" onClick={retry}>ลองใหม่</button> : <Link className="kh-button kh-primary" to="/login">เข้าสู่ระบบ</Link>}</div>; }
+export function ApiError({ message, retry }: { message: string; retry?: () => void }) { const location = useLocation(); return <div className="party-empty"><p role="alert">{message}</p>{localStorage.getItem('token') ? retry && <button className="kh-button kh-dark" onClick={retry}>ลองใหม่</button> : <Link className="kh-button kh-primary" to={`/login?next=${encodeURIComponent(location.pathname + location.search)}`}>เข้าสู่ระบบ</Link>}</div>; }
 export default function LiveParties() {
   const [searchParams] = useSearchParams();
   const fieldFilter = searchParams.get('field') || '';
