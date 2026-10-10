@@ -46,7 +46,7 @@ function AppRoutes() {
   const shouldShowNav = !shouldHideNav;
 
   return (
-    <>
+    <div className={["/", "/home"].includes(location.pathname) ? "kh-app kh-app--home" : "kh-app"}>
       {shouldShowNav && <BottomNav />}
       <Routes>
         
@@ -103,7 +103,7 @@ function AppRoutes() {
           }
         />
       </Routes>
-    </>
+    </div>
   );
 }
 

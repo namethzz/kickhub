@@ -57,7 +57,7 @@ export default function Home() {
     return text.includes(query.trim().toLowerCase()) && (area === 'ทั้งหมด' || item.area.includes(area)) && (kind === 'fields' || ((level === 'ทั้งหมด' || item.level === level) && (day === 'ทั้งหมด' || item.day === day)));
   });
   const reset = () => { setQuery(''); setArea('ทั้งหมด'); setLevel('ทั้งหมด'); setDay('ทั้งหมด'); };
-  return <main className="kh-main">
+  return <main className={`kh-main${isHome ? " kh-main--home" : ""}`}>
     {isHome ? <ParallaxComponent targetRef={section} /> : <section className="kh-page-heading"><span className="kh-eyebrow">{kind === 'fields' ? 'FIND YOUR PITCH' : 'FIND YOUR PEOPLE'}</span><h1>{kind === 'fields' ? 'สนามที่ใช่ สำหรับเกมของคุณ' : 'มาเดี่ยว กลับไปมีทีม'}</h1><p>เลือก{kind === 'fields' ? 'สนามจากพื้นที่และสิ่งอำนวยความสะดวก' : 'นัดเตะจากพื้นที่ เวลา และระดับที่เหมาะกับคุณ'}</p></section>}
     {isHome && <div className="kh-how"><span><b>01</b> หาแมตช์ที่ใช่</span><i /><span><b>02</b> รู้เวลาและค่าใช้จ่าย</span><i /><span><b>03</b> นัดเจอกันที่สนาม <TbBallFootball /></span></div>}
     <section ref={section} className="kh-discovery" aria-labelledby="discovery-title"><div className="kh-section-heading"><div><span className="kh-eyebrow">{kind === 'fields' ? 'THE RIGHT PLACE TO PLAY' : 'GOOD GAMES. GREAT COMPANY.'}</span><h2 id="discovery-title">{kind === 'fields' ? 'ค้นหาสนามฟุตบอล' : 'เลือกแมตช์ แล้วไปเตะกัน'} <span className="kh-count">{filtered.length}</span></h2></div><span className="kh-demo-label">ข้อมูลตัวอย่าง · Preview</span></div>

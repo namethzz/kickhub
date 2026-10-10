@@ -16,7 +16,7 @@ type ParallaxProps = {
 // Same four-layer timeline and DOM structure as the supplied component.
 // The uploaded photo is a single flattened image: extra layers are CSS atmosphere
 // and pitch graphics, rather than claiming separate photographic cutouts exist.
-export function ParallaxComponent({ imageSrc = '/hero-kickhub.jpg', targetRef }: ParallaxProps = {}) {
+export function ParallaxComponent({ imageSrc = '/hero-stadium-v2.png', targetRef }: ParallaxProps = {}) {
   const parallaxRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
 
@@ -86,7 +86,7 @@ export function ParallaxComponent({ imageSrc = '/hero-kickhub.jpg', targetRef }:
           <div className="parallax__black-line-overflow" aria-hidden="true" />
           <div data-parallax-layers className="parallax__layers">
             <div data-parallax-layer="1" className="parallax__photo-layer" aria-hidden="true">
-              <img src={imageSrc} loading="eager" fetchPriority="high" width="1920" height="1080" alt="" className="parallax__layer-img" />
+              <img src={imageSrc} loading="eager" fetchPriority="high" width="1672" height="941" alt="" className="parallax__layer-img" />
             </div>
             <div data-parallax-layer="2" className="parallax__light-layer" aria-hidden="true" />
             <div className="parallax__shade" aria-hidden="true" />

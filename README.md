@@ -103,3 +103,15 @@ npx shadcn@latest add button
 ติดตั้ง `gsap`, `@studio-freight/lenis`, `lucide-react`, `typescript`, `@types/node`, `clsx`, `tailwind-merge`, `tw-animate-css` แล้ว แพ็กเกจ @studio-freight/lenis เป็นชื่อเก่าที่ deprecated แต่ใช้ตาม dependency ที่ระบุใน component รอบนี้
 
 Build/typecheck ต้องผ่านก่อนขึ้น GitHub ยังไม่ได้ทดสอบภาพหรือ scroll บนอุปกรณ์จริง/browser ใน environment นี้
+
+## Fullscreen stadium Hero update
+
+Hero หน้า home เต็ม viewport ด้วย 100svh และเต็มความกว้าง ไม่มีกรอบ/ขอบมน/ช่องว่างด้านข้าง Header ซ้อนบน Hero ส่วนแมตช์ด้านล่างยังคุมความกว้างอ่านง่าย หน้าจอสั้นสามารถ scroll เพื่อไม่ตัดปุ่ม
+
+ใช้ `frontend/public/hero-stadium-v2.png` เป็นภาพใหม่ที่แก้จากรูปของคุณด้วย imagegen built-in: ลบข้อความในภาพ คงหลังคา ไฟ อัฒจันทร์ หมอกและสนาม ลดลูกบอลและย้ายไปขวาล่าง ให้พื้นที่กลางภาพสำหรับข้อความ HTML ภาพเดิมยังอยู่
+
+เลิกขยายภาพสูง 290–300%; desktop ใช้ cover 100%, portrait/mobile ใช้ contain สำหรับภาพหลักให้เห็นทั้งสนาม พร้อม backdrop รูปเดียวกันเพื่อเติมพื้นที่แนวตั้ง ไม่ทำให้บอลกินทั้งหน้าจอ
+
+Asset prompt: edit the supplied stadium, remove all printed text and labels, preserve roof/floodlights/stands/green turf; wide 16:9, smaller football lower right, open center/left for HTML text, no UI or text.
+
+Typecheck/build ใช้ตรวจ source; ยังไม่มี browser/device visual QA ใน environment นี้

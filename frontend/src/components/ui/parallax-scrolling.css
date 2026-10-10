@@ -1,12 +1,12 @@
-.parallax{position:relative;isolation:isolate;border-radius:20px;overflow:hidden;background:#081c16;color:white}
-.parallax__header{position:relative;height:auto;min-height:680px;min-height:clamp(680px,85svh,940px)}
+.parallax{position:relative;isolation:isolate;border-radius:0;overflow:hidden;background:#081c16;color:white}
+.parallax__header{position:relative;height:100vh;height:100svh;min-height:650px}
 .parallax__visuals,.parallax__layers{position:absolute;inset:0;overflow:hidden}
 .parallax__black-line-overflow{position:absolute;bottom:-2px;left:0;right:0;height:4px;background:#081c16}
 .parallax__photo-layer{position:absolute;inset:0;will-change:transform;pointer-events:none}
-.parallax__layer-img{position:absolute;bottom:-7%;left:0;width:100%;height:290%;max-width:none;object-fit:cover;object-position:center bottom;filter:brightness(.65) saturate(.8)}
+.parallax__layer-img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center center;filter:brightness(.94) saturate(.96)}
 .parallax__light-layer{position:absolute;inset:-50% 0 0;will-change:transform;pointer-events:none;background:radial-gradient(ellipse at 16% 38%,#a3e2e635,transparent 43%),radial-gradient(ellipse at 89% 43%,#b7d7ed26,transparent 40%)}
-.parallax__shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#071d16ce,#071d1699 43%,#071d167a 76%,#081c16dd),linear-gradient(90deg,#081c164d,transparent 50%,#081c164d)}
-.parallax__layer-title{position:absolute;z-index:2;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:38px 32px 94px;will-change:transform}
+.parallax__shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#06152870,#0615284a 35%,#06152875 63%,#06152835 83%,#081c16b3),radial-gradient(ellipse at 50% 44%,#06152845,transparent 65%)}
+.parallax__layer-title{position:absolute;z-index:2;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:112px 32px 80px;will-change:transform}
 .parallax__eyebrow{display:flex;align-items:center;gap:9px;font-size:10px;line-height:1.8;letter-spacing:2.4px;color:#d6e1cb;font-weight:600}
 .parallax__eyebrow i{width:6px;height:6px;border-radius:50%;background:#cdf46c}
 .parallax__title{font-family:Arial,Helvetica,sans-serif;font-size:clamp(85px,13vw,170px);font-style:italic;font-weight:900;line-height:.95;letter-spacing:-8px;margin:35px 0 24px;white-space:nowrap;text-shadow:0 8px 35px #0004}
@@ -26,8 +26,34 @@
 .parallax__content button,.parallax__content a{display:flex;align-items:center;gap:12px;min-height:44px;color:#e1eccf;background:transparent;border:0;font-size:11px;cursor:pointer;white-space:nowrap}
 .osmo-credits{text-align:center;padding:16px;font-size:11px;color:#60735e}.osmo-credits__p-a{text-decoration:underline!important}
 html.lenis{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}.lenis.lenis-stopped{overflow:hidden}
-@media(min-width:761px) and (max-width:1024px){.parallax__header{min-height:720px}.parallax__title{font-size:clamp(95px,13.5vw,145px);letter-spacing:-6px}.parallax__subtitle{font-size:29px}.parallax__layer-title{padding:42px 25px 86px}}
-@media(max-width:760px){.parallax{border-radius:16px}.parallax__header{min-height:650px}.parallax__layer-title{padding:35px 20px 88px}.parallax__eyebrow{font-size:8px;letter-spacing:1px;gap:7px}.parallax__title{font-size:clamp(43px,13.1vw,89px);letter-spacing:-3px;margin:29px 0 23px}.parallax__subtitle{font-size:clamp(21px,5.8vw,30px);line-height:1.6;letter-spacing:-.4px;margin-bottom:17px}.parallax__description{font-size:12px}.parallax__actions{gap:9px;margin-top:24px}.parallax__actions .kh-button{font-size:12px!important;padding:12px 15px;min-height:46px}.parallax__benefits{font-size:9px;gap:12px;margin-top:22px}.parallax__benefits svg{width:12px;height:12px}.parallax__layer-img{height:300%;bottom:-7%}.parallax__pitch-layer>span{font-size:7px;letter-spacing:1.3px;bottom:28px}.parallax__pitch-line{inset:14px}.parallax__content{padding:16px 20px;gap:10px}.parallax__content>.osmo-icon-svg{width:21px;height:21px}.parallax__content p{font-size:10px;line-height:1.8}.parallax__content button,.parallax__content a{font-size:10px;gap:7px}}
+@media(min-width:761px) and (max-width:1024px){.parallax__header{min-height:650px}.parallax__title{font-size:clamp(95px,13.5vw,145px);letter-spacing:-6px}.parallax__subtitle{font-size:29px}.parallax__layer-title{padding:115px 25px 100px}}
+@media(max-width:760px){.parallax{border-radius:0}.parallax__header{min-height:650px}.parallax__layer-title{padding:95px 20px 135px}.parallax__eyebrow{font-size:8px;letter-spacing:1px;gap:7px}.parallax__title{font-size:clamp(43px,13.1vw,89px);letter-spacing:-3px;margin:29px 0 23px}.parallax__subtitle{font-size:clamp(21px,5.8vw,30px);line-height:1.6;letter-spacing:-.4px;margin-bottom:17px}.parallax__description{font-size:12px}.parallax__actions{gap:9px;margin-top:24px}.parallax__actions .kh-button{font-size:12px!important;padding:12px 15px;min-height:46px}.parallax__benefits{font-size:9px;gap:12px;margin-top:22px}.parallax__benefits svg{width:12px;height:12px}.parallax__layer-img{height:100%;object-fit:contain;object-position:center bottom}.parallax__pitch-layer>span{font-size:7px;letter-spacing:1.3px;bottom:28px}.parallax__pitch-line{inset:14px}.parallax__content{padding:16px 20px;gap:10px}.parallax__content>.osmo-icon-svg{width:21px;height:21px}.parallax__content p{font-size:10px;line-height:1.8}.parallax__content button,.parallax__content a{font-size:10px;gap:7px}}
 @media(max-width:360px){.parallax__actions{flex-direction:column;width:100%;max-width:230px}.parallax__benefits{gap:8px;font-size:8px}.parallax__content{flex-wrap:wrap}.parallax__content button,.parallax__content a{margin-left:auto}}
 @media(max-height:550px) and (orientation:landscape){.parallax__header{min-height:610px}.parallax__title{font-size:86px;margin:25px 0 21px}.parallax__layer-title{padding:25px 30px 78px}.parallax__subtitle{font-size:26px}}
 @media(prefers-reduced-motion:reduce){.parallax__photo-layer,.parallax__light-layer,.parallax__layer-title,.parallax__pitch-layer{will-change:auto}.parallax .kh-button:hover{transform:none}}
+
+/* Full-bleed home: constrain the discovery sections, never the stadium Hero. */
+.kh-app{position:relative}
+.kh-main.kh-main--home{max-width:none;margin:0;padding:0}
+.kh-main--home > :not(.parallax):not(dialog){max-width:1176px;width:calc(100% - 64px);margin-left:auto;margin-right:auto}
+.kh-app--home .kh-header{position:absolute;inset:0 0 auto;z-index:40;background:linear-gradient(#071726a8,transparent);border-bottom:1px solid #ffffff18;color:white}
+.kh-app--home .kh-header-inner{max-width:1440px}
+.kh-app--home .kh-brand>span:not(.kh-brand-icon){color:#cdf46c}
+.kh-app--home .kh-desktop-nav a{color:#d6e2d4}
+.kh-app--home .kh-desktop-nav a.active{color:white}
+.kh-app--home .kh-desktop-nav a.active:after{background:#cdf46c}
+.kh-app--home .kh-login{background:#cdf46c;color:#142b22!important}
+.parallax__photo-layer{background:#091929}
+@media(orientation:portrait){
+  .parallax__photo-layer{background-image:linear-gradient(#08192e50,#081c1666),url('/hero-stadium-v2.png');background-size:cover;background-position:center}
+  .parallax__layer-img{object-fit:contain;object-position:center bottom}
+  .parallax__shade{background:linear-gradient(180deg,#0615288c,#06152891 42%,#06152862 66%,transparent 84%,#081c1670)}
+  .parallax__layer-title{justify-content:flex-start;padding-top:clamp(120px,17svh,240px)}
+}
+@media(max-width:760px){
+  .kh-main.kh-main--home{padding:0 0 76px}
+  .kh-main--home > :not(.parallax):not(dialog){width:calc(100% - 36px)}
+  .parallax__photo-layer{background-image:linear-gradient(#08192e50,#081c1666),url('/hero-stadium-v2.png');background-size:cover;background-position:center}
+  .parallax__layer-img{object-fit:contain;object-position:center bottom}
+}
+@media(max-height:550px) and (orientation:landscape){.parallax__header{height:auto;min-height:650px}.parallax__layer-title{padding-top:110px}}
