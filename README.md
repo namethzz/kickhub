@@ -100,3 +100,11 @@ Repository: https://github.com/namethzz/kickhub
 ### Live field discovery
 
 `/field` lists active MongoDB fields with name/area search, field-type filtering, and price sorting. `/fields/:fieldId` shows details, amenities, contact/map links, and the owner profile. Creating a party from a field preselects that field; paused or missing selections are rejected rather than silently substituted. `/team?field=<id>` filters parties by field. These live routes currently require login. This step does not create a booking or process payments.
+
+### Reset local data
+
+Stop the API first. From `Backend`, run `npm run db:reset -- --confirm=kickhub`. The script only accepts a localhost MongoDB URI with database name `kickhub`; remote servers and other databases are refused. It asks for your management account name/email locally, validates the seed before deletion, saves every non-system collection and its indexes to a private `.backups/*.ejson` file, then drops/recreates the local database. The generated password is displayed in your own terminal only. Keep the backup private: it contains account data. Backups and credentials are never committed.
+
+The new database contains one management account and one Sidekick Soccer field, based on the user-supplied existing record. The venue's official historical page identifies its artificial turf: https://sidekicksoccer.wordpress.com/2010/12/13/รู้จักกับสนามฟุตบอล-sidekicksoccer/ . Price, contact, amenities and hours have not been verified as current. The description discloses this; no fake public players, parties, or reservations are seeded. This account does not claim to verify the actual venue owner. Review `Backend/data/initial-fields.json` before running if you have newer facts. Do not run the reset twice unless you intend to erase the new data too.
+
+After reset, clear site data for `localhost:5173` (including localStorage drafts and saved login), sign in with the generated account, and register real player accounts normally. MongoDB data and browser storage are separate. The home discovery examples remain labelled examples; they are not MongoDB records.

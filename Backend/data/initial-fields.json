@@ -1,0 +1,16 @@
+[
+  {
+    "field_name": "Sidekick Soccer",
+    "field_type": "หญ้าเทียม",
+    "mobile_number": "0651545249",
+    "address": "14/2 ซอยรังสิต–นครนายก 68 ตำบลบึงยี่โถ อำเภอธัญบุรี จังหวัดปทุมธานี 12130",
+    "price": 700,
+    "open": "12:00",
+    "close": "00:00",
+    "facilities": ["ห้องน้ำ", "ที่จอดรถ", "ร้านค้า"],
+    "image": "",
+    "description": "สนาม Sidekick Soccer ย่านคลอง 3 รังสิต ข้อมูลราคา เวลาเปิด–ปิด เบอร์ติดต่อ และสิ่งอำนวยความสะดวกนำมาจากข้อมูลเดิมที่ผู้ดูแลให้ไว้ ยังไม่ได้ยืนยันข้อมูลล่าสุดกับสนาม กรุณาติดต่อสนามเพื่อยืนยันก่อนเดินทางหรือจอง",
+    "google_map": "https://www.google.com/maps/search/?api=1&query=Sidekick+Soccer+Rangsit+Khlong+3",
+    "is_active": true
+  }
+]
