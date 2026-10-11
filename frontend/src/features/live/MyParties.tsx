@@ -55,7 +55,7 @@ export default function MyParties() {
         const status = cancelled ? 'หัวตี้ยกเลิกปาร์ตี้' : ended ? 'จบแล้ว' : scope === 'requested' && request ? request.status === 'pending' && started ? 'หมดเวลาเข้าร่วม' : requestLabels[request.status] : started ? 'กำลังเตะ' : host ? 'คุณเป็นหัวตี้' : 'เข้าร่วมแล้ว';
         const position = positions.find(position => position.code === member?.position)?.name;
         return <article className="kh-my-card" key={party._id}>
-          <div className="kh-my-card-top"><span className={`kh-my-mode ${party.mode}`}>{modeInfo[party.mode].title}</span><span className={`kh-my-status ${cancelled || ended || (scope === 'requested' && request && ['declined', 'cancelled'].includes(request.status)) ? 'ended' : request?.status === 'pending' && scope === 'requested' ? 'pending' : ''}`}>{status}</span></div>
+          <div className="kh-my-card-top"><span className="kh-my-mode" data-mode={party.mode}>{modeInfo[party.mode].title}</span><span className={`kh-my-status ${cancelled || ended || (scope === 'requested' && request && ['declined', 'cancelled'].includes(request.status)) ? 'ended' : request?.status === 'pending' && scope === 'requested' ? 'pending' : ''}`}>{status}</span></div>
           <h3><Link to={`/parties/${party._id}`}>{party.party_name}</Link></h3>
           <p className="kh-my-location"><MapPin size={15} /><span>{party.field_name} · {party.address}</span></p>
           <div className="kh-my-date"><CalendarDays size={17} /><span>{when(party.start_datetime)}</span></div>
