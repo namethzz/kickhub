@@ -7,6 +7,7 @@ const service = require('../services/partyService');
 const notificationService = require('../services/notificationService');
 const { myPartyQuery } = require('../services/myPartiesService');
 const { partyCard } = require('../services/discoveryService');
+const { partySearchQuery } = require('../services/partySearchService');
 const publicProfile = user => ({ _id: user._id, name: user.name, bio: user.bio, area: user.area, preferred_position: user.preferred_position, level: user.level, role: user.role });
 router.get('/discover', async (req, res) => {
   const [fields, parties] = await Promise.all([
@@ -72,6 +73,18 @@ router.get('/parties', async (req,res) => {
   if (['fixed','flexible'].includes(req.query.mode)) filter.mode = req.query.mode;
   const posts = await Post.find(filter).sort({start_datetime:1}).limit(100);
   res.json(posts.map(post => service.publicParty(post,req.user._id)));
+});
+router.get('/party-search', async (req, res) => {
+  const query = partySearchQuery(req.query);
+  // Aggregate preserves the position/capacity expressions without Mongoose query casting.
+  const [result] = await Post.aggregate([
+    { $match: query.filter },
+    { $facet: {
+      items: [{ $sort: query.sort }, { $skip: (query.page - 1) * query.pageSize }, { $limit: query.pageSize }],
+      total: [{ $count: 'count' }],
+    } },
+  ]);
+  res.json({ total: result?.total?.[0]?.count || 0, page: query.page, pageSize: query.pageSize, parties: (result?.items || []).map(post => service.publicParty(post, req.user._id)) });
 });
 router.post('/parties', async (req,res) => { const post = await service.createParty(req.user._id,req.body.field_id,req.body); res.status(201).json(service.publicParty(post,req.user._id)); });
 router.get('/parties/:id', async (req,res) => { service.objectId(req.params.id); const post=await Post.findById(req.params.id); if(!post)service.fail(404,'ไม่พบปาร์ตี้'); res.json(service.publicParty(post,req.user._id)); });

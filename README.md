@@ -172,3 +172,9 @@ Party detail pages offer host-only editing of the name, description, start/end t
 Active party detail pages offer native device sharing (where supported), copy-link, and a selectable manual-copy fallback when sharing/clipboard access is unavailable. Shared links preserve the deployment base path and omit credentials, query strings and fragments. Recipients still authenticate through the existing login-return flow; sharing a link does not bypass host approval or capacity rules.
 
 Joined players and hosts can download an `.ics` snapshot for a party that has not ended. The event contains title, field/address, start/end, price/mode, and a link to the latest party detail; it contains no member identities or private requests. Times are emitted in UTC, so overnight games retain the correct dates, and Thai/emoji content uses UTF-8-aware folding and escaped TEXT per [RFC 5545](https://www.rfc-editor.org/rfc/rfc5545.html). Cancelled/finished parties do not offer these actions. Calendar downloads are not a live subscription: users must update their own calendar when the host changes or cancels the game. This feature does not write directly to a Google or Apple account.
+
+### ค้นหาปาร์ตี้
+
+หน้า `/team` ใช้ `GET /api/v2/party-search` สำหรับผู้เข้าสู่ระบบ ค้นหาชื่อปาร์ตี้ สนาม หรือที่อยู่แบบข้อความธรรมดา พร้อมกรองโหมด วันเล่นตามเวลาไทย งบสูงสุดต่อคน วิธีเข้าร่วม และตำแหน่งที่ยังว่าง เลือกเรียงตามเวลาเริ่มหรือราคาต่ำก่อน โดยแบ่งหน้าละ 12 รายการจากฐานข้อมูล แสดงเฉพาะตี้ที่ยังไม่เริ่มและไม่ถูกยกเลิก
+
+ค่าเริ่มต้นแสดงเฉพาะตี้ที่มีที่ว่าง ตำแหน่งว่างนับจากสมาชิกที่เข้าร่วมสำเร็จ ไม่รวมคำขอรออนุมัติ การเข้าร่วมจริงยังตรวจจำนวนว่างอีกครั้ง ตัวกรองและเลขหน้าเก็บใน URL เพื่อกลับจากหน้ารายละเอียดแล้วใช้ตัวเลือกเดิม ส่วนตี้ที่จัดเอง เข้าร่วม และประวัติรวมอยู่ที่ `/my-parties` ต้องรีสตาร์ต Backend หลังอัปเดตครั้งนี้ ไม่มีการแก้ไขข้อมูลเดิม
