@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,6 +11,7 @@ import { Button } from './button';
 import { Input } from './input';
 import { Checkbox } from './checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './form';
+import { GoogleSignIn } from './google-sign-in';
 import './login.css';
 
 const schema = z.object({ name: z.string(), email: z.string().trim().email('กรุณากรอกอีเมลให้ถูกต้อง'), password: z.string().min(1, 'กรุณากรอกรหัสผ่าน').max(128, 'รหัสผ่านยาวเกินไป'), role: z.enum(['user', 'owner']), rememberMe: z.boolean() });
@@ -20,11 +21,13 @@ type Props = {
   onSubmit: (data: AuthFormValues) => Promise<void>; createAccountHref: string;
   signup?: boolean; onFacebook: (data: Pick<AuthFormValues, 'role' | 'rememberMe'>) => Promise<void>;
   facebookReady: boolean; facebookNote: string;
+  googleClientId: string; googleNote: string; onGoogle: (credential: string, data: Pick<AuthFormValues, 'role' | 'rememberMe'>) => Promise<void>;
 };
 
 /** Live registration and login adapted from the supplied split-screen component. */
-export function AuthFormSplitScreen({ logo, title, description, imageSrc, imageAlt, onSubmit, createAccountHref, signup = false, onFacebook, facebookReady, facebookNote }: Props) {
-  const [busy, setBusy] = useState<'email' | 'facebook' | ''>('');
+export function AuthFormSplitScreen({ logo, title, description, imageSrc, imageAlt, onSubmit, createAccountHref, signup = false, onFacebook, facebookReady, facebookNote, googleClientId, googleNote, onGoogle }: Props) {
+  const [busy, setBusy] = useState<'email' | 'facebook' | 'google' | ''>('');
+  const busyRef = useRef(false);
   const [error, setError] = useState('');
   const [visible, setVisible] = useState(false);
   const reduceMotion = useReducedMotion();
@@ -34,12 +37,16 @@ export function AuthFormSplitScreen({ logo, title, description, imageSrc, imageA
     if (signup && values.password.length < 8) context.addIssue({ code: 'custom', path: ['password'], message: 'ใช้รหัสผ่านอย่างน้อย 8 ตัวอักษร' });
   })), defaultValues: { name: '', email: '', password: '', role: 'user', rememberMe: false } });
   async function submit(values: AuthFormValues) {
-    if (busy) return; setBusy('email'); setError('');
-    try { await onSubmit(values); } catch (error) { setError((error as Error).message); } finally { setBusy(''); }
+    if (busyRef.current) return; busyRef.current = true; setBusy('email'); setError('');
+    try { await onSubmit(values); } catch (error) { setError((error as Error).message); } finally { busyRef.current = false; setBusy(''); }
   }
   async function social() {
-    if (busy) return; setBusy('facebook'); setError('');
-    try { await onFacebook({ role: form.getValues('role'), rememberMe: form.getValues('rememberMe') }); } catch (error) { setError((error as Error).message); } finally { setBusy(''); }
+    if (busyRef.current) return; busyRef.current = true; setBusy('facebook'); setError('');
+    try { await onFacebook({ role: form.getValues('role'), rememberMe: form.getValues('rememberMe') }); } catch (error) { setError((error as Error).message); } finally { busyRef.current = false; setBusy(''); }
+  }
+  async function google(credential: string) {
+    if (busyRef.current) return; busyRef.current = true; setBusy('google'); setError('');
+    try { await onGoogle(credential, { role: form.getValues('role'), rememberMe: form.getValues('rememberMe') }); } catch (error) { setError((error as Error).message); } finally { busyRef.current = false; setBusy(''); }
   }
   const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: reduceMotion ? 0 : 0.06 } } };
   const itemVariants = { hidden: { y: reduceMotion ? 0 : 12, opacity: 0 }, visible: { y: 0, opacity: 1 } };
@@ -58,7 +65,7 @@ export function AuthFormSplitScreen({ logo, title, description, imageSrc, imageA
           {error && <p className="kh-auth-error" role="alert">{error}</p>}
           <motion.div variants={itemVariants}><Button type="submit" disabled={!!busy} className="kh-auth-submit">{busy === 'email' ? <Loader2 className="animate-spin" size={19} /> : <ArrowRight size={19} />}{busy === 'email' ? 'กำลังดำเนินการ…' : signup ? 'สร้างบัญชี' : 'เข้าสู่ระบบ'}</Button></motion.div>
         </form></Form>
-        <motion.div variants={itemVariants} className="kh-auth-social"><div className="kh-auth-divider"><span>หรือใช้บัญชีของคุณ</span></div><Button type="button" variant="outline" className="kh-auth-facebook" disabled={!!busy || !facebookReady} onClick={social}>{busy === 'facebook' ? <Loader2 className="animate-spin" size={20} /> : <span className="kh-facebook-mark" aria-hidden="true">f</span>}{busy === 'facebook' ? 'กำลังเชื่อมต่อ…' : 'ดำเนินการต่อด้วย Facebook'}</Button>{facebookNote && <p className="kh-auth-note" role="status">{facebookNote}</p>}</motion.div>
+        <motion.div variants={itemVariants} className="kh-auth-social"><div className="kh-auth-divider"><span>หรือใช้บัญชีของคุณ</span></div>{googleClientId ? <GoogleSignIn clientId={googleClientId} disabled={!!busy} onCredential={google} /> : <><Button type="button" variant="outline" className="kh-auth-google-unavailable" disabled>ดำเนินการต่อด้วย Google</Button>{googleNote && <p className="kh-auth-note" role="status">{googleNote}</p>}</>}{busy === 'google' && <p className="kh-auth-note" role="status">กำลังยืนยันบัญชี Google…</p>}<Button type="button" variant="outline" className="kh-auth-facebook" disabled={!!busy || !facebookReady} onClick={social}>{busy === 'facebook' ? <Loader2 className="animate-spin" size={20} /> : <span className="kh-facebook-mark" aria-hidden="true">f</span>}{busy === 'facebook' ? 'กำลังเชื่อมต่อ…' : 'ดำเนินการต่อด้วย Facebook'}</Button>{facebookNote && <p className="kh-auth-note" role="status">{facebookNote}</p>}</motion.div>
         <motion.p variants={itemVariants} className="kh-auth-switch">{signup ? 'มีบัญชีอยู่แล้ว?' : 'ยังไม่มีบัญชี?'} <Link to={createAccountHref}>{signup ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก'}</Link></motion.p>
       </motion.div>
       <p className="kh-auth-footer">KICKHUB · FIND YOUR PEOPLE. PLAY YOUR GAME.</p>

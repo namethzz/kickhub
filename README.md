@@ -124,3 +124,27 @@ FACEBOOK_GRAPH_VERSION=v25.0
 Create/configure Facebook Login in your Meta app and add your website's origin in its web/app domain settings. Use the API version supported by your Meta app. Use HTTPS for a deployed site. Development testing must use accounts permitted by your Meta app's current development access; complete Meta's requirements before enabling public users. Keep the App Secret server-side: never use a `VITE_` variable for it and never commit it. Setup references: https://developers.facebook.com/docs/facebook-login/web/ and https://developers.facebook.com/docs/facebook-login/guides/access-tokens/debugging-and-error-handling/ .
 
 The frontend loads the official JavaScript SDK using the public `/api/auth/facebook/config` response and opens login directly from a user click. Backend `/api/auth/facebook` independently checks the supplied access token's application, user identity and expiry, then fetches the profile with an app-secret proof. New users must share an email. Existing Facebook identities retain their account role; inactive users are rejected. An existing password account is never silently linked by matching email: those users must use their original email/password. Facebook account linking is not part of this step. Facebook token responses and App Secret are not stored or sent back to the browser; the app issues its own JWT. Without Meta configuration, email login/signup remain available and the Facebook button explains its unavailable state. Live Meta login requires your own configuration; automated tests use isolated mocks, not real Facebook accounts.
+
+### Google Login
+
+Login and register also offer Google's official Identity Services button. New Google users select player/owner on registration; returning accounts retain their role. Backend verifies Google signatures, audience, issuer, expiry and verified email using `google-auth-library`; the stable Google `sub` is saved as a unique sparse `google_id`. The browser receives only KickHub's own JWT. A matching email on an existing password/Facebook account is rejected with guidance to use the original sign-in method; linking existing accounts is not implemented.
+
+From the project root after pulling:
+
+```bash
+npm ci --prefix Backend
+npm ci --prefix frontend
+```
+
+Create a Google Cloud project, configure Google Auth Platform branding/audience, then create a **Web application** OAuth client. Add the frontend origin (including its port), for example both `http://localhost` and `http://localhost:5173`, to **Authorized JavaScript origins**. If using `http://127.0.0.1:5173` too, register that separately. For production register the actual HTTPS frontend origin. This implementation uses the JavaScript popup credential callback, so no backend redirect route or client secret is needed. If the project is in Testing and restricts access, add your testing accounts in Audience.
+
+Set only this additional value in `Backend/.env`, preserving the MongoDB, JWT and Facebook settings:
+
+```dotenv
+GOOGLE_CLIENT_ID=your-web-client-id.apps.googleusercontent.com
+```
+
+Restart the API and refresh `/login` or `/register`. Missing configuration or blocked SDK loading displays a Thai explanation and email authentication remains available. The official Google button resizes to fit phones/tablets (up to its supported 400px width). Client IDs are public configuration, not secrets. Tokens are posted in JSON from the GIS callback; this API does not accept Google's direct cookie/form redirect login flow. Tests use locally signed tokens with isolated keys and mocked profile/database operations, not live Google accounts. Real account and device testing requires your configured client ID.
+
+Official setup: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
+Server verification: https://developers.google.com/identity/gsi/web/guides/verify-google-id-token

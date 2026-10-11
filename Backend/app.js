@@ -6,6 +6,7 @@ app.use(cors({origin:(process.env.CLIENT_ORIGIN || 'http://localhost:5173').spli
 app.use(express.json({limit:'1mb'}));
 app.use('/api/auth/login',require('./routes/apiAuthRoutes'));
 app.use('/api/auth/register',require('./routes/apiRegister'));
+app.use('/api/auth/google',require('./routes/googleAuth'));
 app.use('/api/auth/facebook',require('./routes/facebookAuth'));
 app.use('/api/v2',require('./routes/partyRoutes'));
 app.use('/api',require('./routes/apiPrivateRoutes'));
