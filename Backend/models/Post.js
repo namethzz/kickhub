@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema(
   {
+    notification_events: [{
+      recipient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      type: { type: String, enum: ['request', 'submitted', 'approved', 'declined', 'joined', 'cancelled'], required: true },
+      actor_name: String,
+      created_at: { type: Date, default: Date.now },
+    }],
     party_name: { type: String, required: true },
     access: { type: String, enum: ["open", "approval"], default: "open" },
     join_requests: [{ user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, name: String, position: { type: String, enum: ["GK", "FW", "DF", "MF", null], default: null }, status: { type: String, enum: ["pending", "approved", "declined", "cancelled"], default: "pending" }, requested_at: { type: Date, default: Date.now }, reviewed_at: Date }],
@@ -66,5 +72,7 @@ const postSchema = new mongoose.Schema(
   },
   { timestamps: true, optimisticConcurrency: true }
 );
+
+postSchema.index({ 'notification_events.recipient_id': 1 });
 
 module.exports = mongoose.model("Post", postSchema);

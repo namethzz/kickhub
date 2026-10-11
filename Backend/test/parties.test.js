@@ -91,3 +91,17 @@ test('field discovery exposes active details and filters parties by field',async
  assert.equal((await call('/api/v2/fields',firstToken)).data.some(item=>'mobile_number' in item),false);
 });
 test('banned users cannot authenticate',async()=>{await User.findByIdAndUpdate(second._id,{status:'banned'});assert.equal((await call('/api/v2/me',secondToken)).status,401);});
+
+test('notifications are saved atomically with requests and reviews, scoped privately, and acknowledged across sessions', async () => {
+ const created=await call('/api/v2/parties',hostToken,'POST',payload()); const id=created.data._id;
+ const requested=await call(`/api/v2/parties/${id}/join`,firstToken,'POST',{position:'GK'});assert.equal(requested.status,200);assert.equal(requested.data.notification_events,undefined);
+ const inbox=await call('/api/v2/notifications',hostToken);assert.equal(inbox.status,200);
+ assert(inbox.data.items.some(item=>item.party_id===id&&item.type==='request'));
+ const other=await call('/api/v2/notifications',secondToken);assert(!other.data.items.some(item=>item.party_id===id));
+ const request=(await call(`/api/v2/parties/${id}/requests`,hostToken)).data.join_requests.find(request=>request.user_id===String(first._id));
+ assert.equal((await call(`/api/v2/parties/${id}/requests/${request._id}`,hostToken,'PATCH',{decision:'approved'})).status,200);
+ const mine=await call('/api/v2/notifications',firstToken);assert(mine.data.items.some(item=>item.party_id===id&&item.type==='approved'&&!item.read));
+ assert.equal((await call('/api/v2/notifications/read',firstToken,'PATCH',{through:mine.data.asOf})).status,200);
+ const read=await call('/api/v2/notifications?filter=unread',firstToken);assert.equal(read.data.unread,0);assert.equal(read.data.total,0);
+ const stored=await User.findById(first._id);assert.equal(stored.notifications_read_at.toISOString(),mine.data.asOf);
+});

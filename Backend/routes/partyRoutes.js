@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Post = require('../models/Post');
 const Field = require('../models/Field');
 const service = require('../services/partyService');
+const notificationService = require('../services/notificationService');
 const { myPartyQuery } = require('../services/myPartiesService');
 const { partyCard } = require('../services/discoveryService');
 const publicProfile = user => ({ _id: user._id, name: user.name, bio: user.bio, area: user.area, preferred_position: user.preferred_position, level: user.level, role: user.role });
@@ -21,6 +22,16 @@ router.get('/profiles/:id', async (req, res) => {
   res.json(publicProfile(user));
 });
 router.use(auth);
+router.get('/notifications', async (req, res) => {
+  const query = notificationService.pipeline(req.user._id, req.user.notifications_read_at, req.query);
+  const [result] = await Post.aggregate(query.stages);
+  res.json({ items: result?.items || [], total: result?.total?.[0]?.count || 0, unread: result?.unread?.[0]?.count || 0, asOf: query.asOf, page: query.page, pageSize: query.pageSize });
+});
+router.patch('/notifications/read', async (req, res) => {
+  const through = notificationService.readThrough(req.body.through);
+  await User.updateOne({ _id: req.user._id }, { $max: { notifications_read_at: through } });
+  res.json({ status: 'ok' });
+});
 router.get('/me', (req,res) => res.json({ ...publicProfile(req.user), email: req.user.email }));
 router.patch('/me', async (req,res) => {
   const data = req.body;

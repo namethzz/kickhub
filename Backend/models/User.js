@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema(
       enum: ["active", "banned"],
       default: "active",
     },
+    notifications_read_at: { type: Date },
     last_login: { type: Date },
   },
   { timestamps: true }

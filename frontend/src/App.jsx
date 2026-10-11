@@ -33,7 +33,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SignUp from "./components/SignUp";
 import FindCreateParty from "./components/FindCreateParty";
 import FindandCreate from "./components/FindandCreate";
-import Notifications from "./components/Notification";
+import Notifications from "./features/live/LiveNotifications";
 import Partybuffet from "./components/Partybuffet";
 import PartyRole from "./components/Partyrole";
 import CreateParty from "./components/CreateParty";

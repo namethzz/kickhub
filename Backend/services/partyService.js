@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Post = require('../models/Post');
 const Field = require('../models/Field');
 const User = require('../models/User');
+const { addNotification } = require('./notificationService');
 const codes = ['GK', 'DF', 'MF', 'FW'];
 function fail(status, message) { throw Object.assign(new Error(message), { status }); }
 function objectId(id) { if (!mongoose.isObjectIdOrHexString(id)) fail(400, 'รหัสข้อมูลไม่ถูกต้อง'); return id; }
@@ -55,7 +56,12 @@ async function joinParty(id, actor, position) {
     if (post.access === 'approval') {
       if (request) { request.position = chosen; request.status = 'pending'; request.requested_at = new Date(); request.reviewed_at = undefined; }
       else post.join_requests.push({ user_id: actor, name: user.name, position: chosen, status: 'pending' });
-    } else post.participants.push({ user_id: actor, name: user.name, position: chosen, status: 'Joined' });
+      addNotification(post, post.user_id, 'request', user.name);
+      addNotification(post, actor, 'submitted', user.name);
+    } else {
+      post.participants.push({ user_id: actor, name: user.name, position: chosen, status: 'Joined' });
+      addNotification(post, post.user_id, 'joined', user.name);
+    }
   });
 }
 async function reviewRequest(id, requestId, actor, decision) {
@@ -70,20 +76,25 @@ async function reviewRequest(id, requestId, actor, decision) {
       post.participants.push({ user_id: request.user_id, name: request.name, position: request.position, status: 'Joined' });
     }
     request.status = decision; request.reviewed_at = new Date();
+    addNotification(post, request.user_id, decision, post.host_name);
   });
 }
 async function leaveParty(id, actor) {
   return mutate(id, post => {
     if (String(post.user_id) === String(actor)) fail(409, 'หัวตี้ไม่สามารถออกจากปาร์ตี้ของตนเองได้');
     if (post.start_datetime <= new Date()) fail(409, 'ปาร์ตี้เริ่มแล้ว ไม่สามารถยกเลิกได้');
+    const member = post.participants.find(member => String(member.user_id) === String(actor));
     post.participants = post.participants.filter(member => String(member.user_id) !== String(actor));
     const request = post.join_requests.find(request => String(request.user_id) === String(actor));
-    if (request && ['pending','approved'].includes(request.status)) request.status = 'cancelled';
+    const activeRequest = request && ['pending', 'approved'].includes(request.status);
+    if (activeRequest) { request.status = 'cancelled'; request.reviewed_at = new Date(); }
+    if (member || activeRequest) addNotification(post, post.user_id, 'cancelled', member?.name || request.name);
   });
 }
 function publicParty(post, actor) {
   const result = post.toObject ? post.toObject() : { ...post };
   delete result.__v;
+  delete result.notification_events;
   result.capacity = capacity(post);
   result.join_requests = String(post.user_id) === String(actor) ? result.join_requests : result.join_requests.filter(request => String(request.user_id) === String(actor));
   return result;
