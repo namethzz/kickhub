@@ -90,6 +90,7 @@ async function leaveParty(id, actor) {
     if (post.start_datetime <= new Date()) fail(409, 'ปาร์ตี้เริ่มแล้ว ไม่สามารถยกเลิกได้');
     const member = post.participants.find(member => String(member.user_id) === String(actor));
     post.participants = post.participants.filter(member => String(member.user_id) !== String(actor));
+    for (const event of post.notification_events || []) if (event.type === 'chat' && String(event.recipient_id) === String(actor)) event.read_at = new Date();
     const request = post.join_requests.find(request => String(request.user_id) === String(actor));
     const activeRequest = request && ['pending', 'approved'].includes(request.status);
     if (activeRequest) { request.status = 'cancelled'; request.reviewed_at = new Date(); }

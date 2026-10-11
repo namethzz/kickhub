@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const { fail, objectId, mutate } = require('./partyService');
+const { addChatNotifications } = require('./notificationService');
 const LIMIT = 50, RETENTION = 200;
 
 function memberOnly(post, actor) {
@@ -35,7 +36,22 @@ async function sendChat(id, user, data) {
     const last = [...messages].reverse().find(message => String(message.sender_id) === String(user._id));
     if (last && Date.now() - +last.created_at < 3000) fail(429, 'ส่งข้อความเร็วเกินไป กรุณารอ 3 วินาที');
     post.chat_messages = [...messages.slice(-(RETENTION - 1)), { sender_id: user._id, sender_name: user.name, client_id: clientId, text, created_at: new Date() }];
+    addChatNotifications(post, post.chat_messages.at(-1));
   }, '+chat_messages');
   return publicMessage(post.chat_messages.find(message => String(message.sender_id) === String(user._id) && message.client_id === clientId));
 }
-module.exports = { readChat, sendChat, memberOnly, chatState };
+async function acknowledgeChat(id, actor, messageId) {
+  objectId(id); objectId(messageId);
+  const post = await Post.findById(id).select('+chat_messages');
+  if (!post) fail(404, 'ไม่พบปาร์ตี้'); memberOnly(post, actor);
+  const index = (post.chat_messages || []).findIndex(message => String(message._id) === String(messageId));
+  if (index < 0) fail(409, 'ข้อความนี้ไม่อยู่ในประวัติแล้ว กรุณาโหลดแชตใหม่');
+  const ids = post.chat_messages.slice(0, index + 1).map(message => message._id);
+  // An incoming message after this snapshot has a different id, even in the same millisecond.
+  const event = { recipient_id: actor, type: 'chat', message_id: { $in: ids }, read_at: null };
+  const result = await Post.updateOne({ _id: id, $or: [{ user_id: actor }, { 'participants.user_id': actor }], notification_events: { $elemMatch: event } },
+    { $set: { 'notification_events.$[event].read_at': new Date() }, $inc: { __v: 1 } },
+    { arrayFilters: [{ 'event.recipient_id': actor, 'event.type': 'chat', 'event.message_id': { $in: ids }, 'event.read_at': null }] });
+  return { status: 'ok', changed: !!result.modifiedCount };
+}
+module.exports = { readChat, sendChat, acknowledgeChat, memberOnly, chatState };

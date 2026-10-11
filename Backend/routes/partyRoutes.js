@@ -36,17 +36,17 @@ router.patch('/notifications/read', async (req, res) => {
 });
 router.patch('/notifications/:id/read', async (req, res) => {
   service.objectId(req.params.id);
-  await Post.updateOne({ notification_events: { $elemMatch: { _id: req.params.id, recipient_id: req.user._id, read_at: null } } },
+  await Post.updateOne({ notification_events: { $elemMatch: { _id: req.params.id, recipient_id: req.user._id, type: { $ne: 'chat' }, read_at: null } } },
     { $set: { 'notification_events.$[event].read_at': new Date() }, $inc: { __v: 1 } },
-    { arrayFilters: [{ 'event._id': req.params.id, 'event.recipient_id': req.user._id, 'event.read_at': null }] });
+    { arrayFilters: [{ 'event._id': req.params.id, 'event.recipient_id': req.user._id, 'event.type': { $ne: 'chat' }, 'event.read_at': null }] });
   res.json({ status: 'ok' });
 });
 router.patch('/parties/:id/notifications/read', async (req, res) => {
   service.objectId(req.params.id);
   const through = notificationService.readThrough(req.body?.through);
-  await Post.updateOne({ _id: req.params.id, notification_events: { $elemMatch: { recipient_id: req.user._id, created_at: { $lte: through }, type: { $ne: 'request' }, read_at: null } } },
+  await Post.updateOne({ _id: req.params.id, notification_events: { $elemMatch: { recipient_id: req.user._id, created_at: { $lte: through }, type: { $nin: ['request', 'chat'] }, read_at: null } } },
     { $set: { 'notification_events.$[event].read_at': new Date() }, $inc: { __v: 1 } },
-    { arrayFilters: [{ 'event.recipient_id': req.user._id, 'event.created_at': { $lte: through }, 'event.type': { $ne: 'request' }, 'event.read_at': null }] });
+    { arrayFilters: [{ 'event.recipient_id': req.user._id, 'event.created_at': { $lte: through }, 'event.type': { $nin: ['request', 'chat'] }, 'event.read_at': null }] });
   res.json({ status: 'ok' });
 });
 router.get('/me', (req,res) => res.json({ ...publicProfile(req.user), email: req.user.email }));
@@ -107,6 +107,7 @@ router.get('/party-search', async (req, res) => {
 router.post('/parties', async (req,res) => { const post = await service.createParty(req.user._id,req.body.field_id,req.body); res.status(201).json(service.publicParty(post,req.user._id)); });
 router.get('/parties/:id/messages', async (req, res) => res.json(await chat.readChat(req.params.id, req.user._id, req.query.before)));
 router.post('/parties/:id/messages', async (req, res) => res.status(201).json(await chat.sendChat(req.params.id, req.user, req.body)));
+router.patch('/parties/:id/messages/read', async (req, res) => res.json(await chat.acknowledgeChat(req.params.id, req.user._id, req.body?.message_id)));
 router.get('/parties/:id', async (req,res) => { const through = new Date(); service.objectId(req.params.id); const post=await Post.findById(req.params.id); if(!post)service.fail(404,'ไม่พบปาร์ตี้'); res.json({ ...service.publicParty(post,req.user._id), activity_read_through: through }); });
 router.patch('/parties/:id', async(req,res) => res.json(service.publicParty(await service.updateParty(req.params.id,req.user._id,req.body),req.user._id)));
 router.post('/parties/:id/cancel', async(req,res) => res.json(service.publicParty(await service.cancelParty(req.params.id,req.user._id,req.body?.reason),req.user._id)));

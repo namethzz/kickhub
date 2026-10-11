@@ -21,7 +21,7 @@ export default function NotificationBell() {
       finally { running = false; if (queued && active) { queued = false; void refresh(); } }
     }
     refresh();
-    const timer = window.setInterval(refresh, 60000);
+    const timer = window.setInterval(refresh, 15000);
     document.addEventListener('visibilitychange', refresh);
     window.addEventListener(notificationChanged, refresh);
     return () => { active = false; clearInterval(timer); document.removeEventListener('visibilitychange', refresh); window.removeEventListener(notificationChanged, refresh); };

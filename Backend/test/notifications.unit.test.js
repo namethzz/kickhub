@@ -73,7 +73,7 @@ test('opening one notification or party acknowledges only actor-owned events, pr
     assert.equal((await fetch(`${url}/parties/${partyId}/notifications/read`, { method: 'PATCH', headers, body: JSON.stringify({ through, user_id: host }) })).status, 200);
     const [filter, , options] = update.mock.calls[1].arguments;
     assert.equal(filter._id, String(partyId)); assert.equal(+filter.notification_events.$elemMatch.created_at.$lte, +new Date(through));
-    assert.deepEqual(options.arrayFilters[0]['event.type'], { $ne: 'request' });
+    assert.deepEqual(options.arrayFilters[0]['event.type'], { $nin: ['request', 'chat'] });
     assert.equal(+options.arrayFilters[0]['event.created_at'].$lte, +new Date(through));
     assert.equal((await fetch(`${url}/parties/${partyId}/notifications/read`, { method: 'PATCH', headers, body: JSON.stringify({ through: new Date(Date.now() + 60000).toISOString() }) })).status, 400);
     assert.equal((await fetch(`${url}/notifications/bad/read`, { method: 'PATCH', headers })).status, 400);

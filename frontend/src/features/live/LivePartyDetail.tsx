@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import { api, type LiveParty, type PublicPlayer } from '@/lib/api';
 import { modeInfo, positions } from '../parties/party-model';
@@ -10,13 +10,16 @@ import { markPartyActivityRead } from './notifications-api';
 import { ApiError, when } from './LiveParties';
 export default function LivePartyDetail() {
   const { partyId } = useParams();
+  const [params] = useSearchParams();
+  const linkedTab = params.get('tab');
   const [party, setParty] = useState<LiveParty | null>(null);
   const [me, setMe] = useState<PublicPlayer | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [position, setPosition] = useState('');
-  const [tab, setTab] = useState('details');
+  const [tab, setTab] = useState(linkedTab === 'chat' ? 'chat' : 'details');
+  useEffect(() => { setTab(linkedTab === 'chat' ? 'chat' : 'details'); }, [partyId, linkedTab]);
   const [confirm, setConfirm] = useState<'join'|'leave'|null>(null);
   const [notice, setNotice] = useState('');
   useEffect(() => {

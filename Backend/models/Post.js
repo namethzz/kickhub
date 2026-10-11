@@ -11,10 +11,11 @@ const postSchema = new mongoose.Schema(
     }], default: [], select: false },
     notification_events: [{
       recipient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-      type: { type: String, enum: ['request', 'submitted', 'approved', 'declined', 'joined', 'cancelled', 'updated', 'party_cancelled'], required: true },
+      type: { type: String, enum: ['request', 'submitted', 'approved', 'declined', 'joined', 'cancelled', 'updated', 'party_cancelled', 'chat'], required: true },
       actor_name: String,
       created_at: { type: Date, default: Date.now },
       read_at: Date,
+      message_id: mongoose.Schema.Types.ObjectId,
     }],
     status: { type: String, enum: ['active', 'cancelled'], default: 'active' },
     cancelled_at: Date,
