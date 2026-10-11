@@ -8,6 +8,7 @@ const notificationService = require('../services/notificationService');
 const { myPartyQuery } = require('../services/myPartiesService');
 const { partyCard } = require('../services/discoveryService');
 const { partySearchQuery } = require('../services/partySearchService');
+const chat = require('../services/partyChatService');
 const publicProfile = user => ({ _id: user._id, name: user.name, bio: user.bio, area: user.area, preferred_position: user.preferred_position, level: user.level, role: user.role });
 router.get('/discover', async (req, res) => {
   const [fields, parties] = await Promise.all([
@@ -89,6 +90,8 @@ router.get('/party-search', async (req, res) => {
   res.json({ total: result?.total?.[0]?.count || 0, page: query.page, pageSize: query.pageSize, parties: posts.map(post => service.publicParty(post, req.user._id)) });
 });
 router.post('/parties', async (req,res) => { const post = await service.createParty(req.user._id,req.body.field_id,req.body); res.status(201).json(service.publicParty(post,req.user._id)); });
+router.get('/parties/:id/messages', async (req, res) => res.json(await chat.readChat(req.params.id, req.user._id, req.query.before)));
+router.post('/parties/:id/messages', async (req, res) => res.status(201).json(await chat.sendChat(req.params.id, req.user, req.body)));
 router.get('/parties/:id', async (req,res) => { service.objectId(req.params.id); const post=await Post.findById(req.params.id); if(!post)service.fail(404,'ไม่พบปาร์ตี้'); res.json(service.publicParty(post,req.user._id)); });
 router.patch('/parties/:id', async(req,res) => res.json(service.publicParty(await service.updateParty(req.params.id,req.user._id,req.body),req.user._id)));
 router.post('/parties/:id/cancel', async(req,res) => res.json(service.publicParty(await service.cancelParty(req.params.id,req.user._id,req.body?.reason),req.user._id)));

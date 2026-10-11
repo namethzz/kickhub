@@ -2,7 +2,7 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   const token = localStorage.getItem('token');
   const response = await fetch(`${import.meta.env.VITE_API_URL || ''}${path}`, { ...options, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options.headers } });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) { if (response.status === 401) localStorage.removeItem('token'); throw new Error(data.message || data.error || 'ระบบไม่พร้อมใช้งาน กรุณาลองใหม่'); }
+  if (!response.ok) { if (response.status === 401) localStorage.removeItem('token'); throw Object.assign(new Error(data.message || data.error || 'ระบบไม่พร้อมใช้งาน กรุณาลองใหม่'), { status: response.status }); }
   return data;
 }
 export type PublicPlayer = { _id: string; name: string; bio: string; area: string; preferred_position: string; level: string; role: string; email?: string };

@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema(
   {
+    chat_messages: { type: [{
+      sender_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      sender_name: { type: String, required: true, maxlength: 100 },
+      client_id: { type: String, required: true },
+      text: { type: String, required: true, maxlength: 1000 },
+      created_at: { type: Date, default: Date.now },
+    }], default: [], select: false },
     notification_events: [{
       recipient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
       type: { type: String, enum: ['request', 'submitted', 'approved', 'declined', 'joined', 'cancelled', 'updated', 'party_cancelled'], required: true },

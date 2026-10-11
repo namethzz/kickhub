@@ -20,10 +20,11 @@ function hasSpace(post, position) {
   }
 }
 function positionFor(post, position) { if (post.mode === 'fixed' && !codes.includes(position)) fail(400, 'กรุณาเลือกตำแหน่ง'); return post.mode === 'fixed' ? position : null; }
-async function mutate(id, action) {
+async function mutate(id, action, select) {
   objectId(id);
   for (let attempt = 0; attempt < 5; attempt++) {
-    const post = await Post.findById(id); if (!post) fail(404, 'ไม่พบปาร์ตี้');
+    const query = Post.findById(id);
+    const post = await (select ? query.select(select) : query); if (!post) fail(404, 'ไม่พบปาร์ตี้');
     await action(post);
     try { await post.save(); return post; } catch (error) { if (error.name !== 'VersionError') throw error; }
   }
@@ -138,6 +139,7 @@ function publicParty(post, actor) {
   const result = post.toObject ? post.toObject() : { ...post };
   delete result.__v;
   delete result.notification_events;
+  delete result.chat_messages;
   result.capacity = capacity(post);
   result.join_requests = String(post.user_id) === String(actor) ? result.join_requests : result.join_requests.filter(request => String(request.user_id) === String(actor));
   return result;
