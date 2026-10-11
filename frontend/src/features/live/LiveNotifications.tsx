@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight, Bell, CheckCheck, CheckCircle2, ChevronLeft, ChevronRight, Clock3, RefreshCw, UserMinus, UserPlus, XCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { ApiError, when } from './LiveParties';
-import { notificationChanged, type NotificationFeed } from './notifications-api';
+import { markNotificationRead, notificationChanged, type NotificationFeed } from './notifications-api';
 import './notifications.css';
 const messages = {
   request: { title: 'มีคำขอเข้าร่วมใหม่', icon: UserPlus },
@@ -36,7 +36,8 @@ export default function LiveNotifications() {
     const refresh = () => { if (document.visibilityState === 'visible') setReload(value => value + 1); };
     const timer = window.setInterval(refresh, 60000);
     document.addEventListener('visibilitychange', refresh);
-    return () => { clearInterval(timer); document.removeEventListener('visibilitychange', refresh); };
+    window.addEventListener(notificationChanged, refresh);
+    return () => { clearInterval(timer); document.removeEventListener('visibilitychange', refresh); window.removeEventListener(notificationChanged, refresh); };
   }, []);
   async function readAll() {
     if (!feed || busy) return;
@@ -58,7 +59,7 @@ export default function LiveNotifications() {
       <div className="kh-inbox-list">{feed.items.map(item => {
         const { icon: Icon, title } = messages[item.type];
         const href = item.type === 'request' ? `/party-requests/${item.party_id}` : `/parties/${item.party_id}`;
-        return <Link key={item._id} to={href} className={`kh-inbox-item ${item.read ? '' : 'unread'}`}><span className={`kh-inbox-icon ${item.type}`}><Icon size={20} /></span><div className="kh-inbox-text"><div><h2>{title}</h2>{!item.read && <span className="kh-inbox-dot" aria-label="ยังไม่อ่าน" />}</div><p>{['request', 'joined', 'cancelled'].includes(item.type) ? `${item.actor_name} · ` : ''}{item.party_name}</p><time dateTime={item.created_at}>{when(item.created_at)}</time></div><ArrowUpRight className="kh-inbox-arrow" size={18} /></Link>;
+        return <Link key={item._id} to={href} onClick={() => { if (!item.read) void markNotificationRead(item._id).catch(() => {}); }} className={`kh-inbox-item ${item.read ? '' : 'unread'}`}><span className={`kh-inbox-icon ${item.type}`}><Icon size={20} /></span><div className="kh-inbox-text"><div><h2>{title}</h2>{!item.read && <span className="kh-inbox-dot" aria-label="ยังไม่อ่าน" />}</div><p>{['request', 'joined', 'cancelled'].includes(item.type) ? `${item.actor_name} · ` : ''}{item.party_name}</p><time dateTime={item.created_at}>{when(item.created_at)}</time></div><ArrowUpRight className="kh-inbox-arrow" size={18} /></Link>;
       })}</div>
       {!feed.items.length && <section className="party-empty kh-inbox-empty"><Bell size={32} /><h3>{unreadOnly ? 'อ่านครบแล้ว พร้อมลงสนาม' : 'ยังไม่มีแจ้งเตือน'}</h3><p>กิจกรรมใหม่เกี่ยวกับคำขอและปาร์ตี้ของคุณจะแสดงที่นี่</p><Link className="kh-button kh-dark" to="/my-parties">ดูปาร์ตี้ของฉัน</Link>{page > 1 && <button className="kh-inbox-read" onClick={() => setParams({ filter: unreadOnly ? 'unread' : 'all', page: '1' })}>กลับหน้าแรก</button>}</section>}
       {feed.total > feed.pageSize && <nav className="kh-inbox-pagination" aria-label="หน้าแจ้งเตือน"><button disabled={page <= 1} onClick={() => setParams({ filter: unreadOnly ? 'unread' : 'all', page: String(page - 1) })} aria-label="หน้าก่อนหน้า"><ChevronLeft size={18} /></button><span>หน้า {page} / {pages}</span><button disabled={page >= pages} onClick={() => setParams({ filter: unreadOnly ? 'unread' : 'all', page: String(page + 1) })} aria-label="หน้าถัดไป"><ChevronRight size={18} /></button></nav>}

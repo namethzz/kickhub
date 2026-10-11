@@ -44,9 +44,41 @@ test('notification pipeline isolates recipient after unwind, bounds pages and av
   const query = pipeline(player, readAt, { filter: 'unread', page: '2', user_id: String(host) }, at);
   assert.deepEqual(query.stages[2].$match, { 'notification_events.recipient_id': player, 'notification_events.created_at': { $lte: at } });
   assert.equal(query.stages.at(-1).$facet.items[0].$match['notification_events.created_at'].$gt, readAt);
+  assert.equal(query.stages.at(-1).$facet.unread[0].$match['notification_events.read_at'], null);
+  assert.equal(query.stages.at(-1).$facet.items.at(-1).$project.read.$or.length, 2);
   for (const invalid of [{ page: '-1' }, { page: '10001' }, { filter: 'other' }]) assert.throws(() => pipeline(player, null, invalid), error => error.status === 400);
   for (const value of [undefined, 'bad', new Date(+at + 1000).toISOString()]) assert.throws(() => readThrough(value, at), error => error.status === 400);
   assert.equal(+readThrough(at.toISOString(), at), +at);
+});
+test('opening one notification or party acknowledges only actor-owned events, preserves newer/unrelated items and increments version', async context => {
+  const previous = process.env.SECRET_KEY; process.env.SECRET_KEY = 'notification-item-test-secret';
+  const event = new mongoose.Types.ObjectId(), partyId = new mongoose.Types.ObjectId();
+  context.mock.method(User, 'findById', () => ({ select: async () => ({ _id: player, status: 'active' }) }));
+  const update = context.mock.method(Post, 'updateOne', async (filter, change, options) => {
+    assert.equal(change.$inc.__v, 1); assert(change.$set['notification_events.$[event].read_at'] instanceof Date);
+    assert.equal(filter.notification_events.$elemMatch.recipient_id, player);
+    assert.equal(options.arrayFilters[0]['event.recipient_id'], player);
+    assert.equal(options.arrayFilters[0]['event.read_at'], null);
+    return { modifiedCount: 1 };
+  });
+  const userUpdate = context.mock.method(User, 'updateOne', async () => { throw Error('must not mark all parties read'); });
+  const server = require('../app').listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
+  const url = `http://127.0.0.1:${server.address().port}/api/v2`;
+  const headers = { Authorization: `Bearer ${jwt.sign({ _id: player }, process.env.SECRET_KEY)}`, 'Content-Type': 'application/json' };
+  try {
+    assert.equal((await fetch(`${url}/notifications/${event}/read`, { method: 'PATCH' })).status, 401);
+    assert.equal((await fetch(`${url}/notifications/${event}/read`, { method: 'PATCH', headers, body: JSON.stringify({ user_id: host }) })).status, 200);
+    assert.equal(update.mock.calls[0].arguments[0].notification_events.$elemMatch._id, String(event));
+    const through = new Date(Date.now() - 1000).toISOString();
+    assert.equal((await fetch(`${url}/parties/${partyId}/notifications/read`, { method: 'PATCH', headers, body: JSON.stringify({ through, user_id: host }) })).status, 200);
+    const [filter, , options] = update.mock.calls[1].arguments;
+    assert.equal(filter._id, String(partyId)); assert.equal(+filter.notification_events.$elemMatch.created_at.$lte, +new Date(through));
+    assert.deepEqual(options.arrayFilters[0]['event.type'], { $ne: 'request' });
+    assert.equal(+options.arrayFilters[0]['event.created_at'].$lte, +new Date(through));
+    assert.equal((await fetch(`${url}/parties/${partyId}/notifications/read`, { method: 'PATCH', headers, body: JSON.stringify({ through: new Date(Date.now() + 60000).toISOString() }) })).status, 400);
+    assert.equal((await fetch(`${url}/notifications/bad/read`, { method: 'PATCH', headers })).status, 400);
+    assert.equal(update.mock.callCount(), 2); assert.equal(userUpdate.mock.callCount(), 0);
+  } finally { await new Promise(resolve => server.close(resolve)); if (previous === undefined) delete process.env.SECRET_KEY; else process.env.SECRET_KEY = previous; }
 });
 test('notification HTTP routes block guests and read acknowledgement changes only authenticated user using monotonic update', async context => {
   const app = require('../app'), oldSecret = process.env.SECRET_KEY;

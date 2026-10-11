@@ -10,7 +10,7 @@ function pipeline(actor, readAt, query = {}, asOf = new Date()) {
   const page = query.page === undefined ? '1' : query.page;
   if (typeof page !== 'string' || !/^\d+$/.test(page) || Number(page) < 1 || Number(page) > 10000 || (query.filter !== undefined && !['all', 'unread'].includes(query.filter))) fail(400, 'ตัวกรองแจ้งเตือนไม่ถูกต้อง');
   const cutoff = readAt || new Date(0);
-  const unread = { 'notification_events.created_at': { $gt: cutoff } };
+  const unread = { 'notification_events.created_at': { $gt: cutoff }, 'notification_events.read_at': null };
   return {
     page: Number(page), pageSize: 12, asOf,
     stages: [
@@ -24,7 +24,7 @@ function pipeline(actor, readAt, query = {}, asOf = new Date()) {
         items: [
           ...(query.filter === 'unread' ? [{ $match: unread }] : []),
           { $skip: (Number(page) - 1) * 12 }, { $limit: 12 },
-          { $project: { _id: '$notification_events._id', party_id: '$_id', party_name: 1, type: '$notification_events.type', actor_name: '$notification_events.actor_name', created_at: '$notification_events.created_at', read: { $lte: ['$notification_events.created_at', cutoff] } } },
+          { $project: { _id: '$notification_events._id', party_id: '$_id', party_name: 1, type: '$notification_events.type', actor_name: '$notification_events.actor_name', created_at: '$notification_events.created_at', read: { $or: [{ $lte: ['$notification_events.created_at', cutoff] }, { $ne: [{ $ifNull: ['$notification_events.read_at', null] }, null] }] } } },
         ],
       } },
     ],

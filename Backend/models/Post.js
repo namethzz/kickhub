@@ -14,6 +14,7 @@ const postSchema = new mongoose.Schema(
       type: { type: String, enum: ['request', 'submitted', 'approved', 'declined', 'joined', 'cancelled', 'updated', 'party_cancelled'], required: true },
       actor_name: String,
       created_at: { type: Date, default: Date.now },
+      read_at: Date,
     }],
     status: { type: String, enum: ['active', 'cancelled'], default: 'active' },
     cancelled_at: Date,

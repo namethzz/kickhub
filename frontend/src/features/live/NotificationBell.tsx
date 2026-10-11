@@ -10,13 +10,15 @@ export default function NotificationBell() {
   useEffect(() => {
     let active = true;
     let running = false;
+    let queued = false;
     async function refresh() {
-      if (running || document.visibilityState !== 'visible') return;
+      if (document.visibilityState !== 'visible') return;
+      if (running) { queued = true; return; }
       if (!localStorage.getItem('token')) { setUnread(0); return; }
       running = true;
       try { const data = await api<NotificationFeed>('/api/v2/notifications'); if (active) setUnread(data.unread); }
       catch { if (active) setUnread(0); }
-      finally { running = false; }
+      finally { running = false; if (queued && active) { queued = false; void refresh(); } }
     }
     refresh();
     const timer = window.setInterval(refresh, 60000);

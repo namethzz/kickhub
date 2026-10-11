@@ -6,6 +6,7 @@ import { modeInfo, positions } from '../parties/party-model';
 import PartyQuickActions from './PartyQuickActions';
 import HostPartyActions from './HostPartyActions';
 import PartyChat from './PartyChat';
+import { markPartyActivityRead } from './notifications-api';
 import { ApiError, when } from './LiveParties';
 export default function LivePartyDetail() {
   const { partyId } = useParams();
@@ -18,6 +19,19 @@ export default function LivePartyDetail() {
   const [tab, setTab] = useState('details');
   const [confirm, setConfirm] = useState<'join'|'leave'|null>(null);
   const [notice, setNotice] = useState('');
+  useEffect(() => {
+    if (!party?.activity_read_through) return;
+    let active = true, done = false, running = false;
+    const acknowledge = async () => {
+      if (done || running || document.visibilityState !== 'visible') return;
+      running = true;
+      try { await markPartyActivityRead(party._id, party.activity_read_through!); done = true; }
+      catch { if (active) setNotice('เปิดปาร์ตี้แล้ว แต่บันทึกสถานะอ่านแจ้งเตือนไม่สำเร็จ ลองเปิดหน้านี้อีกครั้ง'); }
+      finally { running = false; }
+    };
+    void acknowledge(); document.addEventListener('visibilitychange', acknowledge);
+    return () => { active = false; document.removeEventListener('visibilitychange', acknowledge); };
+  }, [party?._id, party?.activity_read_through]);
   useEffect(() => { let active=true; setLoading(true); setError(''); Promise.all([api<LiveParty>(`/api/v2/parties/${partyId}`),api<PublicPlayer>('/api/v2/me')]).then(([data,user]) => { if(active){setParty(data);setMe(user);} }).catch(error => {if(active)setError(error.message);}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;}; },[partyId]);
   const mutate = async () => { if(!confirm||busy)return; const action=confirm; setBusy(true);setError('');setNotice('');try{const data=await api<LiveParty>(`/api/v2/parties/${partyId}/${action}`,{method:'POST',body:JSON.stringify({position})});setParty(data);if(action==='leave')setTab('details');setConfirm(null);setNotice(action==='leave'?'ยกเลิกการเข้าร่วมหรือคำขอแล้ว':data.join_requests.some(request=>request.user_id===me?._id&&request.status==='pending')?'ส่งคำขอแล้ว รอหัวตี้อนุมัติ':'เข้าร่วมปาร์ตี้สำเร็จ');}catch(error){setError((error as Error).message);setConfirm(null);}finally{setBusy(false);} };
   if(loading)return <main className="party-app"><p role="status">กำลังโหลดปาร์ตี้…</p></main>;
