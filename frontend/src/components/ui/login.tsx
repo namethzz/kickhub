@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2, ShieldCheck, Users } from 'lucide-react';
+import { FaFacebookF } from 'react-icons/fa';
 import { Button } from './button';
 import { Input } from './input';
 import { Checkbox } from './checkbox';
@@ -50,7 +51,7 @@ export function AuthFormSplitScreen({ logo, title, description, imageSrc, imageA
   }
   const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: reduceMotion ? 0 : 0.06 } } };
   const itemVariants = { hidden: { y: reduceMotion ? 0 : 12, opacity: 0 }, visible: { y: 0, opacity: 1 } };
-  return <main className="kh-auth-screen">
+  return <main className={`kh-auth-screen${signup ? ' kh-auth-signup' : ''}`}>
     <section className="kh-auth-form-panel">
       <Link to="/home" className="kh-auth-back"><ArrowLeft size={16} />กลับหน้าหลัก</Link>
       <motion.div className="kh-auth-content" variants={containerVariants} initial={reduceMotion ? false : 'hidden'} animate="visible">
@@ -65,7 +66,7 @@ export function AuthFormSplitScreen({ logo, title, description, imageSrc, imageA
           {error && <p className="kh-auth-error" role="alert">{error}</p>}
           <motion.div variants={itemVariants}><Button type="submit" disabled={!!busy} className="kh-auth-submit">{busy === 'email' ? <Loader2 className="animate-spin" size={19} /> : <ArrowRight size={19} />}{busy === 'email' ? 'กำลังดำเนินการ…' : signup ? 'สร้างบัญชี' : 'เข้าสู่ระบบ'}</Button></motion.div>
         </form></Form>
-        <motion.div variants={itemVariants} className="kh-auth-social"><div className="kh-auth-divider"><span>หรือใช้บัญชีของคุณ</span></div>{googleClientId ? <GoogleSignIn clientId={googleClientId} disabled={!!busy} onCredential={google} /> : <><Button type="button" variant="outline" className="kh-auth-google-unavailable" disabled>ดำเนินการต่อด้วย Google</Button>{googleNote && <p className="kh-auth-note" role="status">{googleNote}</p>}</>}{busy === 'google' && <p className="kh-auth-note" role="status">กำลังยืนยันบัญชี Google…</p>}<Button type="button" variant="outline" className="kh-auth-facebook" disabled={!!busy || !facebookReady} onClick={social}>{busy === 'facebook' ? <Loader2 className="animate-spin" size={20} /> : <span className="kh-facebook-mark" aria-hidden="true">f</span>}{busy === 'facebook' ? 'กำลังเชื่อมต่อ…' : 'ดำเนินการต่อด้วย Facebook'}</Button>{facebookNote && <p className="kh-auth-note" role="status">{facebookNote}</p>}</motion.div>
+        <motion.div variants={itemVariants} className="kh-auth-social"><div className="kh-auth-divider"><span>หรือใช้บัญชีของคุณ</span></div>{googleClientId ? <GoogleSignIn clientId={googleClientId} disabled={!!busy} onCredential={google} /> : <><Button type="button" variant="outline" className="kh-auth-google-unavailable" disabled>ดำเนินการต่อด้วย Google</Button>{googleNote && <p className="kh-auth-note" role="status">{googleNote}</p>}</>}{busy === 'google' && <p className="kh-auth-note" role="status">กำลังยืนยันบัญชี Google…</p>}<Button type="button" variant="outline" className="kh-auth-facebook" disabled={!!busy || !facebookReady} onClick={social}>{busy === 'facebook' ? <Loader2 className="animate-spin" size={20} /> : <FaFacebookF className="kh-facebook-mark" aria-hidden="true" />}<span>{busy === 'facebook' ? 'กำลังเชื่อมต่อ…' : 'ดำเนินการต่อด้วย Facebook'}</span></Button>{facebookNote && <p className="kh-auth-note" role="status">{facebookNote}</p>}</motion.div>
         <motion.p variants={itemVariants} className="kh-auth-switch">{signup ? 'มีบัญชีอยู่แล้ว?' : 'ยังไม่มีบัญชี?'} <Link to={createAccountHref}>{signup ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก'}</Link></motion.p>
       </motion.div>
       <p className="kh-auth-footer">KICKHUB · FIND YOUR PEOPLE. PLAY YOUR GAME.</p>

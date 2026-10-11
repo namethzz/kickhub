@@ -38,7 +38,7 @@ export function GoogleSignIn({ clientId, disabled, onCredential }: { clientId: s
         const width = Math.min(400, Math.floor(host.getBoundingClientRect().width));
         if (width < 1 || width === previousWidth) return;
         previousWidth = width; host.replaceChildren();
-        identity.renderButton(host, { type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', width, locale: 'th' });
+        identity.renderButton(host, { type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill', width, locale: 'th' });
       };
       render(); observer = new ResizeObserver(render); observer.observe(host); setNote('');
     }).catch(error => { if (active) setNote((error as Error).message); });
