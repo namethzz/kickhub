@@ -15,6 +15,7 @@ import { lazy, Suspense } from "react";
 const AuthPage = lazy(() => import("./features/live/AuthPage"));
 import LiveFields from "./features/fields/LiveFields";
 import LiveFieldDetail from "./features/fields/LiveFieldDetail";
+import MyParties from "./features/live/MyParties";
 import LiveParties from "./features/live/LiveParties";
 import LivePartyDetail from "./features/live/LivePartyDetail";
 import LiveRequests from "./features/live/LiveRequests";
@@ -73,6 +74,7 @@ function AppRoutes() {
         <Route path="/home" element={<Home />} />
         <Route path="/partybuffet/:id" element={<Partybuffet />} />
         <Route path="/partyrole/:id" element={<PartyRole />} />
+        <Route path="/my-parties" element={<MyParties />} />
         <Route path="/team" element={<LiveParties />} />
         <Route path="/players/:playerId" element={<LiveProfile />} />
         <Route path="/demo/party-requests" element={<PartyRequests />} />

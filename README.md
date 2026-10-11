@@ -148,3 +148,9 @@ Restart the API and refresh `/login` or `/register`. Missing configuration or bl
 
 Official setup: https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
 Server verification: https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
+
+### My parties and history
+
+`/my-parties` is an authenticated mobile-first overview, reachable from the profile and party search. It combines buffet and fixed-position games with three categories: hosted, joined (excluding games you host), and your own requests in all states. Switch between upcoming/in-progress games and history; a game moves into history when its end time passes. Pending requests do not reserve a place and are labelled expired after the start time. Hosts can open request review before kickoff; everyone can open party details. Cards show the user's assigned position when applicable, headcount, date and price. Categories, period and page are preserved in the URL. Refresh is manual or triggered when returning to the browser tab.
+
+`GET /api/v2/my-parties?scope=host|joined|requested&period=upcoming|history&page=1` always scopes data and counts to the authenticated user, returns 12 records per page and uses the existing request privacy serializer. It never takes user identity from query parameters. Existing ended party documents supply history; there are no seeded historical records or new booking/payment features.

@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Post = require('../models/Post');
 const Field = require('../models/Field');
 const service = require('../services/partyService');
+const { myPartyQuery } = require('../services/myPartiesService');
 const { partyCard } = require('../services/discoveryService');
 const publicProfile = user => ({ _id: user._id, name: user.name, bio: user.bio, area: user.area, preferred_position: user.preferred_position, level: user.level, role: user.role });
 router.get('/discover', async (req, res) => {
@@ -39,6 +40,17 @@ router.get('/fields/:id', async (req,res) => {
   const field = await Field.findOne({_id:req.params.id,is_active:true}).select('field_name field_type address price image open close facilities description google_map mobile_number owner_id');
   if (!field) service.fail(404,'ไม่พบสนาม หรือสนามนี้พักการเปิดรับแล้ว');
   res.json(field);
+});
+router.get('/my-parties', async (req, res) => {
+  const query = myPartyQuery(req.user._id, req.query);
+  const [host, joined, requested, posts] = await Promise.all([
+    Post.countDocuments(query.scopes.host),
+    Post.countDocuments(query.scopes.joined),
+    Post.countDocuments(query.scopes.requested),
+    Post.find(query.filter).sort(query.sort).skip((query.page - 1) * query.pageSize).limit(query.pageSize),
+  ]);
+  const counts = { host, joined, requested };
+  res.json({ actor_id: req.user._id, counts, total: counts[query.scope], page: query.page, pageSize: query.pageSize, parties: posts.map(post => service.publicParty(post, req.user._id)) });
 });
 router.get('/parties', async (req,res) => {
   const filter = { end_datetime: { $gt: new Date() } };
