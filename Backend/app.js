@@ -1,8 +1,14 @@
 require('dotenv').config();
 const express=require('express');
 const cors=require('cors');
+const mongoose=require('mongoose');
 const app=express();
-app.use(cors({origin:(process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',')}));
+const origins=(process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',').map(value=>value.trim()).filter(Boolean);
+app.use(cors({origin:origins}));
+app.get('/api/health', (req,res)=>{
+  const ready=mongoose.connection.readyState===1;
+  res.set('Cache-Control','no-store').status(ready?200:503).json({status:ready?'ok':'unavailable'});
+});
 app.use(express.json({limit:'1mb'}));
 app.use('/api/auth/login',require('./routes/apiAuthRoutes'));
 app.use('/api/auth/register',require('./routes/apiRegister'));
