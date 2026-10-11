@@ -10,8 +10,8 @@ export default function CreatePartyFlow() {
   const [searchParams] = useSearchParams();
   const selectedField = searchParams.get('field') || '';
   const [step, setStep] = useState(0);
-  const [mode, setMode] = useState<PartyMode>('flexible');
-  const [access, setAccess] = useState<Access>('open');
+  const [mode, setMode] = useState<PartyMode>(searchParams.get('mode') === 'fixed' ? 'fixed' : 'flexible');
+  const [access, setAccess] = useState<Access>(searchParams.get('mode') === 'fixed' ? 'approval' : 'open');
   const [title, setTitle] = useState('');
   const [fields, setFields] = useState<{ id: string; name: string; area: string; price: number }[]>([]);
   const [fieldId, setFieldId] = useState('');

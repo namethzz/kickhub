@@ -6,6 +6,7 @@ import { ApiError } from '../live/LiveParties';
 import './owner.css';
 import { facilityLabels } from '../fields/facilities';
 import FieldPhoto from '../fields/FieldPhoto';
+import OwnerWelcome from './OwnerWelcome';
 
 type Field = {
   _id: string; field_name: string; field_type: string; address: string; mobile_number: string;
@@ -29,6 +30,7 @@ export default function OwnerDashboard() {
   const [busy, setBusy] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
+    if (!localStorage.getItem('token')) { setLoading(false); return; }
     let active = true; setLoading(true); setError('');
     (async () => {
       try {
@@ -71,8 +73,9 @@ export default function OwnerDashboard() {
     finally { setBusy(false); }
   };
   if (loading) return <main className="party-app"><p role="status">กำลังโหลดสนามของคุณ…</p></main>;
+  if (!localStorage.getItem('token')) return <OwnerWelcome />;
   if (!profile) return <main className="party-app"><ApiError message={error} retry={() => setReload(value => value + 1)} /></main>;
-  if (profile.role !== 'owner') return <main className="party-app"><div className="party-empty"><Flag /><h1>พื้นที่สำหรับเจ้าของสนาม</h1><p>บัญชีนี้เป็นบัญชีผู้เล่น คุณสามารถค้นหาและสร้างปาร์ตี้ได้</p><Link to="/team" className="kh-button kh-primary">ค้นหาปาร์ตี้</Link><Link className="party-back" to="/profile">กลับไปโปรไฟล์</Link></div></main>;
+  if (profile.role !== 'owner') return <OwnerWelcome playerName={profile.name} />;
   const results = fields.filter(field => `${field.field_name} ${field.address}`.toLowerCase().includes(query.trim().toLowerCase()) && (filter === 'all' || field.is_active === (filter === 'active')));
   return <main className={`party-app owner-page ${draft ? 'owner-page--form' : ''}`}>
     {draft ? <>

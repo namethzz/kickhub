@@ -9,6 +9,7 @@ export default function AuthPage({ signup = false }: { signup?: boolean }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const next = searchParams.get('next');
+  const ownerIntent = searchParams.get('role') === 'owner' || safeReturnPath(next) === '/Owner';
   const [facebookReady, setFacebookReady] = useState(false);
   const [facebookNote, setFacebookNote] = useState('กำลังเตรียม Facebook Login…');
   const [googleClientId, setGoogleClientId] = useState('');
@@ -48,6 +49,9 @@ export default function AuthPage({ signup = false }: { signup?: boolean }) {
     const result = await api<{ token: string }>('/api/auth/google', { method: 'POST', body: JSON.stringify({ credential, ...values }) });
     complete(result.token);
   };
-  const switchHref = `${signup ? '/login' : '/signup'}${next ? `?next=${encodeURIComponent(safeReturnPath(next))}` : ''}`;
-  return <AuthFormSplitScreen key={signup ? 'signup' : 'login'} signup={signup} logo={<Link to="/home">kick<span>hub</span><i /></Link>} title={signup ? 'ทีมใหม่ เริ่มจากคุณ' : 'ยินดีต้อนรับกลับ'} description={signup ? 'สร้างบัญชี แล้วเจอเพื่อนร่วมสนามที่ชอบฟุตบอลเหมือนกัน' : 'เข้าสู่ระบบ แล้วไปต่อกับเกมที่คุณรัก'} imageSrc={`${import.meta.env.BASE_URL}auth-sports.webp`} imageAlt="ลูกฟุตบอลติดตาข่ายในสนาม พร้อมข้อความ The Power of Sports" onSubmit={submit} createAccountHref={switchHref} onFacebook={social} facebookReady={facebookReady} facebookNote={facebookNote} googleClientId={googleClientId} googleNote={googleNote} onGoogle={google} />;
+  const switchParams = new URLSearchParams();
+  if (next) switchParams.set('next', safeReturnPath(next));
+  if (ownerIntent) switchParams.set('role', 'owner');
+  const switchHref = `${signup ? '/login' : '/signup'}${switchParams.size ? `?${switchParams}` : ''}`;
+  return <AuthFormSplitScreen key={`${signup ? 'signup' : 'login'}-${ownerIntent ? 'owner' : 'user'}`} signup={signup} initialRole={signup && ownerIntent ? 'owner' : 'user'} logo={<Link to="/home">kick<span>hub</span><i /></Link>} title={signup ? (ownerIntent ? 'สนามของคุณ เริ่มตรงนี้' : 'ทีมใหม่ เริ่มจากคุณ') : 'ยินดีต้อนรับกลับ'} description={ownerIntent ? (signup ? 'สมัครบัญชีเจ้าของสนาม แล้วเพิ่มสนามให้ผู้เล่นค้นพบ' : 'เข้าสู่ระบบด้วยบัญชีเจ้าของสนาม เพื่อจัดการข้อมูลสนามของคุณ') : signup ? 'สร้างบัญชี แล้วเจอเพื่อนร่วมสนามที่ชอบฟุตบอลเหมือนกัน' : 'เข้าสู่ระบบ แล้วไปต่อกับเกมที่คุณรัก'} imageSrc={`${import.meta.env.BASE_URL}auth-sports.webp`} imageAlt="ลูกฟุตบอลติดตาข่ายในสนาม พร้อมข้อความ The Power of Sports" onSubmit={submit} createAccountHref={switchHref} onFacebook={social} facebookReady={facebookReady} facebookNote={facebookNote} googleClientId={googleClientId} googleNote={googleNote} onGoogle={google} />;
 }

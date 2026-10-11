@@ -20,13 +20,13 @@ export type AuthFormValues = z.infer<typeof schema>;
 type Props = {
   logo: ReactNode; title: string; description: string; imageSrc: string; imageAlt: string;
   onSubmit: (data: AuthFormValues) => Promise<void>; createAccountHref: string;
-  signup?: boolean; onFacebook: (data: Pick<AuthFormValues, 'role' | 'rememberMe'>) => Promise<void>;
+  initialRole?: 'user' | 'owner'; signup?: boolean; onFacebook: (data: Pick<AuthFormValues, 'role' | 'rememberMe'>) => Promise<void>;
   facebookReady: boolean; facebookNote: string;
   googleClientId: string; googleNote: string; onGoogle: (credential: string, data: Pick<AuthFormValues, 'role' | 'rememberMe'>) => Promise<void>;
 };
 
 /** Live registration and login adapted from the supplied split-screen component. */
-export function AuthFormSplitScreen({ logo, title, description, imageSrc, imageAlt, onSubmit, createAccountHref, signup = false, onFacebook, facebookReady, facebookNote, googleClientId, googleNote, onGoogle }: Props) {
+export function AuthFormSplitScreen({ logo, title, description, imageSrc, imageAlt, onSubmit, createAccountHref, signup = false, initialRole = 'user', onFacebook, facebookReady, facebookNote, googleClientId, googleNote, onGoogle }: Props) {
   const [busy, setBusy] = useState<'email' | 'facebook' | 'google' | ''>('');
   const busyRef = useRef(false);
   const [error, setError] = useState('');
@@ -36,7 +36,7 @@ export function AuthFormSplitScreen({ logo, title, description, imageSrc, imageA
     if (signup && !values.name.trim()) context.addIssue({ code: 'custom', path: ['name'], message: 'กรุณากรอกชื่อที่แสดง' });
     if (signup && values.name.trim().length > 100) context.addIssue({ code: 'custom', path: ['name'], message: 'ชื่อยาวได้ไม่เกิน 100 ตัวอักษร' });
     if (signup && values.password.length < 8) context.addIssue({ code: 'custom', path: ['password'], message: 'ใช้รหัสผ่านอย่างน้อย 8 ตัวอักษร' });
-  })), defaultValues: { name: '', email: '', password: '', role: 'user', rememberMe: false } });
+  })), defaultValues: { name: '', email: '', password: '', role: initialRole, rememberMe: false } });
   async function submit(values: AuthFormValues) {
     if (busyRef.current) return; busyRef.current = true; setBusy('email'); setError('');
     try { await onSubmit(values); } catch (error) { setError((error as Error).message); } finally { busyRef.current = false; setBusy(''); }
