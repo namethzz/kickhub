@@ -1,10 +1,38 @@
-import { useState } from 'react';
-import { Link,useNavigate,useSearchParams } from 'react-router-dom';
-import { Eye,EyeOff,ArrowRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '@/lib/api';
+import { loadFacebook, facebookLogin } from '@/lib/facebook';
+import { AuthFormSplitScreen, type AuthFormValues } from '@/components/ui/login';
 import { safeReturnPath } from './auth-return';
-export default function AuthPage({signup=false}:{signup?:boolean}){
- const navigate=useNavigate();const [searchParams]=useSearchParams();const next=searchParams.get('next');const switchAuth=`${signup?'/login':'/signup'}${next?`?next=${encodeURIComponent(safeReturnPath(next))}`:''}`;const [name,setName]=useState('');const [email,setEmail]=useState('');const [password,setPassword]=useState('');const [role,setRole]=useState('user');const [visible,setVisible]=useState(false);const [busy,setBusy]=useState(false);const [error,setError]=useState('');
- const submit=async()=>{if(busy)return;setBusy(true);setError('');try{const result=await api<{token:string}>(signup?'/api/auth/register':'/api/auth/login',{method:'POST',body:JSON.stringify({name,email,password,role})});localStorage.setItem('token',result.token);navigate(safeReturnPath(next,signup?'/profile':'/team'),{replace:true});}catch(error){setError((error as Error).message);}finally{setBusy(false);}};
- return <main className="party-app auth-page"><section className="auth-intro"><Link to="/home" className="auth-brand">kick<span>hub</span></Link><span className="party-kicker">YOUR NEXT GAME STARTS HERE</span><h1>มาเดี่ยวก็ได้<br/>ลงสนามด้วยกัน</h1><p>หาเพื่อนเตะบอล เลือกทีมที่ใช่ แล้วเจอกันในสนาม</p></section><form className="party-form-section auth-form" onSubmit={event=>{event.preventDefault();submit();}}><h2>{signup?'สร้างบัญชี Kickhub':'ยินดีต้อนรับกลับ'}</h2><p className="player-caption">{signup?'เริ่มต้นเป็นผู้เล่น หรือดูแลสนามของคุณ':'เข้าสู่ระบบเพื่อเข้าร่วมและจัดการปาร์ตี้'}</p>{signup&&<><label>ชื่อที่แสดง<input autoComplete="name" required maxLength={100} value={name} onChange={event=>setName(event.target.value)}/></label><label>ประเภทบัญชี<select value={role} onChange={event=>setRole(event.target.value)}><option value="user">ผู้เล่น · หาเพื่อนเตะบอล</option><option value="owner">เจ้าของสนาม</option></select></label></>}<label>อีเมล<input type="email" autoComplete="email" required value={email} onChange={event=>setEmail(event.target.value)}/></label><label>รหัสผ่าน<div className="auth-password"><input type={visible?'text':'password'} autoComplete={signup?'new-password':'current-password'} required minLength={signup?8:undefined} maxLength={128} value={password} onChange={event=>setPassword(event.target.value)}/><button type="button" aria-label={visible?'ซ่อนรหัสผ่าน':'แสดงรหัสผ่าน'} onClick={()=>setVisible(value=>!value)}>{visible?<EyeOff size={19}/>:<Eye size={19}/>}</button></div></label>{signup&&<p className="party-help">ใช้รหัสผ่านอย่างน้อย 8 ตัวอักษร</p>}{error&&<p role="alert" className="party-error">{error}</p>}<button className="kh-button kh-primary kh-full auth-submit" disabled={busy} type="submit">{busy?'กำลังดำเนินการ…':signup?'สร้างบัญชี':'เข้าสู่ระบบ'}<ArrowRight size={18}/></button><p className="player-caption">{signup?'มีบัญชีแล้ว?':'ยังไม่มีบัญชี?'} <Link to={switchAuth}>{signup?'เข้าสู่ระบบ':'สมัครสมาชิก'}</Link></p><Link className="party-back" to="/home">← กลับหน้าหลัก</Link></form></main>;
+
+export default function AuthPage({ signup = false }: { signup?: boolean }) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const next = searchParams.get('next');
+  const [facebookReady, setFacebookReady] = useState(false);
+  const [facebookNote, setFacebookNote] = useState('กำลังเตรียม Facebook Login…');
+  useEffect(() => {
+    let active = true;
+    api<{ enabled: boolean; appId: string; version: string }>('/api/auth/facebook/config').then(async config => {
+      if (!config.enabled) { if (active) setFacebookNote('Facebook Login ยังไม่เปิดใช้งาน สมัครหรือเข้าสู่ระบบด้วยอีเมลได้เลย'); return; }
+      await loadFacebook(config.appId, config.version);
+      if (active) { setFacebookReady(true); setFacebookNote(''); }
+    }).catch(() => { if (active) setFacebookNote('Facebook Login ไม่พร้อมในขณะนี้ กรุณาใช้อีเมล'); });
+    return () => { active = false; };
+  }, []);
+  function complete(token: string) {
+    localStorage.setItem('token', token);
+    navigate(safeReturnPath(next, signup ? '/profile' : '/team'), { replace: true });
+  }
+  const submit = async (values: AuthFormValues) => {
+    const result = await api<{ token: string }>(signup ? '/api/auth/register' : '/api/auth/login', { method: 'POST', body: JSON.stringify(values) });
+    complete(result.token);
+  };
+  const social = async (values: Pick<AuthFormValues, 'role' | 'rememberMe'>) => {
+    const accessToken = await facebookLogin();
+    const result = await api<{ token: string }>('/api/auth/facebook', { method: 'POST', body: JSON.stringify({ accessToken, ...values }) });
+    complete(result.token);
+  };
+  const switchHref = `${signup ? '/login' : '/signup'}${next ? `?next=${encodeURIComponent(safeReturnPath(next))}` : ''}`;
+  return <AuthFormSplitScreen key={signup ? 'signup' : 'login'} signup={signup} logo={<Link to="/home">kick<span>hub</span><i /></Link>} title={signup ? 'ทีมใหม่ เริ่มจากคุณ' : 'ยินดีต้อนรับกลับ'} description={signup ? 'สร้างบัญชี แล้วเจอเพื่อนร่วมสนามที่ชอบฟุตบอลเหมือนกัน' : 'เข้าสู่ระบบ แล้วไปต่อกับเกมที่คุณรัก'} imageSrc={`${import.meta.env.BASE_URL}auth-sports.webp`} imageAlt="ลูกฟุตบอลติดตาข่ายในสนาม พร้อมข้อความ The Power of Sports" onSubmit={submit} createAccountHref={switchHref} onFacebook={social} facebookReady={facebookReady} facebookNote={facebookNote} />;
 }

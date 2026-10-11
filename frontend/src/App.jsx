@@ -11,7 +11,8 @@ import BottomNav from "./components/Navbar";
 import Login from "./components/Login";
 import Test1 from "./components/test";
 import Test2 from "./components/test2";
-import AuthPage from "./features/live/AuthPage";
+import { lazy, Suspense } from "react";
+const AuthPage = lazy(() => import("./features/live/AuthPage"));
 import LiveFields from "./features/fields/LiveFields";
 import LiveFieldDetail from "./features/fields/LiveFieldDetail";
 import LiveParties from "./features/live/LiveParties";
@@ -45,6 +46,7 @@ function AppRoutes() {
   const hideNavPaths = [
     "/login",
     "/SignUp",
+    "/register",
     "/reserve",
     "/promptpay",
     "/partybuffet/:id",
@@ -61,10 +63,12 @@ function AppRoutes() {
   return (
     <div className={["/", "/home"].includes(location.pathname) ? "kh-app kh-app--home" : "kh-app"}>
       {shouldShowNav && <BottomNav />}
+      <Suspense fallback={<main className="party-app" role="status">กำลังโหลดหน้าเข้าสู่ระบบ…</main>}>
       <Routes>
         
         <Route path="/login" element={<AuthPage />} />
         <Route path="/signUp" element={<AuthPage signup />} />
+        <Route path="/register" element={<AuthPage signup />} />
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/partybuffet/:id" element={<Partybuffet />} />
@@ -125,6 +129,7 @@ function AppRoutes() {
           }
         />
       </Routes>
+      </Suspense>
     </div>
   );
 }

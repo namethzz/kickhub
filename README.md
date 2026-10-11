@@ -108,3 +108,19 @@ Stop the API first. From `Backend`, run `npm run db:reset -- --confirm=kickhub`.
 The new database contains one management account and one Sidekick Soccer field, based on the user-supplied existing record. The venue's official historical page identifies its artificial turf: https://sidekicksoccer.wordpress.com/2010/12/13/รู้จักกับสนามฟุตบอล-sidekicksoccer/ . Price, contact, amenities and hours have not been verified as current. The description discloses this; no fake public players, parties, or reservations are seeded. This account does not claim to verify the actual venue owner. Review `Backend/data/initial-fields.json` before running if you have newer facts. Do not run the reset twice unless you intend to erase the new data too.
 
 After reset, clear site data for `localhost:5173` (including localStorage drafts and saved login), sign in with the generated account, and register real player accounts normally. MongoDB data and browser storage are separate. The home discovery examples remain labelled examples; they are not MongoDB records.
+
+### Login, registration and Facebook Login
+
+The live `/login`, `/signup` (also `/register`) pages use `src/components/ui/login.tsx`, adapted from the supplied split-screen component with React Hook Form, Zod, shadcn controls and reduced-motion support. The user-supplied image is `frontend/public/auth-sports.webp`. Desktop/tablet show a split screen; phones show the image above the form. Names, account types, password visibility and Thai validation are supported. Remember login extends the JWT from 24 hours to 7 days; tokens expire normally and logout clears browser storage. Password recovery is not implemented, so the form does not include a placeholder recovery link.
+
+From the project root, update dependencies with `npm ci --prefix frontend` and restart both servers after pulling. Configure only `Backend/.env`:
+
+```dotenv
+FACEBOOK_APP_ID=your-numeric-meta-app-id
+FACEBOOK_APP_SECRET=your-meta-app-secret
+FACEBOOK_GRAPH_VERSION=v25.0
+```
+
+Create/configure Facebook Login in your Meta app and add your website's origin in its web/app domain settings. Use the API version supported by your Meta app. Use HTTPS for a deployed site. Development testing must use accounts permitted by your Meta app's current development access; complete Meta's requirements before enabling public users. Keep the App Secret server-side: never use a `VITE_` variable for it and never commit it. Setup references: https://developers.facebook.com/docs/facebook-login/web/ and https://developers.facebook.com/docs/facebook-login/guides/access-tokens/debugging-and-error-handling/ .
+
+The frontend loads the official JavaScript SDK using the public `/api/auth/facebook/config` response and opens login directly from a user click. Backend `/api/auth/facebook` independently checks the supplied access token's application, user identity and expiry, then fetches the profile with an app-secret proof. New users must share an email. Existing Facebook identities retain their account role; inactive users are rejected. An existing password account is never silently linked by matching email: those users must use their original email/password. Facebook account linking is not part of this step. Facebook token responses and App Secret are not stored or sent back to the browser; the app issues its own JWT. Without Meta configuration, email login/signup remain available and the Facebook button explains its unavailable state. Live Meta login requires your own configuration; automated tests use isolated mocks, not real Facebook accounts.
