@@ -84,7 +84,9 @@ router.get('/party-search', async (req, res) => {
       total: [{ $count: 'count' }],
     } },
   ]);
-  res.json({ total: result?.total?.[0]?.count || 0, page: query.page, pageSize: query.pageSize, parties: (result?.items || []).map(post => service.publicParty(post, req.user._id)) });
+  // Older records may predate these arrays; aggregation does not apply schema defaults.
+  const posts = (result?.items || []).map(post => ({ ...post, participants: post.participants || [], required_positions: post.required_positions || [], join_requests: post.join_requests || [] }));
+  res.json({ total: result?.total?.[0]?.count || 0, page: query.page, pageSize: query.pageSize, parties: posts.map(post => service.publicParty(post, req.user._id)) });
 });
 router.post('/parties', async (req,res) => { const post = await service.createParty(req.user._id,req.body.field_id,req.body); res.status(201).json(service.publicParty(post,req.user._id)); });
 router.get('/parties/:id', async (req,res) => { service.objectId(req.params.id); const post=await Post.findById(req.params.id); if(!post)service.fail(404,'ไม่พบปาร์ตี้'); res.json(service.publicParty(post,req.user._id)); });

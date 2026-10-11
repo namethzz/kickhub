@@ -44,7 +44,8 @@ test('search HTTP endpoint authenticates, paginates database results and hides p
     assert.equal(filter.mode, 'flexible');
     assert(filter.start_datetime.$gt instanceof Date);
     assert.deepEqual(stages[1].$facet, { items: [{ $sort: { start_datetime: 1, _id: 1 } }, { $skip: 12 }, { $limit: 12 }], total: [{ $count: 'count' }] });
-    return [{ total: [{ count: 25 }], items: [post.toObject()] }];
+    const legacy = post.toObject(); delete legacy.participants; delete legacy.join_requests; delete legacy.required_positions;
+    return [{ total: [{ count: 25 }], items: [post.toObject(), legacy] }];
   });
   const server = require('../app').listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
   try {
@@ -54,5 +55,6 @@ test('search HTTP endpoint authenticates, paginates database results and hides p
     assert.equal(response.status, 200); const data = await response.json();
     assert.equal(data.total, 25); assert.equal(data.page, 2); assert.equal(data.pageSize, 12);
     assert.deepEqual(data.parties[0].join_requests, []); assert.equal('notification_events' in data.parties[0], false); assert.equal(data.parties[0].capacity, 10);
+    assert.deepEqual(data.parties[1].participants, []); assert.deepEqual(data.parties[1].join_requests, []); assert.equal(data.parties[1].capacity, 10);
   } finally { await new Promise(resolve => server.close(resolve)); if (previous === undefined) delete process.env.SECRET_KEY; else process.env.SECRET_KEY = previous; }
 });
