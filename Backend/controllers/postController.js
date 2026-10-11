@@ -6,6 +6,6 @@ const joinParty=(id,actor,position)=>result(async()=>service.publicParty(await s
 const leaveParty=(id,actor)=>result(async()=>service.publicParty(await service.leaveParty(id,actor),actor));
 const getPostbyJoinerID=actor=>result(async()=>{const posts=await Post.find({'participants.user_id':actor});return posts.map(post=>service.publicParty(post,actor));});
 const getPostbyID=(id,actor)=>result(async()=>{service.objectId(id);const post=await Post.findById(id);if(!post)service.fail(404,'ไม่พบปาร์ตี้');return service.publicParty(post,actor);});
-const deletePost=(id,actor)=>result(async()=>{service.objectId(id);const post=await Post.findById(id);if(!post)service.fail(404,'ไม่พบปาร์ตี้');service.hostOnly(post,actor);return Post.findOneAndDelete({_id:id,user_id:actor});});
-const updatePost=(id,data,actor)=>result(async()=>service.publicParty(await service.mutate(id,post=>{service.hostOnly(post,actor);if(Object.keys(data).some(key=>!['party_name','description'].includes(key)))service.fail(400,'แก้ไขได้เฉพาะชื่อและรายละเอียด');if(data.party_name!==undefined){if(typeof data.party_name!=='string'||!data.party_name.trim()||data.party_name.length>200)service.fail(400,'ชื่อไม่ถูกต้อง');post.party_name=data.party_name.trim();}if(data.description!==undefined){if(typeof data.description!=='string'||data.description.length>600)service.fail(400,'รายละเอียดไม่ถูกต้อง');post.description=data.description;}}),actor));
+const deletePost=(id,actor)=>result(async()=>service.publicParty(await service.cancelParty(id,actor),actor));
+const updatePost=(id,data,actor)=>result(async()=>service.publicParty(await service.updateParty(id,actor,data),actor));
 module.exports={newPost,joinParty,leaveParty,getPostbyJoinerID,getPostbyID,deletePost,updatePost};

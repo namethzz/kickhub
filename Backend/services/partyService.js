@@ -8,7 +8,10 @@ function fail(status, message) { throw Object.assign(new Error(message), { statu
 function objectId(id) { if (!mongoose.isObjectIdOrHexString(id)) fail(400, 'รหัสข้อมูลไม่ถูกต้อง'); return id; }
 function capacity(post) { return post.mode === 'fixed' ? post.required_positions.reduce((sum, slot) => sum + slot.amount, 0) : post.total_required_players; }
 function hostOnly(post, actor) { if (String(post.user_id) !== String(actor)) fail(403, 'เฉพาะหัวตี้เท่านั้นที่จัดการปาร์ตี้นี้ได้'); }
+function activeParty(post) { if (post.status === 'cancelled') fail(409, 'ปาร์ตี้นี้ถูกยกเลิกแล้ว'); }
+function upcomingParty(post) { activeParty(post); if (post.start_datetime <= new Date()) fail(409, 'ปาร์ตี้เริ่มแล้ว ไม่สามารถแก้ไขหรือยกเลิกได้'); }
 function hasSpace(post, position) {
+  activeParty(post);
   if (post.start_datetime <= new Date()) fail(409, 'ปาร์ตี้เริ่มแล้ว ไม่สามารถรับผู้เล่นเพิ่มได้');
   if (!Number.isInteger(capacity(post)) || post.participants.length >= capacity(post)) fail(409, 'ผู้เล่นครบแล้ว');
   if (post.mode === 'fixed') {
@@ -67,7 +70,7 @@ async function joinParty(id, actor, position) {
 async function reviewRequest(id, requestId, actor, decision) {
   objectId(requestId); if (!['approved','declined'].includes(decision)) fail(400, 'ผลการอนุมัติไม่ถูกต้อง');
   return mutate(id, async post => {
-    hostOnly(post, actor); const request = post.join_requests.id(requestId);
+    hostOnly(post, actor); upcomingParty(post); const request = post.join_requests.id(requestId);
     if (!request) fail(404, 'ไม่พบคำขอ'); if (request.status !== 'pending') fail(409, 'คำขอนี้ถูกจัดการแล้ว');
     if (decision === 'approved') {
       if (!await User.exists({ _id: request.user_id, status: 'active' })) fail(409, 'บัญชีผู้เล่นนี้ไม่เปิดใช้งาน');
@@ -81,6 +84,7 @@ async function reviewRequest(id, requestId, actor, decision) {
 }
 async function leaveParty(id, actor) {
   return mutate(id, post => {
+    activeParty(post);
     if (String(post.user_id) === String(actor)) fail(409, 'หัวตี้ไม่สามารถออกจากปาร์ตี้ของตนเองได้');
     if (post.start_datetime <= new Date()) fail(409, 'ปาร์ตี้เริ่มแล้ว ไม่สามารถยกเลิกได้');
     const member = post.participants.find(member => String(member.user_id) === String(actor));
@@ -91,6 +95,45 @@ async function leaveParty(id, actor) {
     if (member || activeRequest) addNotification(post, post.user_id, 'cancelled', member?.name || request.name);
   });
 }
+function notifyPlayers(post, type) {
+  const recipients = new Set([
+    ...post.participants.map(member => String(member.user_id)),
+    ...post.join_requests.filter(request => request.status === 'pending').map(request => String(request.user_id)),
+  ]);
+  recipients.delete(String(post.user_id));
+  for (const recipient of recipients) addNotification(post, recipient, type, post.host_name);
+}
+async function updateParty(id, actor, data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data) || Object.keys(data).length === 0 || Object.keys(data).some(key => !['party_name', 'description', 'start_datetime', 'end_datetime', 'price'].includes(key))) fail(400, 'แก้ไขได้เฉพาะชื่อ รายละเอียด วันเวลา และราคาต่อคน');
+  return mutate(id, post => {
+    hostOnly(post, actor); upcomingParty(post);
+    const update = {};
+    if ('party_name' in data) { if (typeof data.party_name !== 'string' || !data.party_name.trim() || data.party_name.trim().length > 200) fail(400, 'ชื่อปาร์ตี้ต้องมี 1–200 ตัวอักษร'); update.party_name = data.party_name.trim(); }
+    if ('description' in data) { if (typeof data.description !== 'string' || data.description.trim().length > 600) fail(400, 'รายละเอียดต้องไม่เกิน 600 ตัวอักษร'); update.description = data.description.trim(); }
+    if ('price' in data) { if (typeof data.price !== 'number' || !Number.isFinite(data.price) || data.price < 0 || data.price > 100000) fail(400, 'ราคาต่อคนไม่ถูกต้อง'); update.price = data.price; }
+    if ('start_datetime' in data || 'end_datetime' in data) {
+      for (const key of ['start_datetime', 'end_datetime']) if (key in data && typeof data[key] !== 'string') fail(400, 'วันเวลาปาร์ตี้ไม่ถูกต้อง');
+      const start = 'start_datetime' in data ? new Date(data.start_datetime) : post.start_datetime;
+      const end = 'end_datetime' in data ? new Date(data.end_datetime) : post.end_datetime;
+      if (!Number.isFinite(+start) || !Number.isFinite(+end) || start <= new Date() || end <= start || end - start > 6 * 3600000) fail(400, 'วันเวลาปาร์ตี้ไม่ถูกต้อง');
+      update.start_datetime = start; update.end_datetime = end;
+    }
+    const changed = Object.entries(update).some(([key, value]) => value instanceof Date ? +value !== +post[key] : value !== post[key]);
+    Object.assign(post, update);
+    if (changed) notifyPlayers(post, 'updated');
+  });
+}
+async function cancelParty(id, actor, reason = '') {
+  if (typeof reason !== 'string' || reason.trim().length > 300) fail(400, 'เหตุผลยกเลิกต้องไม่เกิน 300 ตัวอักษร');
+  return mutate(id, post => {
+    hostOnly(post, actor);
+    if (post.status === 'cancelled') return;
+    upcomingParty(post);
+    notifyPlayers(post, 'party_cancelled');
+    post.status = 'cancelled'; post.cancelled_at = new Date(); post.cancellation_reason = reason.trim();
+    for (const request of post.join_requests) if (request.status === 'pending') { request.status = 'cancelled'; request.reviewed_at = post.cancelled_at; }
+  });
+}
 function publicParty(post, actor) {
   const result = post.toObject ? post.toObject() : { ...post };
   delete result.__v;
@@ -99,4 +142,4 @@ function publicParty(post, actor) {
   result.join_requests = String(post.user_id) === String(actor) ? result.join_requests : result.join_requests.filter(request => String(request.user_id) === String(actor));
   return result;
 }
-module.exports = { fail, objectId, capacity, hostOnly, hasSpace, mutate, createParty, joinParty, reviewRequest, leaveParty, publicParty };
+module.exports = { fail, objectId, capacity, hostOnly, hasSpace, mutate, createParty, joinParty, reviewRequest, leaveParty, updateParty, cancelParty, publicParty };

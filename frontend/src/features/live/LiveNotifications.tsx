@@ -11,6 +11,8 @@ const messages = {
   approved: { title: 'หัวตี้อนุมัติแล้ว ไปเตะด้วยกัน!', icon: CheckCircle2 },
   declined: { title: 'คำขอไม่ได้รับอนุมัติ', icon: XCircle },
   joined: { title: 'มีเพื่อนเข้าร่วมปาร์ตี้', icon: UserPlus },
+  updated: { title: 'หัวตี้เปลี่ยนรายละเอียดนัด ตรวจสอบก่อนลงสนาม', icon: RefreshCw },
+  party_cancelled: { title: 'หัวตี้ยกเลิกปาร์ตี้แล้ว', icon: XCircle },
   cancelled: { title: 'มีผู้เล่นยกเลิกการเข้าร่วม', icon: UserMinus },
 };
 export default function LiveNotifications() {

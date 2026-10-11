@@ -11,7 +11,7 @@ const publicProfile = user => ({ _id: user._id, name: user.name, bio: user.bio, 
 router.get('/discover', async (req, res) => {
   const [fields, parties] = await Promise.all([
     Field.find({ is_active: true }).select('field_name field_type address price image open close facilities').sort({ createdAt: -1 }),
-    Post.find({ start_datetime: { $gt: new Date() } }).select('party_name mode access field_id field_name address start_datetime end_datetime price required_positions total_required_players participants').sort({ start_datetime: 1 }).limit(100),
+    Post.find({ status: { $ne: 'cancelled' }, start_datetime: { $gt: new Date() } }).select('party_name mode access field_id field_name address start_datetime end_datetime price required_positions total_required_players participants').sort({ start_datetime: 1 }).limit(100),
   ]);
   res.json({ fields, parties: parties.map(partyCard) });
 });
@@ -64,7 +64,7 @@ router.get('/my-parties', async (req, res) => {
   res.json({ actor_id: req.user._id, counts, total: counts[query.scope], page: query.page, pageSize: query.pageSize, parties: posts.map(post => service.publicParty(post, req.user._id)) });
 });
 router.get('/parties', async (req,res) => {
-  const filter = { end_datetime: { $gt: new Date() } };
+  const filter = { status: { $ne: 'cancelled' }, end_datetime: { $gt: new Date() } };
   if (req.query.field) { service.objectId(req.query.field); filter.field_id = req.query.field; }
   if (req.query.mine === 'host') filter.user_id = req.user._id;
   else if (req.query.mine === 'joined') filter['participants.user_id'] = req.user._id;
@@ -75,6 +75,8 @@ router.get('/parties', async (req,res) => {
 });
 router.post('/parties', async (req,res) => { const post = await service.createParty(req.user._id,req.body.field_id,req.body); res.status(201).json(service.publicParty(post,req.user._id)); });
 router.get('/parties/:id', async (req,res) => { service.objectId(req.params.id); const post=await Post.findById(req.params.id); if(!post)service.fail(404,'ไม่พบปาร์ตี้'); res.json(service.publicParty(post,req.user._id)); });
+router.patch('/parties/:id', async(req,res) => res.json(service.publicParty(await service.updateParty(req.params.id,req.user._id,req.body),req.user._id)));
+router.post('/parties/:id/cancel', async(req,res) => res.json(service.publicParty(await service.cancelParty(req.params.id,req.user._id,req.body?.reason),req.user._id)));
 router.post('/parties/:id/join', async(req,res) => res.json(service.publicParty(await service.joinParty(req.params.id,req.user._id,req.body.position),req.user._id)));
 router.post('/parties/:id/leave', async(req,res) => res.json(service.publicParty(await service.leaveParty(req.params.id,req.user._id),req.user._id)));
 router.get('/parties/:id/requests', async(req,res) => { service.objectId(req.params.id); const post=await Post.findById(req.params.id); if(!post)service.fail(404,'ไม่พบปาร์ตี้');service.hostOnly(post,req.user._id);res.json(service.publicParty(post,req.user._id)); });

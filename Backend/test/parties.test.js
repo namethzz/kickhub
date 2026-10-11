@@ -90,7 +90,7 @@ test('field discovery exposes active details and filters parties by field',async
  assert.equal((await call('/api/v2/fields',firstToken)).data.some(item=>item._id===String(alternate._id)),false);
  assert.equal((await call('/api/v2/fields',firstToken)).data.some(item=>'mobile_number' in item),false);
 });
-test('banned users cannot authenticate',async()=>{await User.findByIdAndUpdate(second._id,{status:'banned'});assert.equal((await call('/api/v2/me',secondToken)).status,401);});
+test('banned users cannot authenticate',async()=>{await User.findByIdAndUpdate(second._id,{status:'banned'});try{assert.equal((await call('/api/v2/me',secondToken)).status,401);}finally{await User.findByIdAndUpdate(second._id,{status:'active'});}});
 
 test('notifications are saved atomically with requests and reviews, scoped privately, and acknowledged across sessions', async () => {
  const created=await call('/api/v2/parties',hostToken,'POST',payload()); const id=created.data._id;
@@ -104,4 +104,21 @@ test('notifications are saved atomically with requests and reviews, scoped priva
  assert.equal((await call('/api/v2/notifications/read',firstToken,'PATCH',{through:mine.data.asOf})).status,200);
  const read=await call('/api/v2/notifications?filter=unread',firstToken);assert.equal(read.data.unread,0);assert.equal(read.data.total,0);
  const stored=await User.findById(first._id);assert.equal(stored.notifications_read_at.toISOString(),mine.data.asOf);
+});
+
+test('host edits notify players and cancellation is preserved in history but excluded from discovery', async () => {
+ const created=await call('/api/v2/parties',hostToken,'POST',payload());const id=created.data._id;
+ await call(`/api/v2/parties/${id}/join`,firstToken,'POST',{position:'GK'});
+ assert.equal((await call(`/api/v2/parties/${id}`,firstToken,'PATCH',{price:1})).status,403);
+ const edited=await call(`/api/v2/parties/${id}`,hostToken,'PATCH',{price:150});assert.equal(edited.status,200);assert.equal(edited.data.price,150);
+ const notifications=await call('/api/v2/notifications',firstToken);assert(notifications.data.items.some(item=>item.party_id===id&&item.type==='updated'));
+ const cancelled=await call(`/api/v2/parties/${id}/cancel`,hostToken,'POST',{reason:'Field unavailable'});assert.equal(cancelled.status,200);assert.equal(cancelled.data.status,'cancelled');assert.equal(cancelled.data.notification_events,undefined);
+ assert.equal((await call(`/api/v2/parties/${id}/join`,secondToken,'POST',{position:'GK'})).status,409);
+ const upcoming=await call('/api/v2/my-parties?scope=host',hostToken);assert(!upcoming.data.parties.some(party=>party._id===id));
+ const history=await call('/api/v2/my-parties?scope=host&period=history',hostToken);assert(history.data.parties.some(party=>party._id===id));
+ const applicantHistory=await call('/api/v2/my-parties?scope=requested&period=history',firstToken);assert(applicantHistory.data.parties.some(party=>party._id===id&&party.status==='cancelled'));
+ const discovery=await call('/api/v2/discover',null);assert(!discovery.data.parties.some(party=>party._id===id));
+ const stored=await Post.findById(id);assert.equal(stored.notification_events.filter(event=>event.type==='party_cancelled').length,1);
+ await call(`/api/v2/parties/${id}/cancel`,hostToken,'POST',{});
+ assert.equal((await Post.findById(id)).notification_events.filter(event=>event.type==='party_cancelled').length,1);
 });

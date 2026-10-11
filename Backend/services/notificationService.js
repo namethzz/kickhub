@@ -1,5 +1,5 @@
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
-const types = ['request', 'submitted', 'approved', 'declined', 'joined', 'cancelled'];
+const types = ['request', 'submitted', 'approved', 'declined', 'joined', 'cancelled', 'updated', 'party_cancelled'];
 function addNotification(post, recipient, type, actorName) {
   post.notification_events ||= [];
   post.notification_events.push({ recipient_id: recipient, type, actor_name: actorName, created_at: new Date() });

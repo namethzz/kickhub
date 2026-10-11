@@ -14,7 +14,8 @@ test('my parties scope uses authenticated identity and separates history at end 
   assert.equal('mode' in upcoming.filter, false);
   assert.equal(upcoming.page, 2); assert.equal(upcoming.pageSize, 12);
   const history = myPartyQuery(actor, { scope: 'requested', period: 'history' }, now);
-  assert.deepEqual(history.filter.end_datetime, { $lte: now });
+  assert.deepEqual(history.filter.$or, [{ end_datetime: { $lte: now } }, { status: 'cancelled' }]);
+  assert.deepEqual(upcoming.filter.status, { $ne: 'cancelled' });
   assert.deepEqual(history.filter.join_requests, { $elemMatch: { user_id: actor } });
   assert.equal(history.sort.start_datetime, -1);
 });

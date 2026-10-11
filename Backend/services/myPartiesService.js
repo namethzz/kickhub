@@ -6,7 +6,7 @@ function myPartyQuery(actor, query = {}, now = new Date()) {
   const rawPage = query.page === undefined ? '1' : query.page;
   if (typeof rawPage !== 'string' || !/^\d+$/.test(rawPage) || Number(rawPage) < 1 || Number(rawPage) > 10000) fail(400, 'เลขหน้าไม่ถูกต้อง');
   const page = Number(rawPage);
-  const time = { end_datetime: period === 'history' ? { $lte: now } : { $gt: now } };
+  const time = period === 'history' ? { $or: [{ end_datetime: { $lte: now } }, { status: 'cancelled' }] } : { end_datetime: { $gt: now }, status: { $ne: 'cancelled' } };
   const scopes = {
     host: { ...time, user_id: actor },
     joined: { ...time, user_id: { $ne: actor }, 'participants.user_id': actor },

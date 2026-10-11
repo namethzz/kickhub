@@ -36,7 +36,8 @@ test('guest discovery reads active fields and future games while account routes 
     assert.deepEqual(await response.json(), { fields: [], parties: [] });
     assert.deepEqual(fieldFilter, { is_active: true });
     assert.equal(partyFilter.start_datetime.$gt instanceof Date, true);
-    assert.deepEqual(Object.keys(partyFilter), ['start_datetime']);
+    assert.deepEqual(Object.keys(partyFilter), ['status', 'start_datetime']);
+    assert.deepEqual(partyFilter.status, { $ne: 'cancelled' });
     assert.equal((await fetch(`${url}/api/v2/me`)).status, 401);
     assert.equal((await fetch(`${url}/api/v2/parties`)).status, 401);
   } finally {

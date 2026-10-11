@@ -266,7 +266,7 @@ router.delete("/delete-post/:id", authenticateToken, async (req, res) => {
     const post_id = req.params.id;
     const result = await deletePost(post_id, req.user._id);
     if (result.success) {
-      res.status(200).json({ message: "Post deleted successfully" });
+      res.status(200).json({ message: "Party cancelled successfully" });
     } else {
       res.status(400).json({ error: result.error.message });
     }
@@ -283,7 +283,7 @@ router.put("/update-post/:id", authenticateToken, async (req, res) => {
     if (result.success) {
       res
         .status(200)
-        .json({ message: "Post updated successfully" }, result.data);
+        .json({ message: "Post updated successfully", data: result.data });
     } else {
       res.status(400).json({ error: result.error.message });
     }
