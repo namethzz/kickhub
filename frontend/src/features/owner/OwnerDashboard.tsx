@@ -77,7 +77,7 @@ export default function OwnerDashboard() {
   if (!profile) return <main className="party-app"><ApiError message={error} retry={() => setReload(value => value + 1)} /></main>;
   if (profile.role !== 'owner') return <OwnerWelcome playerName={profile.name} />;
   const results = fields.filter(field => `${field.field_name} ${field.address}`.toLowerCase().includes(query.trim().toLowerCase()) && (filter === 'all' || field.is_active === (filter === 'active')));
-  return <main className={`party-app owner-page ${draft ? 'owner-page--form' : ''}`}>
+  return <main className={`party-app owner-page ${draft ? 'owner-page--form' : 'owner-page--dashboard'}`}>
     {draft ? <>
       <button type="button" className="owner-back" disabled={busy} onClick={() => { setDraft(null); setError(''); }}><ArrowLeft size={18} /> สนามของฉัน</button>
       <span className="party-kicker">BUILD YOUR HOME GROUND</span><h1 ref={heading} tabIndex={-1}>{editingId ? 'แก้ไขสนาม' : 'เพิ่มสนามใหม่'}</h1><p className="owner-intro">ให้เพื่อนร่วมสนามรู้จักสถานที่ของคุณ</p>
@@ -93,14 +93,15 @@ export default function OwnerDashboard() {
         {error && <p className="party-error" role="alert">{error}</p>}<div className="party-form-actions"><button type="button" className="kh-button party-secondary" disabled={busy} onClick={() => { setDraft(null); setError(''); }}>ยกเลิก</button><button className="kh-button kh-primary" disabled={busy} type="submit">{busy ? 'กำลังบันทึก…' : 'บันทึกสนาม'}</button></div>
       </form>
     </> : <>
-      <section className="owner-welcome"><span className="party-kicker">YOUR HOME GROUND</span><h1>สนามของคุณ<br />เกมของทุกคน.</h1><p>สวัสดี {profile.name} · จัดการสนามให้พร้อมรับเพื่อนใหม่</p><button className="kh-button kh-primary" onClick={() => openForm()}><Plus size={18} /> เพิ่มสนามใหม่</button><Flag className="owner-welcome-icon" aria-hidden="true" /></section>
+      <section className="owner-welcome owner-dashboard-hero"><img className="owner-dashboard-photo" src={`${import.meta.env.BASE_URL}hero-stadium-v2.png`} alt="" fetchPriority="high" /><div className="owner-dashboard-copy"><span className="party-kicker">YOUR HOME GROUND</span><h1>สนามของคุณ<br />เกมของทุกคน.</h1><p>สวัสดี {profile.name} · จัดการสนามให้พร้อมรับเพื่อนใหม่</p><button className="kh-button kh-primary" onClick={() => openForm()}><Plus size={18} /> เพิ่มสนามใหม่</button><a className="owner-dashboard-scroll" href="#owner-dashboard-content">จัดการสนามของคุณ ↓</a></div></section>
+      <div className="owner-dashboard-content" id="owner-dashboard-content">
       <div className="owner-stats"><div><strong>{fields.length}</strong><span>สนามทั้งหมด</span></div><div><strong>{fields.filter(field => field.is_active).length}</strong><span>เปิดรับผู้เล่น</span></div><div><strong>{fields.filter(field => !field.is_active).length}</strong><span>พักสนาม</span></div></div>
       {notice && <p role="status" className="party-draft-note">{notice}</p>}{error && <p className="party-error" role="alert">{error}</p>}
       <label className="party-search"><Search size={19} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="ค้นหาสนามของคุณ…" aria-label="ค้นหาสนามของคุณ" /></label>
       <div className="party-main-tabs">{[['all', 'ทั้งหมด'], ['active', 'เปิดรับ'], ['paused', 'พักสนาม']].map(([value, name]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}>{name}</button>)}</div>
       <div className="party-list">{results.map(field => <article key={field._id} className="party-list-card owner-field-card"><div className="owner-field-image"><FieldPhoto src={field.image} name={field.field_name} /><span className={`owner-status ${field.is_active ? 'is-active' : ''}`}>{field.is_active ? 'เปิดรับ' : 'พักสนาม'}</span></div><div className="party-card-body"><span className="party-kicker">{field.field_type}</span><h2>{field.field_name}</h2><p className="party-location"><MapPin size={15} />{field.address}</p><p className="owner-hours"><Clock size={15} /> {field.open}–{field.close}</p><div className="party-card-bottom"><div><strong>฿{field.price.toLocaleString('th-TH')}</strong><small> / ชั่วโมง</small></div><button type="button" disabled={busy} onClick={() => openForm(field)}><Pencil size={15} /> แก้ไข</button></div><button type="button" className="owner-toggle" disabled={busy} onClick={() => toggle(field)}>{field.is_active ? <Pause size={15} /> : <CircleCheck size={15} />}{field.is_active ? 'พักสนามชั่วคราว' : 'เปิดรับอีกครั้ง'}</button></div></article>)}</div>
       {!results.length && <div className="party-empty"><Flag /><h2>{fields.length ? 'ไม่พบสนามที่ตรงกับตัวเลือก' : 'สนามแรก เริ่มตรงนี้'}</h2><p>{fields.length ? 'ลองเปลี่ยนคำค้นหาหรือสถานะสนาม' : 'เพิ่มรายละเอียดสนาม แล้วผู้เล่นจะเลือกสนามของคุณตอนสร้างปาร์ตี้ได้'}</p>{!fields.length && <button className="kh-button kh-primary" onClick={() => openForm()}>เพิ่มสนามแรก</button>}</div>}
-      <p className="owner-footnote">พักสนามเพื่อซ่อนจากตัวเลือกสร้างปาร์ตี้ใหม่ ปาร์ตี้เดิมยังอยู่ในระบบ</p><Link className="party-back" to="/team">ดูปาร์ตี้ของผู้เล่น →</Link>
+      <p className="owner-footnote">พักสนามเพื่อซ่อนจากตัวเลือกสร้างปาร์ตี้ใหม่ ปาร์ตี้เดิมยังอยู่ในระบบ</p><Link className="party-back" to="/team">ดูปาร์ตี้ของผู้เล่น →</Link></div>
     </>}
   </main>;
 }

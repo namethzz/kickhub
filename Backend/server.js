@@ -10,6 +10,9 @@ async function start(){
     if(!origins.length || origins.some(value=>{try{const url=new URL(value);return url.protocol!=='https:' || url.origin!==value;}catch{return true;}}))throw new Error('CLIENT_ORIGIN must contain exact HTTPS origins separated by commas');
   }
   await connect();
+  await require('./services/directoryPhotoService').fillDirectoryPhotos().catch(error => {
+    console.warn('Directory photo update skipped:', error.name);
+  });
   app.listen(process.env.PORT||3000,'0.0.0.0',()=>console.log('KickHub API ready'));
 }
 start().catch(error=>{console.error('API startup failed:',error.message);process.exitCode=1;});

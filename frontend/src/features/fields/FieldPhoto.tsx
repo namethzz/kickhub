@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-const defaultFieldPhoto = `${import.meta.env.BASE_URL}field.jpg`;
+const defaultFieldPhoto = `${import.meta.env.BASE_URL}สนามของเรา.png`;
 export function safeWebLink(value?: string) {
   try { const url = new URL(value || ''); return ['https:', 'http:'].includes(url.protocol) ? url.href : ''; } catch { return ''; }
 }

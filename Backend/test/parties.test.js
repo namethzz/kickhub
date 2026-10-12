@@ -21,6 +21,24 @@ before(async()=>{
  field=await Field.create({owner_id:host._id,field_name:'Test field',field_type:'7v7',mobile_number:'0000000000',address:'Bangkok',price:1200,open:'09:00',close:'23:00',google_map:'https://maps.google.com/'});
 });
 after(async()=>{if(server)await new Promise(resolve=>server.close(resolve));if(mongoose.connection.readyState===1)await mongoose.connection.dropDatabase();await mongoose.disconnect();if(mongo)await mongo.stop();});
+test('directory photo backfill fills only verified missing images and preserves custom and owner images', async () => {
+ const photos=require('../data/directory-field-photos.json');
+ const {fillDirectoryPhotos}=require('../services/directoryPhotoService');
+ const base={field_type:'หญ้าเทียม',google_map:'https://maps.google.com/'};
+ await Field.create([
+  {...base,_id:photos[0]._id,field_name:photos[0].field_name},
+  {...base,_id:photos[1]._id,field_name:photos[1].field_name,image:'https://example.test/custom.jpg'},
+  {...base,_id:photos[2]._id,field_name:photos[2].field_name,owner_id:host._id,address:'Bangkok',mobile_number:'0000000000',price:1000,open:'09:00',close:'23:00'},
+ ]);
+ const unrelated=await Field.create({...base,field_name:photos[3].field_name});
+ await fillDirectoryPhotos();
+ assert.equal((await Field.findById(photos[0]._id)).image,photos[0].image);
+ assert.equal((await Field.findById(photos[1]._id)).image,'https://example.test/custom.jpg');
+ assert.equal((await Field.findById(photos[2]._id)).image,undefined);
+ assert.equal((await Field.findById(unrelated._id)).image,undefined);
+ assert.equal((await fillDirectoryPhotos()).modifiedCount,0);
+ await Field.deleteMany({_id:{$in:[photos[0]._id,photos[1]._id,photos[2]._id,unrelated._id]}});
+});
 test('players can create parties at ownerless directory fields with unknown details', async () => {
  const directory=await Field.create({field_name:'Directory field',field_type:'Outdoor',google_map:'https://maps.google.com/',price_note:'สอบถามราคา',hours_note:'ยังไม่ทราบ'});
  const detail=await call(`/api/v2/fields/${directory._id}`,firstToken);
