@@ -25,9 +25,12 @@ async function verifyFacebookToken(token, fetcher = fetch) {
   const now = Date.now() / 1000;
   if (!data?.is_valid || String(data.app_id) !== config.appId || data.type !== 'USER' || !data.user_id || (data.expires_at && data.expires_at <= now) || (data.data_access_expires_at && data.data_access_expires_at <= now)) fail(401, 'Facebook token หมดอายุหรือไม่ใช่ของแอปนี้');
   const proof = crypto.createHmac('sha256', config.appSecret).update(token).digest('hex');
-  const profile = await request(`${base}/me?fields=id,name,email&appsecret_proof=${proof}`, token);
+  const fields = encodeURIComponent('id,name,email,picture.width(512).height(512){url,is_silhouette}');
+  const profile = await request(`${base}/me?fields=${fields}&appsecret_proof=${proof}`, token);
   if (String(profile.id) !== String(data.user_id) || typeof profile.name !== 'string') fail(401, 'ข้อมูลบัญชี Facebook ไม่ถูกต้อง');
-  return profile;
+  // Flatten Graph's nested picture; Facebook's default silhouette is not a real photo, so ignore it.
+  const picture = profile.picture?.data;
+  return { ...profile, picture: picture && !picture.is_silhouette && typeof picture.url === 'string' ? picture.url : undefined };
 }
 async function facebookAccount(profile, role = 'user') {
   if (!['user', 'owner'].includes(role)) fail(400, 'ประเภทบัญชีไม่ถูกต้อง');

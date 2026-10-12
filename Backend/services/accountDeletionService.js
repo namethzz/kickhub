@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Field = require('../models/Field');
 const Post = require('../models/Post');
 const Reservation = require('../models/Reservation');
+const ProfileImage = require('../models/ProfileImage');
 
 async function eraseAccount(userId, session) {
   const options = { session };
@@ -34,6 +35,7 @@ async function eraseAccount(userId, session) {
   await Field.updateMany({ owner_id: user._id }, {
     $set: { owner_id: null, is_active: false, mobile_number: '', description: '', image: '' },
   }, options);
+  await ProfileImage.deleteMany({ user_id: user._id }, options);
   await User.deleteOne({ _id: user._id }, options);
 }
 module.exports = { eraseAccount };
