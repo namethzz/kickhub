@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ArrowUpRight, Calendar, Clock, MapPin, Plus, Search, ShieldCheck, Users, X, Trash2 } from 'lucide-react';
+import { ChevronRight, ArrowUpRight, Calendar, Clock, MapPin, Plus, Search, ShieldCheck, Users, X, Trash2 } from 'lucide-react';
 import { fields } from '@/data/discovery';
 import { ModePicker } from './ModePicker';
 import { deleteDraft, estimateShare, modeInfo, positions, previewParties, readDrafts, type PartyDraft, type PartyMode, type Position, type PreviewParty } from './party-model';
 import './parties.css';
 import '../profiles/profiles.css';
 import { findPlayer, hostIds } from '../profiles/player-model';
-function PlayerLink({ id, role, onNavigate }: { id: string; role: string; onNavigate?: () => void }) { const player = findPlayer(id); if (!player) return null; return <Link className="player-row" to={`/demo/players/${id}`} onClick={onNavigate}><span className="player-mini-avatar">{player.initials}</span><span><strong>{player.name}</strong><small>{role}</small></span><span className="player-view">ดูโปรไฟล์ ↗</span></Link>; }
+function PlayerLink({ id, role, onNavigate }: { id: string; role: string; onNavigate?: () => void }) { const player = findPlayer(id); if (!player) return null; return <Link className="player-row" to={`/demo/players/${id}`} onClick={onNavigate}><span className="player-mini-avatar">{player.initials}</span><span><strong>{player.name}</strong><small>{role}</small></span><span className="player-view">ดูโปรไฟล์ <ChevronRight size={16} strokeWidth={1.8} aria-hidden="true" /></span></Link>; }
 function PartySheet({ party, onClose }: { party: PreviewParty; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [position, setPosition] = useState<Position | ''>('');

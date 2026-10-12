@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
-import { Plus, Search, MapPin, Users, ArrowUpRight, SlidersHorizontal, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronRight, Plus, Search, MapPin, Users, ArrowUpRight, SlidersHorizontal, Calendar, ChevronLeft } from 'lucide-react';
 import { api, type LiveParty } from '@/lib/api';
 import { ModePicker } from '../parties/ModePicker';
 import { modeInfo, positions } from '../parties/party-model';
@@ -66,7 +66,7 @@ export default function LiveParties() {
             <div className="party-card-body"><h3>{party.party_name}</h3><p className="party-location"><MapPin size={14} />{party.field_name} · {party.address}</p>
               <p className="party-search-time"><Calendar size={16} />{new Date(party.start_datetime).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok', dateStyle: 'medium', timeStyle: 'short' })} · เวลาไทย</p>
               {party.mode === 'fixed' && <div className="party-card-tags">{party.required_positions.map(slot => { const free = Math.max(0, slot.amount - party.participants.filter(member => member.position === slot.position).length); return free > 0 && <span key={slot.position}>{positions.find(item => item.code === slot.position)?.name || slot.position} ว่าง {free}</span>; })}</div>}
-              <Link className="player-row" to={`/players/${party.user_id}`}><span className="player-mini-avatar">{party.host_name.slice(0, 1)}</span><span><strong>{party.host_name}</strong><small>หัวตี้</small></span><span className="player-view">ดูโปรไฟล์ ↗</span></Link>
+              <Link className="player-row" to={`/players/${party.user_id}`}><span className="player-mini-avatar">{party.host_name.slice(0, 1)}</span><span><strong>{party.host_name}</strong><small>หัวตี้</small></span><span className="player-view">ดูโปรไฟล์ <ChevronRight size={16} strokeWidth={1.8} aria-hidden="true" /></span></Link>
               <div className="party-card-progress" aria-hidden="true"><span style={{ width: `${party.capacity ? Math.min(100, party.participants.length / party.capacity * 100) : 0}%` }} /></div>
               <div className="party-player-info"><span><Users size={14} /> {party.participants.length}/{party.capacity} คน</span><strong>{remaining ? `ว่าง ${remaining} คน` : 'เต็มแล้ว'}</strong></div>
               <div className="party-card-bottom"><div><strong>฿{party.price.toLocaleString('th-TH')}</strong><small> / คน</small></div><Link className="kh-button kh-dark" to={`/parties/${party._id}`}>ดูปาร์ตี้ <ArrowUpRight size={16} /></Link></div>
