@@ -20,7 +20,7 @@
 @media(prefers-reduced-motion:reduce){.owner-start .kh-button{transition:none}.owner-start .kh-button:hover{transform:none}}
 
 /* Logged-in owner's welcome uses the entire visible screen. */
-.kh-app .owner-page.owner-page--dashboard { padding:0 0 calc(112px + env(safe-area-inset-bottom)); }
+.kh-app main.owner-page.owner-page--dashboard { padding:0 0 calc(112px + env(safe-area-inset-bottom)); }
 .kh-app .owner-dashboard-hero { border-radius:0; margin:0; min-height:calc(100svh - 88px); width:100%; display:flex; align-items:center; padding:64px clamp(24px,6vw,100px); isolation:isolate; }
 .owner-dashboard-photo { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; z-index:-2; }
 .owner-dashboard-hero::before { content:''; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg,#062419eb 0%,#062419b0 48%,#06241928 100%); }
@@ -30,7 +30,7 @@
 .owner-dashboard-scroll { display:flex; width:fit-content; align-items:center; font-size:13px; min-height:44px; margin-top:24px; color:#e0e9df!important; }
 .owner-dashboard-content { padding:32px clamp(20px,4vw,72px) 0; scroll-margin-top:24px; }
 @media(max-width:760px) {
- .kh-app .owner-dashboard-hero { min-height:calc(100svh - 70px - 76px - env(safe-area-inset-bottom)); padding:40px 22px; }
+ .kh-app .owner-dashboard-hero { min-height:calc(100svh - 70px - 64px - env(safe-area-inset-bottom)); padding:40px 22px; }
  .owner-dashboard-photo { object-position:62% center; }
  .owner-dashboard-hero::before { background:linear-gradient(90deg,#062419e8,#0624199e); }
  .kh-app .owner-dashboard-hero p { font-size:14px; }
