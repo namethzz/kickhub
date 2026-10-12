@@ -1,0 +1,16 @@
+.kh-app .policy-page { max-width:880px; padding-top:36px; }
+.kh-app .policy-page h1 { font-size:clamp(28px,4vw,42px); margin:16px 0; }
+.policy-page section { margin:28px 0; }
+.kh-app .policy-page h2 { font-size:21px; margin:0 0 12px; }
+.policy-page p,.policy-page li { font-size:15px; line-height:1.95; color:#516452; }
+.policy-page ol,.policy-page ul { padding-left:24px; }
+.policy-page li { margin-bottom:8px; }
+.policy-page p a,.policy-page li a { color:#245c36; text-decoration:underline; text-underline-offset:4px; }
+.policy-page .policy-date { font-size:12px; color:#75816e; }
+.policy-links { display:flex; flex-wrap:wrap; align-items:center; gap:8px 20px; padding:20px 0; font-size:12px; color:#61715d; }
+.policy-links a { min-height:36px; display:flex; align-items:center; text-decoration:underline; text-underline-offset:4px; }
+.kh-auth-footer .policy-links { justify-content:center; padding:10px 0 0; }
+.delete-account-form p { overflow-wrap:anywhere; }
+.delete-account-form .delete-account-button { background:#a33127; color:#fff; margin-top:20px; width:100%; }
+.delete-account-button:disabled { opacity:.45; cursor:not-allowed; }
+@media(max-width:760px) { .policy-page p,.policy-page li { font-size:14px; } }

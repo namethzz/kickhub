@@ -42,6 +42,8 @@ import Field from "./components/field";
 import CountdownTimer from "./components/CountdownTimer";
 import Owner from "./features/owner/OwnerDashboard";
 import "./responsive.css";
+import PolicyPage from "./features/policies/PolicyPages";
+import DeleteAccount, { AccountDeleted } from "./features/policies/DeleteAccount";
 
 function AppRoutes() {
   const location = useLocation();
@@ -68,6 +70,11 @@ function AppRoutes() {
       <Suspense fallback={<main className="party-app" role="status">กำลังโหลดหน้าเข้าสู่ระบบ…</main>}>
       <Routes>
         
+        <Route path="/privacy" element={<PolicyPage kind="privacy" />} />
+        <Route path="/terms" element={<PolicyPage kind="terms" />} />
+        <Route path="/data-deletion" element={<PolicyPage kind="deletion" />} />
+        <Route path="/account/delete" element={<DeleteAccount />} />
+        <Route path="/account-deleted" element={<AccountDeleted />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/signUp" element={<AuthPage signup />} />
         <Route path="/register" element={<AuthPage signup />} />

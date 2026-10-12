@@ -14,6 +14,7 @@ import { Checkbox } from './checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './form';
 import { GoogleSignIn } from './google-sign-in';
 import './login.css';
+import { PolicyLinks } from '@/features/policies/PolicyPages';
 
 const schema = z.object({ name: z.string(), email: z.string().trim().email('กรุณากรอกอีเมลให้ถูกต้อง'), password: z.string().min(1, 'กรุณากรอกรหัสผ่าน').max(128, 'รหัสผ่านยาวเกินไป'), role: z.enum(['user', 'owner']), rememberMe: z.boolean() });
 export type AuthFormValues = z.infer<typeof schema>;
@@ -69,7 +70,7 @@ export function AuthFormSplitScreen({ logo, title, description, imageSrc, imageA
         <motion.div variants={itemVariants} className="kh-auth-social"><div className="kh-auth-divider"><span>หรือใช้บัญชีของคุณ</span></div>{googleClientId ? <GoogleSignIn clientId={googleClientId} disabled={!!busy} onCredential={google} /> : <><Button type="button" variant="outline" className="kh-auth-google-unavailable" disabled>ดำเนินการต่อด้วย Google</Button>{googleNote && <p className="kh-auth-note" role="status">{googleNote}</p>}</>}{busy === 'google' && <p className="kh-auth-note" role="status">กำลังยืนยันบัญชี Google…</p>}<Button type="button" variant="outline" className="kh-auth-facebook" disabled={!!busy || !facebookReady} onClick={social}>{busy === 'facebook' ? <Loader2 className="animate-spin" size={20} /> : <FaFacebookF className="kh-facebook-mark" aria-hidden="true" />}<span>{busy === 'facebook' ? 'กำลังเชื่อมต่อ…' : 'ดำเนินการต่อด้วย Facebook'}</span></Button>{facebookNote && <p className="kh-auth-note" role="status">{facebookNote}</p>}</motion.div>
         <motion.p variants={itemVariants} className="kh-auth-switch">{signup ? 'มีบัญชีอยู่แล้ว?' : 'ยังไม่มีบัญชี?'} <Link to={createAccountHref}>{signup ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก'}</Link></motion.p>
       </motion.div>
-      <p className="kh-auth-footer">KICKHUB · FIND YOUR PEOPLE. PLAY YOUR GAME.</p>
+      <div className="kh-auth-footer">KICKHUB · FIND YOUR PEOPLE. PLAY YOUR GAME.<PolicyLinks /></div>
     </section>
     <aside className="kh-auth-art" aria-label="บรรยากาศฟุตบอล"><img src={imageSrc} alt={imageAlt} /><div className="kh-auth-art-shade" /><div className="kh-auth-art-caption"><span>MORE THAN A GAME</span><h2>มาเดี่ยวก็ได้<br />กลับไปมีทีม</h2><p>พื้นที่ของคนรักฟุตบอล และเพื่อนร่วมเกมคนต่อไปของคุณ</p></div></aside>
   </main>;
