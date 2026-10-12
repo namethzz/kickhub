@@ -12,7 +12,7 @@ const chat = require('../services/partyChatService');
 const publicProfile = user => ({ _id: user._id, name: user.name, bio: user.bio, area: user.area, preferred_position: user.preferred_position, level: user.level, role: user.role });
 router.get('/discover', async (req, res) => {
   const [fields, parties] = await Promise.all([
-    Field.find({ is_active: true }).select('field_name field_type address price image open close facilities').sort({ createdAt: -1 }),
+    Field.find({ is_active: true }).select('field_name field_type address price image open close facilities price_note hours_note').sort({ createdAt: -1 }),
     Post.find({ status: { $ne: 'cancelled' }, start_datetime: { $gt: new Date() } }).select('party_name mode access field_id field_name address start_datetime end_datetime price required_positions total_required_players participants').sort({ start_datetime: 1 }).limit(100),
   ]);
   res.json({ fields, parties: parties.map(partyCard) });
@@ -62,10 +62,10 @@ router.patch('/me', async (req,res) => {
   const user = await User.findByIdAndUpdate(req.user._id, { $set: update }, {new:true,runValidators:true});
   res.json({ ...publicProfile(user), email: user.email });
 });
-router.get('/fields', async (req,res) => res.json(await Field.find({is_active:true}).select('field_name field_type address price image open close facilities').sort({createdAt:-1})));
+router.get('/fields', async (req,res) => res.json(await Field.find({is_active:true}).select('field_name field_type address price image open close facilities price_note hours_note').sort({createdAt:-1})));
 router.get('/fields/:id', async (req,res) => {
   service.objectId(req.params.id);
-  const field = await Field.findOne({_id:req.params.id,is_active:true}).select('field_name field_type address price image open close facilities description google_map mobile_number owner_id');
+  const field = await Field.findOne({_id:req.params.id,is_active:true}).select('field_name field_type address price image open close facilities price_note hours_note description google_map mobile_number owner_id');
   if (!field) service.fail(404,'ไม่พบสนาม หรือสนามนี้พักการเปิดรับแล้ว');
   res.json(field);
 });
