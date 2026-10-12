@@ -17,6 +17,15 @@ const userSchema = new mongoose.Schema(
     preferred_position: { type: String, enum: ["GK", "DF", "MF", "FW", ""], default: "" },
     level: { type: String, enum: ["beginner", "casual", "experienced"], default: "casual" },
     profile_photo: { type: String, default: "" },
+    // Photos are stored in ProfileImage; these fields only version the URLs and remember where the avatar came from.
+    avatar_source: { type: String, enum: ["", "upload", "google", "facebook", "none"], default: "" },
+    avatar_updated_at: { type: Date },
+    cover_updated_at: { type: Date },
+    // Verified provider photo URLs captured at social login, so the user can switch back to them later.
+    social_photos: {
+      google: { type: String, maxlength: 2048, default: "" },
+      facebook: { type: String, maxlength: 2048, default: "" },
+    },
     status: {
       type: String,
       enum: ["active", "banned"],

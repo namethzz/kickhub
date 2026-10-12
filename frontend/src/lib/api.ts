@@ -5,7 +5,7 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   if (!response.ok) { if (response.status === 401) localStorage.removeItem('token'); throw Object.assign(new Error(data.message || data.error || 'ระบบไม่พร้อมใช้งาน กรุณาลองใหม่'), { status: response.status }); }
   return data;
 }
-export type PublicPlayer = { _id: string; name: string; bio: string; area: string; preferred_position: string; level: string; role: string; email?: string };
+export type PublicPlayer = { _id: string; name: string; bio: string; area: string; preferred_position: string; level: string; role: string; email?: string; avatar_url?: string; cover_url?: string; avatar_source?: string; social_photos?: { google: boolean; facebook: boolean } };
 export type Member = { user_id: string; name: string; position: string | null };
 export type JoinRequest = Member & { _id: string; status: 'pending'|'approved'|'declined'|'cancelled' };
 export type LiveParty = { activity_read_through?: string; _id: string; status?: 'active' | 'cancelled'; cancelled_at?: string; cancellation_reason?: string; party_name: string; mode: 'fixed'|'flexible'; access: 'open'|'approval'; field_id: string; field_name: string; address: string; user_id: string; host_name: string; description: string; start_datetime: string; end_datetime: string; price: number; google_map: string; capacity: number; required_positions: {position:string;amount:number}[]; participants: Member[]; join_requests: JoinRequest[] };

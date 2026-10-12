@@ -1,4 +1,5 @@
-const router = require('express').Router();
+const express = require('express');
+const router = express.Router();
 const auth = require('../middleware/authMiddleware');
 const User = require('../models/User');
 const Post = require('../models/Post');
@@ -9,7 +10,10 @@ const { myPartyQuery } = require('../services/myPartiesService');
 const { partyCard } = require('../services/discoveryService');
 const { partySearchQuery } = require('../services/partySearchService');
 const chat = require('../services/partyChatService');
-const publicProfile = user => ({ _id: user._id, name: user.name, bio: user.bio, area: user.area, preferred_position: user.preferred_position, level: user.level, role: user.role });
+const images = require('../services/profileImageService');
+const publicProfile = user => ({ _id: user._id, name: user.name, bio: user.bio, area: user.area, preferred_position: user.preferred_position, level: user.level, role: user.role, avatar_url: images.imageUrl(user, 'avatar'), cover_url: images.imageUrl(user, 'cover') });
+// Only the owner learns which provider photos they can switch to; the stored URLs themselves are never returned.
+const ownProfile = user => ({ ...publicProfile(user), email: user.email, avatar_source: user.avatar_source || '', social_photos: { google: !!user.social_photos?.google, facebook: !!user.social_photos?.facebook } });
 router.get('/discover', async (req, res) => {
   const [fields, parties] = await Promise.all([
     Field.find({ is_active: true }).select('field_name field_type address price image open close facilities price_note hours_note').sort({ createdAt: -1 }),
@@ -23,6 +27,14 @@ router.get('/profiles/:id', async (req, res) => {
   if (!user) service.fail(404, 'ไม่พบโปรไฟล์');
   res.json(publicProfile(user));
 });
+for (const kind of ['avatar', 'cover']) {
+  router.get(`/profiles/:id/${kind}`, async (req, res) => {
+    service.objectId(req.params.id);
+    const image = await images.readImage(req.params.id, kind);
+    // The URL carries ?v=<timestamp>, so a changed photo always gets a new URL and old ones can be cached for good.
+    res.set({ 'Content-Type': image.contentType, 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'", 'Cross-Origin-Resource-Policy': 'cross-origin' }).end(image.data);
+  });
+}
 router.use(auth);
 router.get('/notifications', async (req, res) => {
   const query = notificationService.pipeline(req.user._id, req.user.notifications_read_at, req.query);
@@ -49,7 +61,7 @@ router.patch('/parties/:id/notifications/read', async (req, res) => {
     { arrayFilters: [{ 'event.recipient_id': req.user._id, 'event.created_at': { $lte: through }, 'event.type': { $nin: ['request', 'chat'] }, 'event.read_at': null }] });
   res.json({ status: 'ok' });
 });
-router.get('/me', (req,res) => res.json({ ...publicProfile(req.user), email: req.user.email }));
+router.get('/me', (req,res) => res.json(ownProfile(req.user)));
 router.patch('/me', async (req,res) => {
   const data = req.body;
   const update = {};
@@ -60,8 +72,19 @@ router.patch('/me', async (req,res) => {
   if ('preferred_position' in data) { if (!['GK','DF','MF','FW',''].includes(data.preferred_position)) service.fail(400,'ตำแหน่งไม่ถูกต้อง'); update.preferred_position = data.preferred_position; }
   if ('level' in data) { if (!['beginner','casual','experienced'].includes(data.level)) service.fail(400,'ระดับไม่ถูกต้อง'); update.level = data.level; }
   const user = await User.findByIdAndUpdate(req.user._id, { $set: update }, {new:true,runValidators:true});
-  res.json({ ...publicProfile(user), email: user.email });
+  res.json(ownProfile(user));
 });
+const rawImage = express.raw({ type: ['image/jpeg', 'image/png', 'image/webp'], limit: '2mb' });
+const readImageBody = (req, res, next) => rawImage(req, res, error => {
+  if (error) return next(Object.assign(new Error(error.status === 413 ? 'ไฟล์รูปใหญ่เกินไป' : 'อ่านไฟล์รูปไม่สำเร็จ'), { status: error.status === 413 ? 413 : 400 }));
+  if (!Buffer.isBuffer(req.body)) return next(Object.assign(new Error('รองรับเฉพาะไฟล์ JPG, PNG หรือ WebP'), { status: 415 }));
+  next();
+});
+for (const kind of ['avatar', 'cover']) {
+  router.put(`/me/${kind}`, readImageBody, async (req, res) => res.json(ownProfile(await images.saveImage(req.user._id, kind, req.body))));
+  router.delete(`/me/${kind}`, async (req, res) => res.json(ownProfile(await images.removeImage(req.user._id, kind))));
+}
+router.post('/me/avatar/social', async (req, res) => res.json(ownProfile(await images.importSocialPhoto(req.user._id, req.body?.provider))));
 router.get('/fields', async (req,res) => res.json(await Field.find({is_active:true}).select('field_name field_type address price image open close facilities price_note hours_note').sort({createdAt:-1})));
 router.get('/fields/:id', async (req,res) => {
   service.objectId(req.params.id);
