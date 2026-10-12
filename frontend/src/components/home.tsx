@@ -7,6 +7,7 @@ import { ParallaxComponent } from '@/components/ui/parallax-scrolling';
 import FieldPhoto from '@/features/fields/FieldPhoto';
 import { modeInfo } from '@/features/parties/party-model';
 import './home-live.css';
+import { PolicyLinks } from '@/features/policies/PolicyPages';
 
 const formatDate = (value: string) => new Date(value).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
 const formatTime = (value: string) => new Date(value).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
@@ -66,6 +67,6 @@ export default function Home() {
       <p className="kh-data-caption">{kind === 'parties' ? 'แสดงปาร์ตี้ที่ยังไม่เริ่มเกม เข้าสู่ระบบเพื่อเข้าร่วมหรือส่งคำขอให้หัวตี้' : 'ราคาสนามต่อชั่วโมง กรุณายืนยันเรทและการจองกับเจ้าของสนาม'}</p>
     </section>
     <section className="kh-owner-banner kh-owner-banner--guide"><div className="kh-owner-banner-copy"><span className="kh-eyebrow"><Goal size={16} /> FOR FIELD OWNERS</span><h2>มีสนาม? ให้ทีมใหม่หาคุณเจอ.</h2><p>สร้างหน้าสนามที่มีข้อมูลพร้อม แล้วเปิดให้ผู้เล่นเลือกตอนนัดเตะ</p><div className="kh-owner-banner-points"><span><MapPin size={16} /> ที่อยู่และแผนที่</span><span><Clock size={16} /> ราคาและเวลาเปิด</span><span><Users size={16} /> เปิดให้เลือกสร้างปาร์ตี้</span></div></div><div className="kh-owner-banner-action"><Link className="kh-button kh-dark" to="/Owner">รู้จักพื้นที่เจ้าของสนาม <ArrowUpRight size={17} /></Link><small>มีบัญชีเจ้าของสนามแล้ว เข้าจัดการได้จากหน้านี้</small></div></section>
-    <footer className="kh-footer"><Link to="/home" className="kh-footer-brand">kickhub<span>®</span></Link><p>เจอเพื่อนใหม่ ในเกมที่คุณรัก</p><Link to="/Owner">พื้นที่เจ้าของสนาม <ArrowUpRight size={16} /></Link></footer>
+    <footer className="kh-footer"><Link to="/home" className="kh-footer-brand">kickhub<span>®</span></Link><p>เจอเพื่อนใหม่ ในเกมที่คุณรัก</p><Link to="/Owner">พื้นที่เจ้าของสนาม <ArrowUpRight size={16} /></Link></footer><PolicyLinks />
   </main>;
 }

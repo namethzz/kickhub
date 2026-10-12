@@ -10,7 +10,7 @@ async function authenticateToken(req, res, next) {
     if (!mongoose.isObjectIdOrHexString(id)) return res.status(401).json({ message: 'บัญชีไม่ถูกต้อง' });
     const user = await User.findById(id).select('-password');
     if (!user || user.status === 'banned') return res.status(401).json({ message: 'บัญชีไม่สามารถใช้งานได้' });
-    req.user = user; next();
+    req.user = user; req.authIssuedAt = claims.iat; next();
   } catch (error) {
     if (['JsonWebTokenError', 'TokenExpiredError', 'NotBeforeError'].includes(error.name)) return res.status(401).json({ message: 'กรุณาเข้าสู่ระบบใหม่' });
     next(error);
