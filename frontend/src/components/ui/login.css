@@ -166,3 +166,9 @@
 @media (prefers-reduced-motion: reduce) {
   .kh-auth-screen *, .kh-auth-screen *:before, .kh-auth-screen *:after { transition: none !important; }
 }
+.kh-role-back { border:0; background:transparent; cursor:pointer; font-family:inherit; padding:0; }
+.kh-role-fieldset { border:0; margin:0; padding:0; min-width:0; }
+.kh-role-fieldset legend { font-size:14px; font-weight:600; margin-bottom:12px; }
+.kh-auth-role-screen h1:focus { outline:none; }
+.kh-auth-role-screen .kh-auth-roles button { min-height:96px; }
+.kh-auth-role-screen .kh-auth-submit:disabled { opacity:.45; cursor:not-allowed; }

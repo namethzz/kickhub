@@ -67,7 +67,7 @@ test('HTTP Facebook config hides secrets and successful login issues only a Kick
       const response = await fetch(`${url}/api/auth/facebook`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ accessToken: 'test-token', role: 'owner', rememberMe }) });
       assert.equal(response.status, 200);
       const body = await response.json();
-      assert.deepEqual(Object.keys(body).sort(), ['status', 'token']);
+      assert.deepEqual(Object.keys(body).sort(), ['role', 'status', 'token']);
       const claims = jwt.verify(body.token, process.env.SECRET_KEY);
       assert.equal(claims._id, user._id); assert.equal(claims.exp - claims.iat, rememberMe ? 604800 : 86400);
       assert.equal(user.role, 'user');

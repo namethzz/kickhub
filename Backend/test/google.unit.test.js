@@ -61,7 +61,7 @@ test('Google HTTP login verifies credential then issues KickHub JWT with request
     assert.equal((await request({ credential: 'invalid' })).status, 401); assert.equal(lookup.mock.callCount(), 0);
     for (const rememberMe of [false, true]) {
       const response = await request({ credential: 'valid-token', role: 'owner', rememberMe }); assert.equal(response.status, 200);
-      const body = await response.json(); assert.deepEqual(Object.keys(body).sort(), ['status', 'token']);
+      const body = await response.json(); assert.deepEqual(Object.keys(body).sort(), ['role', 'status', 'token']);
       const claims = jwt.verify(body.token, process.env.SECRET_KEY); assert.equal(claims._id, '507f1f77bcf86cd799439011'); assert.equal(claims.exp - claims.iat, rememberMe ? 604800 : 86400);
     }
   } finally { await new Promise(resolve => server.close(resolve)); if (oldSecret === undefined) delete process.env.SECRET_KEY; else process.env.SECRET_KEY = oldSecret; }
