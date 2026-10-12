@@ -1,4 +1,4 @@
-import { fieldPrice, fieldHours, fieldAddress } from '@/features/fields/field-display';
+import { hasFieldPrice, fieldHours, fieldAddress } from '@/features/fields/field-display';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, MapPin, Clock, Search, Calendar, Users, ShieldCheck, Goal } from 'lucide-react';
@@ -24,7 +24,7 @@ function PartyCard({ party }: { party: DiscoveryParty }) {
   </article>;
 }
 function FieldCard({ field }: { field: LiveField }) {
-  return <article className="kh-field-card"><Link className="kh-field-image kh-live-field-photo" to={`/fields/${field._id}`} aria-label={`ดูสนาม ${field.field_name}`}><FieldPhoto src={field.image} name={field.field_name} /><span>{field.field_type}</span></Link><div className="kh-field-body"><h3>{field.field_name}</h3><p className="kh-card-place"><MapPin size={15} />{fieldAddress(field)}</p><p className="kh-card-place"><Clock size={15} />{fieldHours(field)}</p><div className="kh-card-footer"><p><strong>{fieldPrice(field)}</strong></p><Link className="kh-card-button" to={`/fields/${field._id}`}>ดูสนาม <ArrowUpRight size={16} /></Link></div></div></article>;
+  return <article className="kh-field-card"><Link className="kh-field-image kh-live-field-photo" to={`/fields/${field._id}`} aria-label={`ดูสนาม ${field.field_name}`}><FieldPhoto src={field.image} name={field.field_name} /><span>{field.field_type}</span></Link><div className="kh-field-body"><h3>{field.field_name}</h3><p className="kh-card-place"><MapPin size={15} />{fieldAddress(field)}</p><p className="kh-card-place"><Clock size={15} />{fieldHours(field)}</p><div className="kh-card-footer kh-field-price-footer"><p><strong>{hasFieldPrice(field) ? `฿${field.price!.toLocaleString('th-TH')}` : 'สอบถามราคากับสนาม'}</strong>{hasFieldPrice(field) && <small> / ชั่วโมง</small>}{field.price_note && <span className="kh-field-price-note">{field.price_note}</span>}</p><Link className="kh-card-button" to={`/fields/${field._id}`}>ดูสนาม <ArrowUpRight size={16} /></Link></div></div></article>;
 }
 export default function Home() {
   const section = useRef<HTMLElement>(null);

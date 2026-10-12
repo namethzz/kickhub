@@ -1,0 +1,65 @@
+/* Shared type and spacing for the live app at every viewport size. */
+html { font-size:16px; scroll-padding-top:24px; }
+body { font-family:'Noto Sans Thai','Roboto',sans-serif; font-weight:400; line-height:1.65; -webkit-text-size-adjust:100%; }
+#root,.kh-app { width:100%; min-height:100svh; }
+#root { max-width:none; margin:0; padding:0; text-align:left; }
+*,*::before,*::after { box-sizing:border-box; }
+button,input,select,textarea { font-family:inherit; }
+img { max-width:100%; }
+.kh-app h1,.kh-app h2,.kh-app h3 { line-height:1.45; letter-spacing:0; }
+.kh-app p { overflow-wrap:anywhere; }
+.kh-app .kh-button { min-height:46px; line-height:1.5; gap:8px; white-space:normal; text-align:center; }
+.kh-app .kh-header-inner { max-width:none; padding-inline:clamp(20px,4vw,72px); gap:clamp(18px,3vw,42px); }
+.kh-app .kh-brand { font-family:'Roboto','Noto Sans Thai',sans-serif; font-size:27px; font-weight:700; letter-spacing:-1px; flex-shrink:0; }
+.kh-app .kh-desktop-nav a { font-size:14px; }
+.kh-app .kh-login,.kh-app .kh-owner-link { font-size:14px; white-space:nowrap; }
+.kh-app .party-app { line-height:1.75; }
+.kh-app .party-page-head p,.kh-app .party-location,.kh-app .owner-intro,.kh-app .owner-footnote { font-size:14px; line-height:1.8; }
+.kh-app .party-card-body { min-width:0; }
+.kh-app .party-location { align-items:flex-start; gap:8px; }
+.kh-app .party-location svg { flex-shrink:0; margin-top:4px; }
+.kh-app .party-search { min-height:52px; }
+.kh-app .party-search input { min-width:0; font-size:16px; }
+.kh-app .party-form-section label { font-size:14px; }
+.kh-app .party-help { font-size:12px; }
+.kh-app .party-main-tabs button { min-height:46px; font-size:14px; }
+.kh-app .owner-page:not(.owner-page--form) { max-width:none; padding:32px clamp(20px,4vw,72px) 112px; }
+.kh-app .owner-welcome { padding:clamp(24px,4vw,48px); border-radius:24px; }
+.kh-app .owner-welcome h1 { font-size:clamp(30px,3.5vw,48px); line-height:1.45; }
+.kh-app .owner-welcome p { font-size:15px; max-width:75%; }
+.kh-app .owner-stats { gap:16px; }
+.kh-app .owner-stats span { font-size:13px; }
+.kh-app .owner-stats strong { font-size:30px; font-weight:650; }
+.kh-app .owner-page .party-list { grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.kh-app .owner-field-card h2 { font-size:20px; font-weight:650; }
+.kh-app .owner-hours,.kh-app .owner-toggle { font-size:14px; }
+.kh-app .owner-field-card .party-card-bottom strong { font-size:24px; }
+.kh-app .owner-field-card .party-card-bottom { flex-wrap:wrap; gap:12px; }
+@media(max-width:1100px) {
+ .kh-app .kh-header-inner { gap:20px; }
+ .kh-app .kh-desktop-nav { gap:16px; }
+ .kh-app .kh-desktop-nav a { font-size:12px; }
+ .kh-app .kh-header-actions { gap:12px; }
+ .kh-app .kh-owner-link { display:none; }
+ .kh-app .owner-page .party-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:760px) {
+ .kh-app .kh-header-inner { padding-inline:18px; }
+ .kh-app .kh-login { font-size:12px; }
+ .kh-app .kh-brand { font-size:24px; }
+ .kh-app .kh-mobile-nav { padding-bottom:max(12px,env(safe-area-inset-bottom)); }
+ .kh-app .kh-mobile-nav a { font-size:10px; min-width:0; line-height:1.4; }
+ .kh-app .owner-page:not(.owner-page--form) { padding:20px 16px calc(112px + env(safe-area-inset-bottom)); }
+ .kh-app .owner-stats { gap:8px; }
+ .kh-app .owner-stats>div { padding:16px 12px; }
+ .kh-app .owner-stats span { font-size:11px; }
+ .kh-app .owner-stats strong { font-size:26px; }
+ .kh-app .owner-welcome p { max-width:100%; font-size:14px; position:relative; }
+ .kh-app .owner-page .party-list { grid-template-columns:1fr; gap:18px; }
+}
+@media(prefers-reduced-motion:reduce) { .kh-app * { scroll-behavior:auto; } .kh-app .kh-button { transition:none; } }
+.kh-app .kh-field-price-footer { align-items:flex-start; flex-wrap:wrap; gap:12px; }
+.kh-app .kh-field-price-footer p { min-width:0; flex:1 1 170px; }
+.kh-app .kh-field-price-footer strong { font-size:22px; line-height:1.6; }
+.kh-app .kh-field-price-note { display:block; font-size:12px; line-height:1.8; color:#6b775f; font-weight:400; margin-top:6px; }
+.kh-app .kh-field-price-footer .kh-card-button { flex-shrink:0; }

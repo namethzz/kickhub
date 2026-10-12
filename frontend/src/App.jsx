@@ -41,6 +41,7 @@ import CreateParty2 from "./components/CreateParty2";
 import Field from "./components/field";
 import CountdownTimer from "./components/CountdownTimer";
 import Owner from "./features/owner/OwnerDashboard";
+import "./responsive.css";
 
 function AppRoutes() {
   const location = useLocation();
