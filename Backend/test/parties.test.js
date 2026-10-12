@@ -21,6 +21,13 @@ before(async()=>{
  field=await Field.create({owner_id:host._id,field_name:'Test field',field_type:'7v7',mobile_number:'0000000000',address:'Bangkok',price:1200,open:'09:00',close:'23:00',google_map:'https://maps.google.com/'});
 });
 after(async()=>{if(server)await new Promise(resolve=>server.close(resolve));if(mongoose.connection.readyState===1)await mongoose.connection.dropDatabase();await mongoose.disconnect();if(mongo)await mongo.stop();});
+test('players can create parties at ownerless directory fields with unknown details', async () => {
+ const directory=await Field.create({field_name:'Directory field',field_type:'Outdoor',google_map:'https://maps.google.com/',price_note:'สอบถามราคา',hours_note:'ยังไม่ทราบ'});
+ const detail=await call(`/api/v2/fields/${directory._id}`,firstToken);
+ assert.equal(detail.status,200);assert.equal(detail.data.owner_id,null);assert.equal(detail.data.price,null);assert.equal(detail.data.price_note,'สอบถามราคา');
+ const created=await call('/api/v2/parties',firstToken,'POST',payload({field_id:String(directory._id),price:100}));
+ assert.equal(created.status,201);assert.equal(created.data.field_id,String(directory._id));assert.equal(created.data.price,100);
+});
 test('profile privacy, authenticated editing and normalized auth tokens',async()=>{
  assert.equal((await call('/api/v2/me',null)).status,401);
  const login=await call('/login',null,'POST',{email:'FIRST@example.test',password:'password123'});assert.equal(login.status,200);

@@ -38,7 +38,7 @@ const postSchema = new mongoose.Schema(
 
     field_name: { type: String, required: true },
 
-    address: { type: String, required: true },
+    address: { type: String, default: "" },
 
     user_id: {
       type: mongoose.Schema.Types.ObjectId,

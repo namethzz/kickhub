@@ -1,3 +1,4 @@
+import { fieldPrice, fieldHours, fieldAddress } from '@/features/fields/field-display';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, MapPin, Clock, Search, Calendar, Users, ShieldCheck, Goal } from 'lucide-react';
@@ -23,7 +24,7 @@ function PartyCard({ party }: { party: DiscoveryParty }) {
   </article>;
 }
 function FieldCard({ field }: { field: LiveField }) {
-  return <article className="kh-field-card"><Link className="kh-field-image kh-live-field-photo" to={`/fields/${field._id}`} aria-label={`ดูสนาม ${field.field_name}`}><FieldPhoto src={field.image} name={field.field_name} /><span>{field.field_type}</span></Link><div className="kh-field-body"><h3>{field.field_name}</h3><p className="kh-card-place"><MapPin size={15} />{field.address}</p><p className="kh-card-place"><Clock size={15} />{field.open}–{field.close}</p><div className="kh-card-footer"><p><strong>฿{money(field.price)}</strong><small> / ชม.</small></p><Link className="kh-card-button" to={`/fields/${field._id}`}>ดูสนาม <ArrowUpRight size={16} /></Link></div></div></article>;
+  return <article className="kh-field-card"><Link className="kh-field-image kh-live-field-photo" to={`/fields/${field._id}`} aria-label={`ดูสนาม ${field.field_name}`}><FieldPhoto src={field.image} name={field.field_name} /><span>{field.field_type}</span></Link><div className="kh-field-body"><h3>{field.field_name}</h3><p className="kh-card-place"><MapPin size={15} />{fieldAddress(field)}</p><p className="kh-card-place"><Clock size={15} />{fieldHours(field)}</p><div className="kh-card-footer"><p><strong>{fieldPrice(field)}</strong></p><Link className="kh-card-button" to={`/fields/${field._id}`}>ดูสนาม <ArrowUpRight size={16} /></Link></div></div></article>;
 }
 export default function Home() {
   const section = useRef<HTMLElement>(null);
@@ -42,7 +43,7 @@ export default function Home() {
   }, [reload]);
   const term = query.trim().toLowerCase();
   const parties = feed.parties.filter(party => (mode === 'all' || party.mode === mode) && `${party.party_name} ${party.field_name} ${party.address}`.toLowerCase().includes(term));
-  const fields = feed.fields.filter(field => `${field.field_name} ${field.address}`.toLowerCase().includes(term));
+  const fields = feed.fields.filter(field => `${field.field_name} ${fieldAddress(field)}`.toLowerCase().includes(term));
   const count = kind === 'parties' ? parties.length : fields.length;
   const filtered = Boolean(term || (kind === 'parties' && mode !== 'all'));
   return <main className="kh-main kh-main--home">
