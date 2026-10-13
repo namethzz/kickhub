@@ -31,6 +31,11 @@ export default function MyParties() {
     document.addEventListener('visibilitychange', refresh);
     return () => document.removeEventListener('visibilitychange', refresh);
   }, []);
+  // Opened without an explicit tab: if the user hosts nothing but has joined games, show those first.
+  useEffect(() => {
+    if (!feed || params.get('scope') || history || scope !== 'host') return;
+    if (feed.counts.host === 0 && feed.counts.joined > 0) setParams({ scope: 'joined', period: 'upcoming', page: '1' }, { replace: true });
+  }, [feed, params, history, scope, setParams]);
   function select(nextScope: Scope, nextHistory = history, nextPage = 1) {
     setParams({ scope: nextScope, period: nextHistory ? 'history' : 'upcoming', page: String(nextPage) });
   }
