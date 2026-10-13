@@ -8,9 +8,6 @@ import {
 import "./discovery.css";
 import "./features/parties/parties.css";
 import BottomNav from "./components/Navbar";
-import Login from "./components/Login";
-import Test1 from "./components/test";
-import Test2 from "./components/test2";
 import { lazy, Suspense } from "react";
 const AuthPage = lazy(() => import("./features/live/AuthPage"));
 import LiveFields from "./features/fields/LiveFields";
@@ -30,7 +27,6 @@ import Party from "./components/party";
 import Reserve from "./components/reserve";
 import Promptpay from "./components/prompypay";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SignUp from "./components/SignUp";
 import FindCreateParty from "./components/FindCreateParty";
 import FindandCreate from "./components/FindandCreate";
 import Notifications from "./features/live/LiveNotifications";
@@ -93,7 +89,6 @@ function AppRoutes() {
         <Route path="/party-requests/:partyId" element={<LiveRequests />} />
         <Route path="/legacy/team" element={<FindCreateParty />} />
         <Route path="/Findandcreate" element={<FindandCreate />} />
-        <Route path="/test/:id" element={<Test2 />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/historybuffet/:id" element={<Partybuffet />} />
         <Route path="/historyrole/:id" element={<PartyRole />} />
@@ -106,14 +101,6 @@ function AppRoutes() {
         <Route path="/countdown" element={<CountdownTimer />} />
         <Route path="/Owner" element={<Owner />} />
 
-        <Route
-          path="/test"
-          element={
-            <ProtectedRoute>
-              <Test1 />
-            </ProtectedRoute>
-          }
-        />
         <Route
           path="/party"
           element={
