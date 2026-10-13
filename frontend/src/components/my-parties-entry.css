@@ -1,31 +1,107 @@
-/* "ปาร์ตี้ของฉัน" entry points: header pill, mobile tab, home shortcut strip */
-.kh-nav-badge { display:inline-grid; place-items:center; min-width:20px; height:20px; padding:0 6px; border-radius:999px; background:#173c2b; color:#cdf46c; font-size:11px; font-weight:800; line-height:1; font-style:normal; }
-
-/* Desktop / iPad header: highlighted pill */
-.kh-app .kh-desktop-nav a.kh-nav-mine { height:auto; align-self:center; gap:8px; padding:8px 14px; border-radius:999px; background:#cdf46c; color:#142b22; font-weight:750; white-space:nowrap; transition:box-shadow .2s ease, transform .2s ease; }
-.kh-app .kh-desktop-nav a.kh-nav-mine:hover { box-shadow:0 4px 14px #cdf46c66; transform:translateY(-1px); }
-.kh-app .kh-desktop-nav a.kh-nav-mine.active { color:#142b22; box-shadow:0 0 0 2px #173c2b; }
-.kh-app .kh-desktop-nav a.kh-nav-mine.active:after { display:none; }
-.kh-app .kh-desktop-nav a.kh-nav-mine svg { flex-shrink:0; }
-
-/* Mobile bottom tab: icon with count badge */
-.kh-mobile-nav a .kh-nav-icon { position:relative; display:inline-flex; }
-.kh-mobile-nav a.kh-nav-mine { color:#285833; font-weight:750; }
-.kh-mobile-nav a.kh-nav-mine .kh-nav-badge { position:absolute; top:-7px; right:-11px; min-width:16px; height:16px; padding:0 4px; font-size:9px; box-shadow:0 0 0 2px #fffffff5; }
-
-/* Home shortcut strip */
-.kh-my-strip { display:flex; align-items:center; gap:14px; width:min(1240px, calc(100% - 36px)); margin:18px auto 0; padding:14px 18px; border-radius:16px; background:linear-gradient(100deg,#173c2b,#1f5237); color:#fff; text-decoration:none; border:1px solid #2c6a45; transition:transform .2s ease, box-shadow .2s ease; }
-.kh-my-strip:hover { transform:translateY(-1px); box-shadow:0 8px 24px #173c2b44; }
-.kh-my-strip:focus-visible { outline:3px solid #cdf46c; outline-offset:3px; }
-.kh-my-strip-icon { flex:0 0 auto; display:grid; place-items:center; width:44px; height:44px; border-radius:12px; background:#cdf46c; color:#142b22; }
-.kh-my-strip-copy { flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
-.kh-my-strip-copy strong { font-size:16px; font-weight:750; }
-.kh-my-strip-copy span { font-size:13px; color:#d5e6d2; line-height:1.5; }
-.kh-my-strip-cta { flex:0 0 auto; display:inline-flex; align-items:center; gap:6px; padding:10px 14px; border-radius:10px; background:#cdf46c; color:#142b22; font-size:13px; font-weight:750; white-space:nowrap; }
-@media (max-width:560px) {
-  .kh-my-strip { padding:12px 14px; gap:10px; }
-  .kh-my-strip-icon { width:38px; height:38px; }
-  .kh-my-strip-cta { padding:9px 11px; font-size:12px; }
-  .kh-my-strip-copy span { font-size:12px; }
+/* "ปาร์ตี้ของฉัน" entry points: header button, mobile tab, home shortcut strip.
+   Every colour is a token with explicit light + dark values. Do not use literal colours in
+   background/color/border here: the dark-theme build step would derive its own dark variant for them. */
+:root {
+  --kh-mine-tint: #e7f4c3;
+  --kh-mine-tint-hover: #d9ee9f;
+  --kh-mine-edge: #bddb6b;
+  --kh-mine-ink: #173c2b;
+  --kh-mine-solid: #cdf46c;
+  --kh-mine-solid-ink: #142b22;
+  --kh-mine-badge: #173c2b;
+  --kh-mine-badge-ink: #cdf46c;
+  --kh-mine-focus: #55872c;
+  --kh-strip-bg: linear-gradient(100deg, #173c2b, #1f5237);
+  --kh-strip-edge: #2c6a45;
+  --kh-strip-ink: #ffffff;
+  --kh-strip-sub: #d5e6d2;
 }
-@media (prefers-reduced-motion:reduce) { .kh-my-strip, .kh-app .kh-desktop-nav a.kh-nav-mine { transition:none; } .kh-my-strip:hover, .kh-app .kh-desktop-nav a.kh-nav-mine:hover { transform:none; } }
+html[data-theme="dark"] {
+  --kh-mine-tint: rgba(205, 244, 108, 0.16);
+  --kh-mine-tint-hover: rgba(205, 244, 108, 0.26);
+  --kh-mine-edge: rgba(205, 244, 108, 0.42);
+  --kh-mine-ink: #cdf46c;
+  --kh-mine-badge: #cdf46c;
+  --kh-mine-badge-ink: #142b22;
+  --kh-mine-focus: #8fc43a;
+  --kh-strip-bg: linear-gradient(100deg, #1a3a2a, #235a3b);
+  --kh-strip-edge: rgba(205, 244, 108, 0.28);
+}
+/* The home header floats over the dark hero photo in both themes, so it always uses the on-dark set. */
+.kh-app--home .kh-header {
+  --kh-mine-tint: rgba(205, 244, 108, 0.18);
+  --kh-mine-tint-hover: rgba(205, 244, 108, 0.3);
+  --kh-mine-edge: rgba(205, 244, 108, 0.5);
+  --kh-mine-ink: #cdf46c;
+  --kh-mine-badge: #cdf46c;
+  --kh-mine-badge-ink: #142b22;
+}
+
+.kh-nav-badge { display: inline-grid; place-items: center; box-sizing: border-box; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--kh-mine-badge); color: var(--kh-mine-badge-ink); font-size: 11px; font-weight: 800; line-height: 1; font-style: normal; font-variant-numeric: tabular-nums; }
+
+/* ---------- Header button (tablet + desktop) ---------- */
+.kh-app .kh-header .kh-nav-mine { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; flex: 0 0 auto; height: 40px; padding: 0 14px 0 12px; border: 1px solid var(--kh-mine-edge); border-radius: 999px; background: var(--kh-mine-tint); color: var(--kh-mine-ink); font-size: 14px; font-weight: 750; line-height: 1; white-space: nowrap; text-decoration: none; transition: background-color .18s ease, border-color .18s ease, transform .18s ease; }
+.kh-app .kh-header .kh-nav-mine svg { flex: 0 0 auto; width: 18px; height: 18px; }
+.kh-app .kh-header .kh-nav-mine:hover { background: var(--kh-mine-tint-hover); transform: translateY(-1px); }
+.kh-app .kh-header .kh-nav-mine:focus-visible { outline: 3px solid var(--kh-mine-focus); outline-offset: 3px; }
+.kh-app .kh-header .kh-nav-mine.active { background: var(--kh-mine-solid); border-color: transparent; color: var(--kh-mine-solid-ink); }
+.kh-app .kh-header .kh-nav-mine.active .kh-nav-badge { background: var(--kh-mine-solid-ink); color: var(--kh-mine-solid); }
+.kh-nav-label--short { display: none; }
+
+/* Wide laptop and up: full label. Below that the header is crowded, so the label shortens, then collapses. */
+@media (max-width: 1279px) {
+  .kh-app .kh-header-actions { gap: 14px; }
+  .kh-app .kh-owner-link { display: none !important; } /* still reachable from the home banner and footer */
+}
+@media (max-width: 1179px) {
+  .kh-app .kh-header .kh-nav-label--full { display: none; }
+  .kh-app .kh-header .kh-nav-label--short { display: inline; }
+  .kh-app .kh-header .kh-nav-mine { font-size: 13px; padding: 0 12px 0 10px; gap: 6px; }
+}
+@media (min-width: 761px) and (max-width: 899px) {
+  .kh-app .kh-header .kh-nav-label { display: none; }
+  .kh-app .kh-header .kh-nav-mine { width: 40px; padding: 0; }
+  .kh-app .kh-header .kh-nav-mine .kh-nav-badge { position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px; font-size: 10px; }
+  .kh-app .kh-header-actions { gap: 10px; }
+  .kh-app .kh-login span { display: none; } /* the account button keeps its aria-label; icon only on narrow tablets */
+}
+/* Phones use the bottom tab bar instead. */
+@media (max-width: 760px) {
+  .kh-app .kh-header .kh-nav-mine { display: none; }
+}
+
+/* ---------- Mobile bottom tab ---------- */
+/* Equal-width tabs so six items fit on 360px phones; labels truncate instead of colliding. */
+.kh-app .kh-mobile-nav { padding-left: max(4px, env(safe-area-inset-left)); padding-right: max(4px, env(safe-area-inset-right)); gap: 0; }
+.kh-app .kh-mobile-nav a { flex: 1 1 0; min-width: 0; padding-left: 2px; padding-right: 2px; text-align: center; }
+.kh-app .kh-mobile-nav a > span:last-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kh-mobile-nav .kh-nav-icon { position: relative; display: grid; place-items: center; box-sizing: border-box; width: 42px; height: 26px; margin: -2px 0 -3px; border-radius: 13px; background: var(--kh-mine-tint); color: var(--kh-mine-ink); transition: background-color .18s ease, color .18s ease; }
+.kh-mobile-nav .kh-nav-icon svg { width: 20px; height: 20px; font-size: 20px; }
+.kh-mobile-nav .kh-nav-mine .kh-nav-text { color: var(--kh-mine-ink); font-weight: 750; }
+.kh-mobile-nav a.kh-nav-mine.active .kh-nav-icon { background: var(--kh-mine-solid); color: var(--kh-mine-solid-ink); }
+.kh-mobile-nav .kh-nav-icon .kh-nav-badge { position: absolute; top: -7px; right: -5px; min-width: 16px; height: 16px; padding: 0 4px; font-size: 9px; }
+.kh-mobile-nav a.kh-nav-mine:focus-visible { outline: 3px solid var(--kh-mine-focus); outline-offset: 2px; border-radius: 10px; }
+
+/* ---------- Home shortcut strip ---------- */
+/* Width and centring come from `.kh-main--home > :not(.parallax)`, so it lines up with the rest of the page. */
+.kh-my-strip { display: flex; align-items: center; gap: 14px; box-sizing: border-box; margin-top: 20px; padding: 14px 16px 14px 14px; border: 1px solid var(--kh-strip-edge); border-radius: 18px; background: var(--kh-strip-bg); color: var(--kh-strip-ink); text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+.kh-my-strip:hover { transform: translateY(-1px); box-shadow: 0 10px 26px rgba(8, 28, 18, 0.28); }
+.kh-my-strip:focus-visible { outline: 3px solid var(--kh-mine-solid); outline-offset: 3px; }
+.kh-my-strip-icon { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--kh-mine-solid); color: var(--kh-mine-solid-ink); }
+.kh-my-strip-copy { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.kh-my-strip-copy strong { font-size: 16px; font-weight: 750; line-height: 1.4; color: var(--kh-strip-ink); }
+.kh-my-strip-copy span { font-size: 13px; line-height: 1.55; color: var(--kh-strip-sub); }
+.kh-my-strip-copy b { color: var(--kh-mine-solid); font-weight: 800; }
+.kh-my-strip-cta { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 12px; background: var(--kh-mine-solid); color: var(--kh-mine-solid-ink); font-size: 13px; font-weight: 750; white-space: nowrap; }
+@media (max-width: 560px) {
+  .kh-my-strip { gap: 11px; padding: 12px; border-radius: 16px; }
+  .kh-my-strip-icon { width: 40px; height: 40px; border-radius: 12px; }
+  .kh-my-strip-copy strong { font-size: 15px; }
+  .kh-my-strip-copy span { font-size: 12px; }
+  .kh-my-strip-cta { width: 36px; min-height: 36px; padding: 0; border-radius: 999px; } /* arrow only */
+  .kh-my-strip-cta-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kh-app .kh-header .kh-nav-mine, .kh-mobile-nav .kh-nav-icon, .kh-my-strip { transition: none; }
+  .kh-app .kh-header .kh-nav-mine:hover, .kh-my-strip:hover { transform: none; }
+}
