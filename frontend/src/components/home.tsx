@@ -5,6 +5,7 @@ import { ArrowRight, ArrowUpRight, MapPin, Clock, Search, Calendar, Users, Shiel
 import { api, type DiscoveryFeed, type DiscoveryParty, type LiveField } from '@/lib/api';
 import { ParallaxComponent } from '@/components/ui/parallax-scrolling';
 import FieldPhoto from '@/features/fields/FieldPhoto';
+import { PartyCover } from '@/features/live/PartyCover';
 import { modeInfo } from '@/features/parties/party-model';
 import './home-live.css';
 import { PolicyLinks } from '@/features/policies/PolicyPages';
@@ -15,13 +16,16 @@ const money = (value: number) => value.toLocaleString('th-TH');
 
 function PartyCard({ party }: { party: DiscoveryParty }) {
   const available = Math.max(0, party.capacity - party.player_count);
-  return <article className={`kh-match-card kh-tone-${party.mode === 'fixed' ? 'purple' : 'green'}`}>
-    <div className="kh-card-top"><span className="kh-tag">{modeInfo[party.mode].title}</span><span className="kh-format">{party.access === 'approval' ? <ShieldCheck size={15} /> : <Users size={15} />}{party.access === 'approval' ? 'หัวตี้อนุมัติ' : 'เปิดรับทุกคน'}</span></div>
-    <h3>{party.party_name}</h3><p className="kh-card-place"><MapPin size={15} />{party.field_name}</p><p className="kh-card-area">{party.address}</p>
-    <div className="kh-match-time"><span><Calendar size={15} />{formatDate(party.start_datetime)}</span><strong>{formatTime(party.start_datetime)}–{formatTime(party.end_datetime)}</strong></div>
-    <div className="kh-player-row"><Users size={24} /><div><strong>{available ? `ว่างอีก ${available} คน` : 'ผู้เล่นครบแล้ว'}</strong><small>{party.player_count}/{party.capacity} คนเข้าร่วม</small></div></div>
-    <div className="kh-progress" role="meter" aria-label="จำนวนผู้เล่น" aria-valuenow={party.player_count} aria-valuemin={0} aria-valuemax={party.capacity}><span style={{ width: `${Math.min(100, party.player_count / party.capacity * 100)}%` }} /></div>
-    <div className="kh-card-footer"><p><strong>฿{money(party.price)}</strong><small> / คน</small></p><Link className="kh-card-button" to={`/parties/${party._id}`}>ดูปาร์ตี้ <ArrowUpRight size={16} /></Link></div>
+  const approval = party.access === 'approval';
+  return <article className={`kh-match-card kh-match-card--media kh-tone-${party.mode === 'fixed' ? 'purple' : 'green'}`}>
+    <PartyCover key={party.cover_url || party._id} src={party.cover_url}><div className="party-card-media-top"><span className="party-pill">{modeInfo[party.mode].title}</span><span className="party-card-chip">{approval ? <ShieldCheck size={13} /> : <Users size={13} />}{approval ? 'หัวตี้อนุมัติ' : 'เปิดรับทุกคน'}</span></div></PartyCover>
+    <div className="kh-match-body">
+      <h3>{party.party_name}</h3><p className="kh-card-place"><MapPin size={15} />{party.field_name}</p><p className="kh-card-area">{party.address}</p>
+      <div className="kh-match-time"><span><Calendar size={15} />{formatDate(party.start_datetime)}</span><strong>{formatTime(party.start_datetime)}–{formatTime(party.end_datetime)}</strong></div>
+      <div className="kh-player-row"><Users size={24} /><div><strong>{available ? `ว่างอีก ${available} คน` : 'ผู้เล่นครบแล้ว'}</strong><small>{party.player_count}/{party.capacity} คนเข้าร่วม</small></div></div>
+      <div className="kh-progress" role="meter" aria-label="จำนวนผู้เล่น" aria-valuenow={party.player_count} aria-valuemin={0} aria-valuemax={party.capacity}><span style={{ width: `${Math.min(100, party.player_count / party.capacity * 100)}%` }} /></div>
+      <div className="kh-card-footer"><p><strong>฿{money(party.price)}</strong><small> / คน</small></p><Link className="kh-card-button" to={`/parties/${party._id}`}>ดูปาร์ตี้ <ArrowUpRight size={16} /></Link></div>
+    </div>
   </article>;
 }
 function FieldCard({ field }: { field: LiveField }) {
