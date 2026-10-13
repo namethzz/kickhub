@@ -2,12 +2,15 @@ import { api, type PublicPlayer } from './api';
 import { coverRect } from './image-fit';
 
 export type ImageKind = 'avatar' | 'cover';
+// 'party' is the 16:9 cover photo of a party; it is uploaded with uploadPartyCover, not uploadImage.
+export type PrepareKind = ImageKind | 'party';
 export type SocialProvider = 'google' | 'facebook';
 
 // Output sizes and byte caps mirror Backend/services/profileImageService.js (avatar 1 MB, cover 2 MB).
-export const IMAGE_SPEC: Record<ImageKind, { width: number; height: number; maxBytes: number }> = {
+export const IMAGE_SPEC: Record<PrepareKind, { width: number; height: number; maxBytes: number }> = {
   avatar: { width: 512, height: 512, maxBytes: 1024 * 1024 },
   cover: { width: 1200, height: 400, maxBytes: 2 * 1024 * 1024 },
+  party: { width: 1280, height: 720, maxBytes: 2 * 1024 * 1024 },
 };
 export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 // The original may be large (phone photos); only the resized copy is uploaded.
@@ -38,7 +41,7 @@ const toBlob = (canvas: HTMLCanvasElement, quality: number) =>
   new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
 
 /** Center-crops and shrinks the chosen photo to a JPEG small enough for the API. */
-export async function prepareImage(file: File, kind: ImageKind): Promise<Blob> {
+export async function prepareImage(file: File, kind: PrepareKind): Promise<Blob> {
   if (!ACCEPTED_TYPES.includes(file.type)) throw new Error('รองรับเฉพาะไฟล์ JPG, PNG หรือ WebP');
   if (file.size > MAX_SOURCE_BYTES) throw new Error('ไฟล์รูปใหญ่เกินไป กรุณาเลือกรูปที่เล็กกว่า 20 MB');
   const spec = IMAGE_SPEC[kind];
@@ -67,6 +70,8 @@ export async function prepareImage(file: File, kind: ImageKind): Promise<Blob> {
 
 export const uploadImage = (kind: ImageKind, blob: Blob) =>
   api<PublicPlayer>(`/api/v2/me/${kind}`, { method: 'PUT', headers: { 'Content-Type': blob.type }, body: blob });
+export const uploadPartyCover = (partyId: string, blob: Blob) =>
+  api<{ cover_url: string }>(`/api/v2/parties/${partyId}/cover`, { method: 'PUT', headers: { 'Content-Type': blob.type }, body: blob });
 export const removeImage = (kind: ImageKind) => api<PublicPlayer>(`/api/v2/me/${kind}`, { method: 'DELETE' });
 export const importSocialPhoto =(provider: SocialProvider) =>
   api<PublicPlayer>('/api/v2/me/avatar/social', { method: 'POST', body: JSON.stringify({ provider }) });

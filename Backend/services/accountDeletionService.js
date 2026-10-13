@@ -3,6 +3,7 @@ const Field = require('../models/Field');
 const Post = require('../models/Post');
 const Reservation = require('../models/Reservation');
 const ProfileImage = require('../models/ProfileImage');
+const PartyImage = require('../models/PartyImage');
 
 async function eraseAccount(userId, session) {
   const options = { session };
@@ -14,6 +15,7 @@ async function eraseAccount(userId, session) {
     $set: { status: 'cancelled' }, $unset: { post_id: '' },
   }, options);
   await Reservation.deleteMany({ user_id: user._id }, options);
+  await PartyImage.deleteMany({ post_id: { $in: hostedIds } }, options);
   await Post.deleteMany({ user_id: user._id }, options);
   await Post.updateMany({ $or: [
     { 'participants.user_id': user._id }, { 'join_requests.user_id': user._id },
