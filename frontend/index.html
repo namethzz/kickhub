@@ -5,6 +5,10 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image" href="/KHlogo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#f7f9f5" />
+  <!-- Set the theme before first paint so dark-mode users never see a white flash. Keep in sync with src/lib/theme.js. -->
+  <script>try{var c=localStorage.getItem('kh-theme');var d=c==='dark'||(c!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light';var m=document.querySelector('meta[name="theme-color"]');if(m&&d)m.setAttribute('content','#0d1511')}catch(e){}</script>
   <title>Kickhub — หาเพื่อนเตะบอล</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

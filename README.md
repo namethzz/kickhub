@@ -74,6 +74,14 @@ Vite proxy ส่ง `/api` ไป `http://127.0.0.1:3000` หน้า login/re
 
 ออกแบบเน้นมือถือ touch target 44–48px, input 16px, safe-area สำหรับเมนูล่าง; iPad/desktop ใช้ความกว้างและสองคอลัมน์ตามพื้นที่ Hero ใช้ GSAP/ScrollTrigger และ component parallax ที่ผู้ใช้ให้มา รูปสนาม `/hero-stadium-v2.png` มาจากรูปอ้างอิงของผู้ใช้ Desktop ใช้ Lenis; touch ใช้ native scroll และรองรับ reduced motion
 
+## Dark mode
+
+เลือกธีมได้ 3 แบบ: สว่าง, มืด และตามระบบ (ตามค่าของอุปกรณ์) ปุ่มสลับอยู่ที่แถบด้านบน และตัวเลือก 3 แบบอยู่ในหน้าโปรไฟล์ ค่าที่เลือกเองเก็บใน `localStorage` ชื่อ `kh-theme` ส่วน "ตามระบบ" ไม่เก็บค่าและตามอุปกรณ์แบบสด สคริปต์ใน `frontend/index.html` ตั้งธีมก่อนวาดหน้าเว็บ จึงไม่มีแสงขาววาบ
+
+- สีของโหมดมืดไม่ได้เขียนมือทีละไฟล์ `frontend/vite-plugins/dark-theme.js` (PostCSS) สร้างกฎ `html[data-theme="dark"] …` ให้ทุกกฎที่มีสีใน `src/**/*.css` ตอน build โดย CSS โหมดสว่างยังเป็นต้นฉบับเดียว ไม่มีไฟล์ที่สร้างถูก commit
+- ตัวแปรสีของ shadcn/Tailwind และปุ่มสลับอยู่ใน `frontend/src/theme.css`
+- เพิ่มสีใหม่ใน CSS ตามปกติได้เลย ปุ่มสีเขียวมะนาวจะคงตัวอักษรสีเข้มโดยอัตโนมัติ ถ้าสีใดผิดเพี้ยนในโหมดมืด ให้เพิ่มกฎ `html[data-theme="dark"] .ชื่อคลาส` ใน `theme.css` ทับได้
+
 ## ตรวจสอบ
 
 ```bash
