@@ -3,6 +3,7 @@ import { FiHome, FiUsers, FiMapPin, FiArrowUpRight, FiUser, FiPlusCircle } from 
 import BrandMark from './BrandMark';
 import NotificationBell from '../features/live/NotificationBell';
 import ThemeToggle from './ThemeToggle';
+import useSoftKeyboardOpen from './useSoftKeyboardOpen';
 const items = [
   { name: 'หน้าหลัก', icon: FiHome, path: '/home' },
   { name: 'ค้นหาปาร์ตี้', icon: FiUsers, path: '/team' },
@@ -10,6 +11,7 @@ const items = [
   { name: 'ค้นหาสนาม', icon: FiMapPin, path: '/field' },
 ];
 export default function Navbar() {
+  const keyboardOpen = useSoftKeyboardOpen();
   return <>
     <header className="kh-header">
       <div className="kh-header-inner">
@@ -18,7 +20,7 @@ export default function Navbar() {
         <div className="kh-header-actions"><ThemeToggle /><NotificationBell /><Link className="kh-owner-link" to="/Owner">สำหรับเจ้าของสนาม <FiArrowUpRight /></Link><Link className="kh-login" to="/profile"><FiUser /><span>บัญชีของฉัน</span></Link></div>
       </div>
     </header>
-    <nav className="kh-mobile-nav" aria-label="เมนูมือถือ">
+    <nav className="kh-mobile-nav" aria-label="เมนูมือถือ" hidden={keyboardOpen}>
       {items.map(({ icon: Icon, ...item }) => <NavLink key={item.path} to={item.path}><Icon /><span>{item.name}</span></NavLink>)}
       <NavLink to="/profile"><FiUser /><span>โปรไฟล์</span></NavLink>
     </nav>

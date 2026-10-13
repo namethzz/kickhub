@@ -76,7 +76,10 @@ export function ParallaxComponent({ imageSrc = '/hero-stadium-v2.png', targetRef
     if (!target) return;
     if (lenisRef.current) lenisRef.current.scrollTo(target, { offset: -24 });
     else target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
-    target.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true });
+    // Let touch users choose when to open the keyboard after scrolling to matches.
+    if (window.matchMedia('(min-width: 1025px) and (pointer: fine)').matches) {
+      target.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true });
+    }
   };
 
   return (
