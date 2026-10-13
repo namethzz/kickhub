@@ -1,5 +1,11 @@
 /* Shared type and spacing for the live app at every viewport size. */
 html { font-size:16px; scroll-padding-top:24px; }
+body { color:var(--foreground); }
+/* Keep supporting text comfortable to read without changing the visual identity. */
+.kh-app small,.kh-app .party-help,.kh-app .owner-footnote { font-size:13px; line-height:1.7; }
+.kh-app label { line-height:1.6; }
+.kh-app input,.kh-app select,.kh-app textarea { font-size:16px; line-height:1.5; }
+.kh-app :focus-visible { outline-offset:3px; }
 body { font-family:'Noto Sans Thai','Roboto',sans-serif; font-weight:400; line-height:1.65; -webkit-text-size-adjust:100%; }
 #root,.kh-app { width:100%; min-height:100svh; }
 #root { max-width:none; margin:0; padding:0; text-align:left; }
@@ -12,7 +18,7 @@ img { max-width:100%; }
 .kh-app .kh-button { min-height:46px; line-height:1.5; gap:8px; white-space:normal; text-align:center; }
 .kh-app .kh-header-inner { max-width:none; padding-inline:clamp(20px,4vw,72px); gap:clamp(18px,3vw,42px); }
 .kh-app .kh-brand { font-family:'Roboto','Noto Sans Thai',sans-serif; font-size:27px; font-weight:700; letter-spacing:-1px; flex-shrink:0; }
-.kh-app .kh-desktop-nav a { font-size:14px; }
+.kh-app .kh-desktop-nav a { font-size:15px; }
 .kh-app .kh-login,.kh-app .kh-owner-link { font-size:14px; white-space:nowrap; }
 .kh-app .party-app { line-height:1.75; }
 .kh-app .party-page-head p,.kh-app .party-location,.kh-app .owner-intro,.kh-app .owner-footnote { font-size:14px; line-height:1.8; }
@@ -22,7 +28,7 @@ img { max-width:100%; }
 .kh-app .party-search { min-height:52px; }
 .kh-app .party-search input { min-width:0; font-size:16px; }
 .kh-app .party-form-section label { font-size:14px; }
-.kh-app .party-help { font-size:12px; }
+.kh-app .party-help { font-size:13px; }
 .kh-app .party-main-tabs button { min-height:46px; font-size:14px; }
 .kh-app .owner-page:not(.owner-page--form) { max-width:none; padding:32px clamp(20px,4vw,72px) 112px; }
 .kh-app .owner-welcome { padding:clamp(24px,4vw,48px); border-radius:24px; }
@@ -39,7 +45,7 @@ img { max-width:100%; }
 @media(max-width:1100px) {
  .kh-app .kh-header-inner { gap:20px; }
  .kh-app .kh-desktop-nav { gap:16px; }
- .kh-app .kh-desktop-nav a { font-size:12px; }
+ .kh-app .kh-desktop-nav a { font-size:13px; }
  .kh-app .kh-header-actions { gap:12px; }
  .kh-app .kh-owner-link { display:none; }
  .kh-app .owner-page .party-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
@@ -49,7 +55,7 @@ img { max-width:100%; }
  .kh-app .kh-login { font-size:12px; }
  .kh-app .kh-brand { font-size:24px; }
  .kh-app .kh-mobile-nav { padding-bottom:max(12px,env(safe-area-inset-bottom)); }
- .kh-app .kh-mobile-nav a { font-size:10px; min-width:0; line-height:1.4; }
+ .kh-app .kh-mobile-nav a { font-size:11px; min-width:0; line-height:1.5; }
  .kh-app .owner-page:not(.owner-page--form) { padding:20px 16px calc(112px + env(safe-area-inset-bottom)); }
  .kh-app .owner-stats { gap:8px; }
  .kh-app .owner-stats>div { padding:16px 12px; }
