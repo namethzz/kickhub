@@ -1,0 +1,9 @@
+.party-detail-cover{margin:18px 0 20px;border-radius:24px;overflow:hidden}
+.party-detail-cover .party-card-media{--media-scrim:linear-gradient(180deg,#06120b38 0%,#06120b14 32%,#06120bd9 100%);display:flex;flex-direction:column;justify-content:space-between;gap:64px;aspect-ratio:auto;min-height:clamp(240px,42vw,410px);padding:clamp(20px,4vw,32px)}
+.party-detail-cover .party-card-media>img{position:absolute;inset:0}
+.party-detail-cover-meta,.party-detail-cover-title{position:relative;z-index:1}
+.party-detail-cover-meta{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.party-detail-cover-meta .party-card-chip{flex-shrink:0}
+.party-detail-cover-title>span{display:block;font-size:10px;font-weight:600;letter-spacing:2px;color:#cdf46c;margin-bottom:8px}
+.kh-app .party-detail-cover h1{margin:0;color:#fff;font-size:clamp(24px,4vw,38px);line-height:1.4;overflow-wrap:anywhere;text-wrap:balance}
+@media(max-width:760px){.party-detail-cover{border-radius:18px;margin-top:12px}.party-detail-cover .party-card-media{gap:56px;min-height:240px}.party-detail-cover-meta .party-card-chip{font-size:10px}.party-detail-cover-title>span{font-size:9px;letter-spacing:1.6px}}

@@ -19,12 +19,12 @@ function PitchFallback() {
 }
 
 /** 16:9 media area for a party card: the cover photo, or a pitch drawing. Children are overlaid on top (badges, chips). */
-export function PartyCover({ src, children }: { src?: string; children?: ReactNode }) {
+export function PartyCover({ src, children, loading = 'lazy' }: { src?: string; children?: ReactNode; loading?: 'lazy' | 'eager' }) {
   const [failed, setFailed] = useState(false);
   const url = assetUrl(src);
   return <div className="party-card-media">
     {url && !failed
-      ? <img src={url} alt="" loading="lazy" decoding="async" onError={() => setFailed(true)} />
+      ? <img src={url} alt="" loading={loading} decoding="async" onError={() => setFailed(true)} />
       : <PitchFallback />}
     {children}
   </div>;
