@@ -1,0 +1,31 @@
+/* "ปาร์ตี้ของฉัน" entry points: header pill, mobile tab, home shortcut strip */
+.kh-nav-badge { display:inline-grid; place-items:center; min-width:20px; height:20px; padding:0 6px; border-radius:999px; background:#173c2b; color:#cdf46c; font-size:11px; font-weight:800; line-height:1; font-style:normal; }
+
+/* Desktop / iPad header: highlighted pill */
+.kh-app .kh-desktop-nav a.kh-nav-mine { height:auto; align-self:center; gap:8px; padding:8px 14px; border-radius:999px; background:#cdf46c; color:#142b22; font-weight:750; white-space:nowrap; transition:box-shadow .2s ease, transform .2s ease; }
+.kh-app .kh-desktop-nav a.kh-nav-mine:hover { box-shadow:0 4px 14px #cdf46c66; transform:translateY(-1px); }
+.kh-app .kh-desktop-nav a.kh-nav-mine.active { color:#142b22; box-shadow:0 0 0 2px #173c2b; }
+.kh-app .kh-desktop-nav a.kh-nav-mine.active:after { display:none; }
+.kh-app .kh-desktop-nav a.kh-nav-mine svg { flex-shrink:0; }
+
+/* Mobile bottom tab: icon with count badge */
+.kh-mobile-nav a .kh-nav-icon { position:relative; display:inline-flex; }
+.kh-mobile-nav a.kh-nav-mine { color:#285833; font-weight:750; }
+.kh-mobile-nav a.kh-nav-mine .kh-nav-badge { position:absolute; top:-7px; right:-11px; min-width:16px; height:16px; padding:0 4px; font-size:9px; box-shadow:0 0 0 2px #fffffff5; }
+
+/* Home shortcut strip */
+.kh-my-strip { display:flex; align-items:center; gap:14px; width:min(1240px, calc(100% - 36px)); margin:18px auto 0; padding:14px 18px; border-radius:16px; background:linear-gradient(100deg,#173c2b,#1f5237); color:#fff; text-decoration:none; border:1px solid #2c6a45; transition:transform .2s ease, box-shadow .2s ease; }
+.kh-my-strip:hover { transform:translateY(-1px); box-shadow:0 8px 24px #173c2b44; }
+.kh-my-strip:focus-visible { outline:3px solid #cdf46c; outline-offset:3px; }
+.kh-my-strip-icon { flex:0 0 auto; display:grid; place-items:center; width:44px; height:44px; border-radius:12px; background:#cdf46c; color:#142b22; }
+.kh-my-strip-copy { flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.kh-my-strip-copy strong { font-size:16px; font-weight:750; }
+.kh-my-strip-copy span { font-size:13px; color:#d5e6d2; line-height:1.5; }
+.kh-my-strip-cta { flex:0 0 auto; display:inline-flex; align-items:center; gap:6px; padding:10px 14px; border-radius:10px; background:#cdf46c; color:#142b22; font-size:13px; font-weight:750; white-space:nowrap; }
+@media (max-width:560px) {
+  .kh-my-strip { padding:12px 14px; gap:10px; }
+  .kh-my-strip-icon { width:38px; height:38px; }
+  .kh-my-strip-cta { padding:9px 11px; font-size:12px; }
+  .kh-my-strip-copy span { font-size:12px; }
+}
+@media (prefers-reduced-motion:reduce) { .kh-my-strip, .kh-app .kh-desktop-nav a.kh-nav-mine { transition:none; } .kh-my-strip:hover, .kh-app .kh-desktop-nav a.kh-nav-mine:hover { transform:none; } }

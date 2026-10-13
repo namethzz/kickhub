@@ -1,7 +1,9 @@
 import { hasFieldPrice, fieldHours, fieldAddress } from '@/features/fields/field-display';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight, MapPin, Clock, Search, Calendar, Users, ShieldCheck, Goal } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, MapPin, Clock, Search, Calendar, CalendarDays, Users, ShieldCheck, Goal } from 'lucide-react';
+import useMyPartyCounts, { upcomingTotal } from '@/components/useMyPartyCounts';
+import './my-parties-entry.css';
 import { api, type DiscoveryFeed, type DiscoveryParty, type LiveField } from '@/lib/api';
 import { ParallaxComponent } from '@/components/ui/parallax-scrolling';
 import FieldPhoto from '@/features/fields/FieldPhoto';
@@ -13,6 +15,18 @@ import { PolicyLinks } from '@/features/policies/PolicyPages';
 const formatDate = (value: string) => new Date(value).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
 const formatTime = (value: string) => new Date(value).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
 const money = (value: number) => value.toLocaleString('th-TH');
+
+/** Shortcut for signed-in players who already have upcoming games; hidden otherwise. */
+function MyPartiesStrip() {
+  const counts = useMyPartyCounts();
+  const total = upcomingTotal(counts);
+  if (!counts || total === 0) return null;
+  return <Link className="kh-my-strip" to={counts.joined > 0 ? '/my-parties?scope=joined&period=upcoming' : '/my-parties'}>
+    <span className="kh-my-strip-icon" aria-hidden="true"><CalendarDays size={22} /></span>
+    <span className="kh-my-strip-copy"><strong>ปาร์ตี้ของฉัน · {total} นัดที่กำลังจะมาถึง</strong><span>เข้าร่วม {counts.joined} นัด · เป็นหัวตี้ {counts.host} นัด</span></span>
+    <span className="kh-my-strip-cta">ดูทั้งหมด <ArrowUpRight size={16} /></span>
+  </Link>;
+}
 
 function PartyCard({ party }: { party: DiscoveryParty }) {
   const available = Math.max(0, party.capacity - party.player_count);
@@ -54,6 +68,7 @@ export default function Home() {
   return <main className="kh-main kh-main--home">
     <ParallaxComponent targetRef={section} />
     <div className="kh-how"><span><b>01</b> หาเกมที่ใช่</span><i /><span><b>02</b> เลือกโหมดและทีม</span><i /><span><b>03</b> เจอกันที่สนาม <Goal /></span></div>
+    <MyPartiesStrip />
     <section ref={section} className="kh-discovery" aria-labelledby="discovery-title">
       <div className="kh-section-heading"><div><span className="kh-eyebrow">GOOD GAMES. GREAT COMPANY.</span><h2 id="discovery-title">{kind === 'parties' ? 'หาเพื่อน ลงสนาม' : 'สนามสำหรับเกมถัดไป'}{!loading && !error && <span className="kh-count">{count}</span>}</h2></div><Link className="kh-button kh-primary" to="/create-party">สร้างปาร์ตี้ <ArrowUpRight size={17} /></Link></div>
       <div className="kh-home-tabs" role="group" aria-label="เลือกรายการ"><button aria-pressed={kind === 'parties'} className={kind === 'parties' ? 'active' : ''} onClick={() => setKind('parties')}><Users size={19} />ค้นหาปาร์ตี้</button><button aria-pressed={kind === 'fields'} className={kind === 'fields' ? 'active' : ''} onClick={() => setKind('fields')}><Goal size={19} />ค้นหาสนาม</button></div>
