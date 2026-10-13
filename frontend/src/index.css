@@ -59,3 +59,18 @@
   --color-input: var(--input); --color-ring: var(--ring);
   --radius-sm: calc(var(--radius) - 4px); --radius-md: calc(var(--radius) - 2px); --radius-lg: var(--radius);
 }
+
+/* Prevent selecting / copying page content. Form fields stay usable. */
+html, body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+input, textarea, select, [contenteditable=""], [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+img, svg, a {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
