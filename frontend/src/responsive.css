@@ -64,3 +64,8 @@ img { max-width:100%; }
 .kh-app .kh-field-price-footer strong { font-size:22px; line-height:1.6; }
 .kh-app .kh-field-price-note { display:block; font-size:12px; line-height:1.8; color:#6b775f; font-weight:400; margin-top:6px; }
 .kh-app .kh-field-price-footer .kh-card-button { flex-shrink:0; }
+/* Match-card footer: keep the "ดูปาร์ตี้" button intact when the price is long */
+.kh-app .kh-match-card .kh-card-footer { flex-wrap:wrap; row-gap:12px; }
+.kh-app .kh-match-card .kh-card-footer p { min-width:0; max-width:100%; }
+.kh-app .kh-match-card .kh-card-footer .kh-card-button { flex:0 0 auto; white-space:nowrap; margin-left:auto; }
+.kh-app .kh-match-card .kh-card-footer .kh-card-button svg { flex-shrink:0; }
