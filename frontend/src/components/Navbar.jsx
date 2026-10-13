@@ -1,5 +1,5 @@
 import { NavLink, Link } from 'react-router-dom';
-import { FiHome, FiUsers, FiMapPin, FiArrowUpRight, FiUser, FiPlusCircle, FiCalendar } from 'react-icons/fi';
+import { FiHome, FiUsers, FiMapPin, FiArrowUpRight, FiUser, FiPlus, FiCalendar } from 'react-icons/fi';
 import BrandMark from './BrandMark';
 import NotificationBell from '../features/live/NotificationBell';
 import ThemeToggle from './ThemeToggle';
@@ -9,7 +9,7 @@ import './my-parties-entry.css';
 const items = [
   { name: 'หน้าหลัก', icon: FiHome, path: '/home' },
   { name: 'ค้นหาปาร์ตี้', icon: FiUsers, path: '/team' },
-  { name: 'สร้างปาร์ตี้', icon: FiPlusCircle, path: '/create-party' },
+  { name: 'สร้างปาร์ตี้', icon: FiPlus, path: '/create-party' },
   { name: 'ค้นหาสนาม', icon: FiMapPin, path: '/field' },
 ];
 const myParties = { name: 'ปาร์ตี้ของฉัน', short: 'ตี้ของฉัน', icon: FiCalendar, path: '/my-parties' };
@@ -37,10 +37,11 @@ export default function Navbar() {
       </div>
     </header>
     <nav className="kh-mobile-nav" aria-label="เมนูมือถือ" hidden={keyboardOpen}>
-      {items.slice(0, 3).map(({ icon: Icon, ...item }) => <NavLink key={item.path} className={item.path === '/create-party' ? 'kh-nav-create' : undefined} to={item.path}><span className="kh-nav-icon"><Icon aria-hidden="true" /></span><span className="kh-nav-text">{item.name}</span></NavLink>)}
-      <NavLink className="kh-nav-mine" to={myParties.path} aria-label={mineLabel}><span className="kh-nav-icon"><MineIcon aria-hidden="true" />{badge}</span><span className="kh-nav-text" aria-hidden="true">{myParties.short}</span></NavLink>
-      {items.slice(3).map(({ icon: Icon, ...item }) => <NavLink key={item.path} to={item.path}><span className="kh-nav-icon"><Icon aria-hidden="true" /></span><span className="kh-nav-text">{item.name}</span></NavLink>)}
-      <NavLink to="/profile"><span className="kh-nav-icon"><FiUser aria-hidden="true" /></span><span className="kh-nav-text">โปรไฟล์</span></NavLink>
+      {[items[0], items[1], items[2], null, items[3]].map(item => {
+        if (!item) return <NavLink key={myParties.path} className="kh-nav-mine" to={myParties.path} aria-label={mineLabel}><span className="kh-nav-icon"><MineIcon aria-hidden="true" />{badge}</span><span className="kh-nav-text" aria-hidden="true">{myParties.name}</span></NavLink>;
+        const Icon = item.icon;
+        return <NavLink key={item.path} className={item.path === '/create-party' ? 'kh-nav-create' : undefined} to={item.path}><span className="kh-nav-icon"><Icon aria-hidden="true" /></span><span className="kh-nav-text">{item.name}</span></NavLink>;
+      })}
     </nav>
   </>;
 }
