@@ -70,13 +70,12 @@ html[data-theme="dark"] {
   .kh-app .kh-header .kh-nav-mine { display: none; }
 }
 
-/* ---------- Mobile dock ---------- */
-/* Phones get a floating five-slot dock instead of a flush six-tab bar: home, find a party, create (raised),
+/* ---------- Mobile tab bar ---------- */
+/* Phones get a five-slot bar, fixed flush to the bottom edge and opaque so it never looks like it floats: home, find a party, create (raised),
    my parties, find a field. Profile lives in the header's account button, so it is not repeated here.
-   The current page gets a short bar on the dock's top edge, echoing the underline in the desktop nav.
+   The current page gets a short bar on the top edge, echoing the underline in the desktop nav.
    Every rule starts with `html` so it outranks the dark-theme rules generated from discovery.css. */
 :root {
-  --kh-dock-bg: rgba(255, 255, 255, 0.94);
   --kh-dock-solid: #ffffff;
   --kh-dock-edge: #dfe6d8;
   --kh-tab-ink: #5b685f;
@@ -84,15 +83,13 @@ html[data-theme="dark"] {
   --kh-tab-bar: #2f7a43;
 }
 html[data-theme="dark"] {
-  --kh-dock-bg: rgba(23, 33, 27, 0.94);
   --kh-dock-solid: #17211b;
   --kh-dock-edge: #2a3a31;
   --kh-tab-ink: #a8b5ab;
   --kh-tab-ink-on: #cdf46c;
   --kh-tab-bar: #cdf46c;
 }
-html .kh-app nav.kh-mobile-nav { left: 10px; right: 10px; bottom: calc(8px + env(safe-area-inset-bottom)); box-sizing: border-box; align-items: stretch; justify-content: space-between; gap: 0; height: 64px; padding: 0 4px; border: 1px solid var(--kh-dock-edge); border-radius: 24px; background: var(--kh-dock-bg); box-shadow: 0 10px 30px rgba(14, 36, 25, 0.2), 0 2px 6px rgba(14, 36, 25, 0.08); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
-@media (min-width: 480px) and (max-width: 760px) { html .kh-app nav.kh-mobile-nav { left: 50%; right: auto; width: min(460px, calc(100% - 20px)); transform: translateX(-50%); } }
+html .kh-app nav.kh-mobile-nav { left: 0; right: 0; bottom: 0; box-sizing: border-box; align-items: stretch; justify-content: space-between; gap: 0; height: calc(64px + env(safe-area-inset-bottom)); padding: 0 max(4px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(4px, env(safe-area-inset-left)); border: 0; border-top: 1px solid var(--kh-dock-edge); border-radius: 0; background: var(--kh-dock-solid); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; transform: none; }
 html .kh-app nav.kh-mobile-nav a { position: relative; flex: 1 1 0; min-width: 0; justify-content: center; gap: 2px; padding: 0 2px; font-size: 11px; font-weight: 500; line-height: 1.3; color: var(--kh-tab-ink); text-align: center; border-radius: 18px; -webkit-tap-highlight-color: transparent; transition: color .18s ease, transform .12s ease; }
 html .kh-app nav.kh-mobile-nav a:active { transform: scale(0.95); }
 html .kh-app nav.kh-mobile-nav a.active { color: var(--kh-tab-ink-on); font-weight: 750; }
@@ -102,7 +99,7 @@ html .kh-app nav.kh-mobile-nav .kh-nav-icon { position: relative; display: grid;
 html .kh-app nav.kh-mobile-nav .kh-nav-icon svg { width: 23px; height: 23px; font-size: 23px; stroke-width: 2; }
 html .kh-app nav.kh-mobile-nav a.active .kh-nav-icon svg { stroke-width: 2.4; }
 html .kh-app nav.kh-mobile-nav .kh-nav-icon .kh-nav-badge { position: absolute; top: -4px; right: -2px; min-width: 18px; height: 18px; padding: 0 5px; font-size: 11px; box-shadow: 0 0 0 2px var(--kh-dock-solid); }
-/* Create is the one filled action: a lime disc lifted above the dock, its label still on the shared baseline. */
+/* Create is the one filled action: a lime disc lifted above the bar, its label still on the shared baseline. */
 html .kh-app nav.kh-mobile-nav a.kh-nav-create { color: var(--kh-tab-ink-on); font-weight: 650; }
 html .kh-app nav.kh-mobile-nav a.kh-nav-create::before { display: none; }
 html .kh-app nav.kh-mobile-nav a.kh-nav-create .kh-nav-icon { width: 54px; height: 54px; margin: -26px 0 0; border-radius: 50%; background: var(--kh-mine-solid); color: var(--kh-mine-solid-ink); box-shadow: 0 0 0 5px var(--kh-dock-solid), 0 8px 18px rgba(79, 120, 20, 0.35); }
