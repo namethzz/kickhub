@@ -64,8 +64,11 @@ img { max-width:100%; }
 .kh-app .kh-field-price-footer strong { font-size:22px; line-height:1.6; }
 .kh-app .kh-field-price-note { display:block; font-size:12px; line-height:1.8; color:#6b775f; font-weight:400; margin-top:6px; }
 .kh-app .kh-field-price-footer .kh-card-button { flex-shrink:0; }
-/* Match-card footer: keep the "ดูปาร์ตี้" button intact when the price is long */
-.kh-app .kh-match-card .kh-card-footer { flex-wrap:wrap; row-gap:12px; }
-.kh-app .kh-match-card .kh-card-footer p { min-width:0; max-width:100%; }
-.kh-app .kh-match-card .kh-card-footer .kh-card-button { flex:0 0 auto; white-space:nowrap; margin-left:auto; }
+/* Match-card footer: price + "ดูปาร์ตี้" always stay on one line */
+.kh-app .kh-match-card .kh-card-footer { flex-wrap:nowrap; }
+.kh-app .kh-match-card .kh-card-footer p { min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; }
+.kh-app .kh-match-card .kh-card-footer .kh-card-button { flex:0 0 auto; white-space:nowrap; }
 .kh-app .kh-match-card .kh-card-footer .kh-card-button svg { flex-shrink:0; }
+.kh-app .kh-match-card .kh-card-footer--long strong { font-size:18px; }
+.kh-app .kh-match-card .kh-card-footer--long small { font-size:9px; }
+.kh-app .kh-match-card .kh-card-footer--long .kh-card-button { padding:9px 11px; gap:6px; font-size:11px!important; min-height:40px; }

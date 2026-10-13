@@ -24,7 +24,7 @@ function PartyCard({ party }: { party: DiscoveryParty }) {
       <div className="kh-match-time"><span><Calendar size={15} />{formatDate(party.start_datetime)}</span><strong>{formatTime(party.start_datetime)}–{formatTime(party.end_datetime)}</strong></div>
       <div className="kh-player-row"><Users size={24} /><div><strong>{available ? `ว่างอีก ${available} คน` : 'ผู้เล่นครบแล้ว'}</strong><small>{party.player_count}/{party.capacity} คนเข้าร่วม</small></div></div>
       <div className="kh-progress" role="meter" aria-label="จำนวนผู้เล่น" aria-valuenow={party.player_count} aria-valuemin={0} aria-valuemax={party.capacity}><span style={{ width: `${Math.min(100, party.player_count / party.capacity * 100)}%` }} /></div>
-      <div className="kh-card-footer"><p><strong>฿{money(party.price)}</strong><small> / คน</small></p><Link className="kh-card-button" to={`/parties/${party._id}`}>ดูปาร์ตี้ <ArrowUpRight size={16} /></Link></div>
+      <div className={`kh-card-footer${money(party.price).length > 6 ? ' kh-card-footer--long' : ''}`}><p><strong>฿{money(party.price)}</strong><small> / คน</small></p><Link className="kh-card-button" to={`/parties/${party._id}`}>ดูปาร์ตี้ <ArrowUpRight size={16} /></Link></div>
     </div>
   </article>;
 }
