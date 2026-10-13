@@ -24,5 +24,5 @@ export default function SocialRoleChoice({ name, provider, initialRole, onComple
       {error && <p className="kh-auth-error" role="alert">{error}</p>}
       <Button type="submit" className="kh-auth-submit" disabled={!role || busy}>{busy ? <Loader2 className="animate-spin" size={19} /> : <ArrowRight size={19} />}{busy ? 'กำลังสร้างบัญชี…' : 'ยืนยันและสร้างบัญชี'}</Button></form>
     </div><div className="kh-auth-footer"><PolicyLinks /></div>
-  </section><aside className="kh-auth-art" aria-label="บรรยากาศฟุตบอล"><img src={`${import.meta.env.BASE_URL}auth-sports.webp`} alt="ลูกฟุตบอลติดตาข่ายในสนาม" /><div className="kh-auth-art-shade" /><div className="kh-auth-art-caption"><span>YOUR PLACE IN THE GAME</span><h2>เพื่อนร่วมเกม<br />หรือเจ้าของสนาม</h2><p>เริ่มในแบบที่ใช่สำหรับคุณ</p></div></aside></main>;
+  </section><aside className="kh-auth-art" aria-label="บรรยากาศฟุตบอล"><img src={`${import.meta.env.BASE_URL}auth-football.webp`} alt="ลูกฟุตบอลบนสนามหญ้า" /><div className="kh-auth-art-shade" /><div className="kh-auth-art-caption"><span>YOUR PLACE IN THE GAME</span><h2>เพื่อนร่วมเกม<br />หรือเจ้าของสนาม</h2><p>เริ่มในแบบที่ใช่สำหรับคุณ</p></div></aside></main>;
 }
