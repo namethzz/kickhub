@@ -1,0 +1,18 @@
+/* Party card with a cover photo. Colours on top of the photo use custom properties so light and dark look the same. */
+.party-card-media{--media-base:linear-gradient(135deg,#1d4a2c,#2f6d3b);--media-scrim:linear-gradient(180deg,rgba(6,18,11,.6) 0%,rgba(6,18,11,0) 45%,rgba(6,18,11,0) 70%,rgba(6,18,11,.28) 100%);--media-pill-bg:rgba(255,255,255,.94);--media-pill-ink:#2d4a1f;--media-chip-bg:rgba(8,22,14,.58);--media-chip-ink:#ffffff;--media-line:rgba(205,244,108,.55);position:relative;aspect-ratio:16/9;overflow:hidden;background-image:var(--media-base)}
+.party-card-media>img{display:block;width:100%;height:100%;object-fit:cover}
+.party-card-media::after{content:"";position:absolute;inset:0;background-image:var(--media-scrim);pointer-events:none}
+.party-card-media-fallback{position:absolute;inset:0;color:var(--media-line)}
+.party-card-media-fallback svg{display:block;width:100%;height:100%}
+.party-card-media-top{position:absolute;inset:12px 12px auto 12px;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.party-card-media .party-pill{background-color:var(--media-pill-bg);color:var(--media-pill-ink);font-size:11px;padding:6px 11px;border-radius:100px}
+.party-card-chip{display:inline-flex;align-items:center;gap:5px;min-width:0;padding:5px 11px;border-radius:100px;background-color:var(--media-chip-bg);color:var(--media-chip-ink);font-size:11px;font-weight:600;line-height:1.4;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+@media (prefers-reduced-motion:no-preference){.party-card-media>img{transition:transform .5s ease}.party-list-card:hover .party-card-media>img,.kh-match-card:hover .party-card-media>img{transform:scale(1.04)}}
+
+/* Home page card (.kh-match-card): the photo runs edge to edge, the text keeps the card's usual padding at each breakpoint. */
+.kh-match-card.kh-match-card--media{padding:0}
+.kh-match-card--media:before{display:none}
+.kh-match-body{padding:22px}
+.kh-match-card--media .kh-match-body h3{margin-top:0}
+@media(max-width:1050px){.kh-match-body{padding:18px}}
+@media(max-width:760px){.kh-match-body{padding:21px}}

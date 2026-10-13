@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { assetUrl } from '@/lib/profile-image';
+import './party-cover.css';
 
 // Minimal top-down pitch drawn in lines; shown when a party has no cover photo (or it fails to load).
 function PitchFallback() {
