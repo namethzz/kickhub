@@ -6,6 +6,7 @@ body { font-family:'Noto Sans Thai','Roboto',sans-serif; font-weight:400; line-h
 *,*::before,*::after { box-sizing:border-box; }
 button,input,select,textarea { font-family:inherit; }
 img { max-width:100%; }
+.kh-app .kh-mobile-nav[hidden] { display:none; }
 .kh-app h1,.kh-app h2,.kh-app h3 { line-height:1.45; letter-spacing:0; }
 .kh-app p { overflow-wrap:anywhere; }
 .kh-app .kh-button { min-height:46px; line-height:1.5; gap:8px; white-space:normal; text-align:center; }
