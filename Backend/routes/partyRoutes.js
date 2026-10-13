@@ -11,13 +11,14 @@ const { partyCard } = require('../services/discoveryService');
 const { partySearchQuery } = require('../services/partySearchService');
 const chat = require('../services/partyChatService');
 const images = require('../services/profileImageService');
+const partyImages = require('../services/partyImageService');
 const publicProfile = user => ({ _id: user._id, name: user.name, bio: user.bio, area: user.area, preferred_position: user.preferred_position, level: user.level, role: user.role, avatar_url: images.imageUrl(user, 'avatar'), cover_url: images.imageUrl(user, 'cover') });
 // Only the owner learns which provider photos they can switch to; the stored URLs themselves are never returned.
 const ownProfile = user => ({ ...publicProfile(user), email: user.email, avatar_source: user.avatar_source || '', social_photos: { google: !!user.social_photos?.google, facebook: !!user.social_photos?.facebook } });
 router.get('/discover', async (req, res) => {
   const [fields, parties] = await Promise.all([
     Field.find({ is_active: true }).select('field_name field_type address price image open close facilities price_note hours_note').sort({ createdAt: -1 }),
-    Post.find({ status: { $ne: 'cancelled' }, start_datetime: { $gt: new Date() } }).select('party_name mode access field_id field_name address start_datetime end_datetime price required_positions total_required_players participants').sort({ start_datetime: 1 }).limit(100),
+    Post.find({ status: { $ne: 'cancelled' }, start_datetime: { $gt: new Date() } }).select('party_name mode access field_id field_name address start_datetime end_datetime price required_positions total_required_players participants image_updated_at').sort({ start_datetime: 1 }).limit(100),
   ]);
   res.json({ fields, parties: parties.map(partyCard) });
 });
@@ -35,6 +36,11 @@ for (const kind of ['avatar', 'cover']) {
     res.set({ 'Content-Type': image.contentType, 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'", 'Cross-Origin-Resource-Policy': 'cross-origin' }).end(image.data);
   });
 }
+// Public like profile photos: an <img> tag cannot send the login token. The URL carries ?v=<timestamp> for caching.
+router.get('/parties/:id/cover', async (req, res) => {
+  const image = await partyImages.readCover(req.params.id);
+  res.set({ 'Content-Type': image.contentType, 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'", 'Cross-Origin-Resource-Policy': 'cross-origin' }).end(image.data);
+});
 router.use(auth);
 router.get('/notifications', async (req, res) => {
   const query = notificationService.pipeline(req.user._id, req.user.notifications_read_at, req.query);
@@ -84,6 +90,8 @@ for (const kind of ['avatar', 'cover']) {
   router.put(`/me/${kind}`, readImageBody, async (req, res) => res.json(ownProfile(await images.saveImage(req.user._id, kind, req.body))));
   router.delete(`/me/${kind}`, async (req, res) => res.json(ownProfile(await images.removeImage(req.user._id, kind))));
 }
+router.put('/parties/:id/cover', readImageBody, async (req, res) => res.json(await partyImages.saveCover(req.params.id, req.user._id, req.body)));
+router.delete('/parties/:id/cover', async (req, res) => res.json(await partyImages.removeCover(req.params.id, req.user._id)));
 router.post('/me/avatar/social', async (req, res) => res.json(ownProfile(await images.importSocialPhoto(req.user._id, req.body?.provider))));
 router.get('/fields', async (req,res) => res.json(await Field.find({is_active:true}).select('field_name field_type address price image open close facilities price_note hours_note').sort({createdAt:-1})));
 router.get('/fields/:id', async (req,res) => {

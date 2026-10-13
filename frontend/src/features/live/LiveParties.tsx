@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
-import { ChevronRight, Plus, Search, MapPin, Users, ArrowUpRight, SlidersHorizontal, Calendar, ChevronLeft } from 'lucide-react';
+import { ChevronRight, Plus, Search, MapPin, Users, ArrowUpRight, SlidersHorizontal, Calendar, ChevronLeft, ShieldCheck } from 'lucide-react';
 import { api, type LiveParty } from '@/lib/api';
 import { ModePicker } from '../parties/ModePicker';
+import { PartyCover } from './PartyCover';
 import { modeInfo, positions } from '../parties/party-model';
 import './party-search.css';
 export const when = (value: string) => new Date(value).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' });
@@ -62,7 +63,7 @@ export default function LiveParties() {
         <div className="party-list">{data.parties.map(party => {
           const remaining = Math.max(0, party.capacity - party.participants.length);
           return <article className="party-list-card" key={party._id}>
-            <div className="party-card-banner"><span className="party-pill">{modeInfo[party.mode].title}</span><span>{party.access === 'approval' ? 'หัวตี้อนุมัติก่อน' : 'เข้าร่วมได้ทันที'}</span></div>
+            <PartyCover key={party.cover_url || party._id} src={party.cover_url}><div className="party-card-media-top"><span className="party-pill">{modeInfo[party.mode].title}</span><span className="party-card-chip">{party.access === 'approval' ? <ShieldCheck size={13} /> : <Users size={13} />}{party.access === 'approval' ? 'หัวตี้อนุมัติก่อน' : 'เข้าร่วมได้ทันที'}</span></div></PartyCover>
             <div className="party-card-body"><h3>{party.party_name}</h3><p className="party-location"><MapPin size={14} />{party.field_name} · {party.address}</p>
               <p className="party-search-time"><Calendar size={16} />{new Date(party.start_datetime).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok', dateStyle: 'medium', timeStyle: 'short' })} · เวลาไทย</p>
               {party.mode === 'fixed' && <div className="party-card-tags">{party.required_positions.map(slot => { const free = Math.max(0, slot.amount - party.participants.filter(member => member.position === slot.position).length); return free > 0 && <span key={slot.position}>{positions.find(item => item.code === slot.position)?.name || slot.position} ว่าง {free}</span>; })}</div>}

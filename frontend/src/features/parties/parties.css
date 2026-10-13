@@ -2,3 +2,18 @@
 @media(max-width:1000px) and (min-width:761px){.kh-desktop-nav{gap:14px}.kh-desktop-nav a{font-size:11px}.kh-header-inner{gap:18px}}
 @media(max-width:760px){.party-app{padding:24px 18px 115px}.party-page-head{margin-bottom:20px}.party-app h1{font-size:27px}.party-page-head p{font-size:11px}.party-modes{gap:9px}.party-modes button{padding:16px;min-height:128px}.party-modes button.selected{padding:15px}.party-modes strong{font-size:16px}.party-modes small{font-size:10px}.party-list{grid-template-columns:1fr;gap:15px}.party-search input{font-size:16px}.party-list-card{border-radius:18px}.party-create-banner{padding:18px;flex-wrap:wrap}.party-create-banner>a{flex:1;justify-content:center}.party-sheet{inset:auto 0 0;margin:0;width:100%;max-width:none;max-height:90dvh;border-radius:24px 24px 0 0;padding:18px 21px max(21px,env(safe-area-inset-bottom))}.party-form-section{padding:19px}.party-form-actions{bottom:calc(63px + env(safe-area-inset-bottom));padding:13px 0}.party-steps{font-size:10px}.party-steps li{gap:5px;font-size:10px}.party-cost-estimate strong{font-size:23px}.party-card-bottom button{min-height:48px;padding:12px 17px}.kh-mobile-nav a[href='/create-party']>svg{background:#cdf46c;color:#25441d;border-radius:50%;padding:4px;width:29px;height:29px;margin-top:-4px}.kh-mobile-nav a{font-size:8px;padding:0 3px}.kh-discovery-actions .kh-demo-label{flex-basis:100%;width:fit-content}.party-create-page .party-modes strong{font-size:15px}.party-saved{padding:27px 21px}}
 @media(max-width:360px){.party-create-page .party-modes button{padding:12px}.party-create-page .party-modes button.selected{padding:11px}.party-modes small{font-size:9px}.party-form-grid{grid-template-columns:1fr}.party-card-bottom small{font-size:8px}}
+
+/* Party cover photo picker (create flow). Dark-mode rules are generated from these light ones. */
+.party-cover-section h2 small{font-size:11px;font-weight:500;color:#7c8c70;margin-left:6px}
+.party-cover-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;aspect-ratio:16/9;margin-top:14px;padding:16px;border:1.5px dashed #c5d3b8;border-radius:14px;background:#f6f9f1;color:#42632e;font-family:inherit;text-align:center;cursor:pointer;transition:background-color .2s,border-color .2s}
+.party-cover-empty:hover{background:#eff4e9;border-color:#a9c18f}
+.party-cover-empty strong{font-size:14px;font-weight:700}
+.party-cover-empty small{font-size:11px;color:#6c8060}
+.party-cover-preview{--cover-btn-bg:rgba(255,255,255,.94);--cover-btn-ink:#26391b;position:relative;margin-top:14px;border-radius:14px;overflow:hidden;aspect-ratio:16/9;background:#e5efda}
+.party-cover-preview img{display:block;width:100%;height:100%;object-fit:cover}
+.party-cover-actions{position:absolute;right:10px;bottom:10px;display:flex;gap:8px}
+.party-cover-actions button{min-height:36px;padding:0 14px;border:0;border-radius:100px;background-color:var(--cover-btn-bg);color:var(--cover-btn-ink);font-family:inherit;font-size:12px;font-weight:650;cursor:pointer}
+.party-cover-empty:focus-visible,.party-cover-actions button:focus-visible{outline:3px solid #8fc43a;outline-offset:2px}
+.party-review-cover{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin-bottom:14px}
+.party-cover-warning{margin:16px 0;padding:14px 16px;border:1px solid #f0d9a8;border-radius:12px;background:#fff6e5;color:#7a5410;font-size:13px;text-align:left}
+.party-cover-warning p{margin:0 0 10px}

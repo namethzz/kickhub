@@ -50,6 +50,8 @@ const postSchema = new mongoose.Schema(
 
     description: { type: String },
     image: { type: String },
+    // Cover photo bytes live in PartyImage; this only versions the cover URL.
+    image_updated_at: { type: Date },
 
     start_datetime: { type: Date, required: true },
     end_datetime: { type: Date, required: true },

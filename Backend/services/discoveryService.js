@@ -1,4 +1,4 @@
-const { capacity } = require('./partyService');
+const { capacity, coverUrl } = require('./partyService');
 
 // Public cards contain counts, never member lists or private join requests.
 function partyCard(post) {
@@ -8,6 +8,7 @@ function partyCard(post) {
     address: post.address, start_datetime: post.start_datetime,
     end_datetime: post.end_datetime, price: post.price,
     capacity: capacity(post), player_count: post.participants.length,
+    cover_url: coverUrl(post),
   };
 }
 module.exports = { partyCard };

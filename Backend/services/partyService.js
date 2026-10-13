@@ -136,13 +136,19 @@ async function cancelParty(id, actor, reason = '') {
     for (const request of post.join_requests) if (request.status === 'pending') { request.status = 'cancelled'; request.reviewed_at = post.cancelled_at; }
   });
 }
+// The ?v= version changes whenever the cover changes, so old URLs can be cached for good.
+function coverUrl(post) {
+  return post.image_updated_at ? `/api/v2/parties/${post._id}/cover?v=${new Date(post.image_updated_at).getTime()}` : '';
+}
 function publicParty(post, actor) {
   const result = post.toObject ? post.toObject() : { ...post };
   delete result.__v;
+  result.cover_url = coverUrl(post);
+  delete result.image_updated_at;
   delete result.notification_events;
   delete result.chat_messages;
   result.capacity = capacity(post);
   result.join_requests = String(post.user_id) === String(actor) ? result.join_requests : result.join_requests.filter(request => String(request.user_id) === String(actor));
   return result;
 }
-module.exports = { fail, objectId, capacity, hostOnly, hasSpace, mutate, createParty, joinParty, reviewRequest, leaveParty, updateParty, cancelParty, publicParty };
+module.exports = { fail, objectId, capacity, hostOnly, hasSpace, mutate, coverUrl, createParty, joinParty, reviewRequest, leaveParty, updateParty, cancelParty, publicParty };
