@@ -1,0 +1,93 @@
+/* Edit-profile dialog. Colours are literal hex so the dark-theme plugin can derive the dark counterpart. */
+html.pe-lock { overflow: hidden; }
+
+.profile-editor { margin: auto; padding: 0; border: 0; border-radius: 24px; width: min(560px, calc(100vw - 32px)); max-width: none; max-height: none; background: #ffffff; color: #172e24; font-family: inherit; overflow: hidden; box-shadow: 0 24px 64px #0a1a1244; }
+.profile-editor::backdrop { background: #0a1a12a6; }
+.profile-editor[open] { animation: pe-in 180ms ease-out; }
+.profile-editor form { display: flex; flex-direction: column; max-height: min(88vh, 860px); }
+@keyframes pe-in { from { opacity: 0; transform: translateY(12px) scale(.985); } to { opacity: 1; transform: none; } }
+
+.profile-editor .pe-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 12px 12px 20px; border-bottom: 1px solid #e0e6db; flex-shrink: 0; }
+.profile-editor .pe-title { margin: 0; font-size: 18px; font-weight: 750; line-height: 1.4; outline: none; }
+.profile-editor .pe-close { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; color: #172e24; }
+.profile-editor .pe-close:hover { background: #eef3ea; }
+
+.profile-editor .pe-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 28px; }
+.profile-editor .pe-photos { padding-bottom: 4px; }
+.profile-editor .player-cover { min-height: 128px; border-radius: 0; padding: 0; }
+.profile-editor .player-cover > span { display: none; }
+.profile-editor .player-avatar-wrap { margin: -40px 0 10px 20px; }
+.profile-editor .pe-photos .pe-hint { margin: 0 20px; }
+.profile-editor .pe-photo-error { margin: 12px 20px 0; }
+
+.profile-editor .pe-section { padding: 4px 20px 0; }
+.profile-editor .pe-section + .pe-section { margin-top: 12px; border-top: 1px solid #e0e6db; padding-top: 8px; }
+.profile-editor .pe-field { display: grid; gap: 6px; margin-top: 16px; }
+.profile-editor .pe-fieldset { border: 0; padding: 0; min-width: 0; margin-inline: 0; }
+.profile-editor .pe-label { padding: 0; font-size: 14px; font-weight: 650; color: #172e24; }
+.profile-editor .pe-fieldset .pe-label { margin-bottom: 8px; }
+.profile-editor .pe-hint { margin: 0; font-size: 12px; line-height: 1.6; color: #66756c; }
+
+.profile-editor .pe-input { width: 100%; min-height: 48px; padding: 0 14px; border: 1px solid #cfd8ca; border-radius: 14px; background: #ffffff; color: #172e24; font-size: 16px; line-height: 1.5; }
+.profile-editor .pe-input::placeholder { color: #8a978f; }
+.profile-editor .pe-input:focus-visible { outline: none; border-color: #214932; box-shadow: 0 0 0 3px #cdf46c; }
+.profile-editor .pe-input[aria-invalid="true"] { border-color: #a84824; }
+.profile-editor .pe-textarea { padding: 12px 14px; min-height: 112px; resize: vertical; field-sizing: content; max-height: 260px; }
+.profile-editor .pe-meta { display: flex; justify-content: space-between; gap: 12px; min-height: 18px; font-size: 12px; color: #66756c; }
+.profile-editor .pe-error-text { color: #a84824; }
+.profile-editor .pe-count { margin-left: auto; font-variant-numeric: tabular-nums; }
+.profile-editor .pe-near { color: #a84824; font-weight: 650; }
+
+.profile-editor .pe-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.profile-editor .pe-chip, .profile-editor .pe-level { position: relative; display: block; cursor: pointer; }
+.profile-editor .pe-chip input, .profile-editor .pe-level input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.profile-editor .pe-chip-face { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid #cfd8ca; border-radius: 999px; background: #ffffff; font-size: 14px; }
+.profile-editor .pe-chip input:checked + .pe-chip-face { border-color: #cdf46c; background: #cdf46c; color: #142b22; font-weight: 700; }
+.profile-editor .pe-chip input:focus-visible + .pe-chip-face, .profile-editor .pe-level input:focus-visible + .pe-level-face { box-shadow: 0 0 0 3px #89b960; }
+
+.profile-editor .pe-levels { display: grid; gap: 8px; }
+.profile-editor .pe-level-face { position: relative; display: grid; gap: 2px; padding: 12px 14px 12px 46px; border: 1px solid #cfd8ca; border-radius: 14px; background: #ffffff; }
+.profile-editor .pe-level-face strong { font-size: 15px; font-weight: 700; }
+.profile-editor .pe-level-face small { font-size: 12px; color: #66756c; }
+.profile-editor .pe-level-face::before { content: ""; position: absolute; left: 15px; top: 50%; width: 18px; height: 18px; margin-top: -9px; border: 2px solid #9aa89f; border-radius: 50%; background: #ffffff; }
+.profile-editor .pe-level input:checked + .pe-level-face { border-color: #214932; background: #f3f9e8; }
+.profile-editor .pe-level input:checked + .pe-level-face::before { border-color: #214932; background: #214932; box-shadow: inset 0 0 0 3px #f3f9e8; }
+
+.profile-editor .pe-locked { position: relative; }
+.profile-editor .pe-locked svg { position: absolute; left: 14px; top: 16px; color: #66756c; pointer-events: none; }
+.profile-editor .pe-locked .pe-input { padding-left: 40px; background: #f3f6f0; color: #4d5c53; }
+
+.profile-editor .pe-foot { flex-shrink: 0; padding: 14px 20px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid #e0e6db; background: #ffffff; }
+.profile-editor .pe-save-error { margin: 0 0 12px; }
+.profile-editor .pe-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.profile-editor .pe-confirm p { margin: 0 0 12px; font-size: 14px; font-weight: 650; }
+.profile-editor .pe-btn { min-height: 48px; padding: 0 22px; border: 1px solid transparent; border-radius: 14px; font-size: 15px; font-weight: 700; }
+.profile-editor .pe-btn-ghost { border-color: #cfd8ca; background: #ffffff; color: #172e24; }
+.profile-editor .pe-btn-ghost:hover:not(:disabled) { background: #eef3ea; }
+.profile-editor .pe-btn-primary { background: #cdf46c; color: #142b22; min-width: 112px; }
+.profile-editor .pe-btn-primary:hover:not(:disabled) { background: #c1ec55; }
+.profile-editor .pe-btn-danger { background: #a84824; color: #ffffff; }
+.profile-editor .pe-btn:disabled { opacity: .45; cursor: not-allowed; }
+.profile-editor .pe-btn:focus-visible { outline: 3px solid #89b960; outline-offset: 2px; }
+
+@media (max-width: 640px) {
+  .profile-editor { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
+  .profile-editor form { height: 100dvh; max-height: 100dvh; }
+  .profile-editor[open] { animation-name: pe-sheet; }
+  .profile-editor .pe-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .profile-editor .pe-actions .pe-btn-primary { order: 2; }
+  .profile-editor .pe-actions .pe-btn-ghost { order: 1; }
+  .profile-editor .pe-confirm .pe-btn-danger { order: 2; }
+}
+@keyframes pe-sheet { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .profile-editor[open] { animation: none; } }
+
+.pe-toast { position: fixed; left: 50%; bottom: calc(92px + env(safe-area-inset-bottom)); z-index: 70; max-width: calc(100vw - 32px); transform: translateX(-50%); padding: 12px 20px; border-radius: 999px; background: #173c2b; color: #ffffff; font-size: 14px; font-weight: 600; box-shadow: 0 10px 28px #0a1a1240; animation: pe-toast-in 180ms ease-out; }
+@keyframes pe-toast-in { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@media (min-width: 900px) { .pe-toast { bottom: 32px; } }
+@media (prefers-reduced-motion: reduce) { .pe-toast { animation: none; } }
+
+/* Dark mode: the pale selected card would glare, so give it a dark tint with the lime accent. Placed last so it wins over the generated rules. */
+html[data-theme="dark"] .profile-editor .pe-level input:checked + .pe-level-face { border-color: #cdf46c; background: #25331f; color: #e6efe4; }
+html[data-theme="dark"] .profile-editor .pe-level input:checked + .pe-level-face::before { border-color: #cdf46c; background: #cdf46c; box-shadow: inset 0 0 0 3px #25331f; }
+html[data-theme="dark"] .profile-editor .pe-level input:checked + .pe-level-face small { color: #b8c9b8; }
