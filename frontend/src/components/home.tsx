@@ -23,8 +23,8 @@ function MyPartiesStrip() {
   if (!counts || total === 0) return null;
   return <Link className="kh-my-strip" to={counts.joined > 0 ? '/my-parties?scope=joined&period=upcoming' : '/my-parties'}>
     <span className="kh-my-strip-icon" aria-hidden="true"><CalendarDays size={22} /></span>
-    <span className="kh-my-strip-copy"><strong>ปาร์ตี้ของฉัน · {total} นัดที่กำลังจะมาถึง</strong><span>เข้าร่วม {counts.joined} นัด · เป็นหัวตี้ {counts.host} นัด</span></span>
-    <span className="kh-my-strip-cta">ดูทั้งหมด <ArrowUpRight size={16} /></span>
+    <span className="kh-my-strip-copy"><strong>ปาร์ตี้ของฉัน</strong><span><b>{total}</b> นัดที่กำลังจะมาถึง · เข้าร่วม {counts.joined} · เป็นหัวตี้ {counts.host}</span></span>
+    <span className="kh-my-strip-cta"><span className="kh-my-strip-cta-label">ดูทั้งหมด</span><ArrowUpRight size={16} aria-hidden="true" /></span>
   </Link>;
 }
 
