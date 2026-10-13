@@ -58,6 +58,12 @@ img { max-width:100%; }
  .kh-app .owner-welcome p { max-width:100%; font-size:14px; position:relative; }
  .kh-app .owner-page .party-list { grid-template-columns:1fr; gap:18px; }
 }
+/* Some field photos ship with a white frame baked into the file; scale up slightly so object-fit:cover crops it away.
+   Uses the standalone `scale` property so existing hover transforms keep working. */
+.kh-app .kh-field-image img,
+.kh-app .fields-photo img,
+.kh-app .field-detail-photo img,
+.kh-app .owner-field-image > img { scale:1.07; transform-origin:center; }
 @media(prefers-reduced-motion:reduce) { .kh-app * { scroll-behavior:auto; } .kh-app .kh-button { transition:none; } }
 .kh-app .kh-field-price-footer { align-items:flex-start; flex-wrap:wrap; gap:12px; }
 .kh-app .kh-field-price-footer p { min-width:0; flex:1 1 170px; }
