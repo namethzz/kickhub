@@ -96,6 +96,12 @@ export default function PartyChat({ partyId, actorId }: { partyId: string; actor
     } catch (err) { handleError(err as Error); }
     finally { sendingRef.current = false; if (alive.current) setSending(false); }
   }
+  function keyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== 'Enter' || event.shiftKey || event.ctrlKey || event.altKey || event.metaKey || event.nativeEvent.isComposing || event.keyCode === 229) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    event.preventDefault();
+    if (!event.repeat && state && !sendingRef.current) event.currentTarget.form?.requestSubmit();
+  }
   return <section className="party-chat" aria-label="แชตสมาชิกปาร์ตี้">
     <div className="party-chat-head"><div><MessageCircle size={19} /><strong>คุยกับทีม</strong></div><button type="button" onClick={() => void refresh(true)} aria-label="โหลดแชตใหม่"><RefreshCw size={17} /></button></div>
     <p className="party-chat-hint">เฉพาะหัวตี้และสมาชิก · เก็บล่าสุด 200 ข้อความ · อัปเดตทุก 10 วินาทีขณะเปิดหน้า</p>
@@ -109,6 +115,6 @@ export default function PartyChat({ partyId, actorId }: { partyId: string; actor
     </>}
     {error && <p className="party-error" role="alert">{error} <button className="party-chat-retry" onClick={() => void refresh(true)}>โหลดใหม่</button></p>}
     {readError && !denied && <p className="party-chat-hint" role="status">{readError}</p>}
-    {state?.readOnly ? <p className="party-chat-hint" role="status">{state.reason}</p> : !denied && <form className="party-chat-compose" onSubmit={event => { event.preventDefault(); void send(); }}><label htmlFor="party-chat-text">ข้อความถึงทีม</label><textarea id="party-chat-text" value={text} onChange={event => setText(event.target.value)} maxLength={1000} rows={2} disabled={sending || !state} placeholder="พิมพ์ข้อความ…" /><div><small>{text.length}/1,000 · กดส่งเพื่อส่งข้อความ</small><button className="kh-button kh-dark" disabled={sending || !state || !text.trim()} type="submit"><Send size={16} />{sending ? 'กำลังส่ง…' : 'ส่ง'}</button></div></form>}
+    {state?.readOnly ? <p className="party-chat-hint" role="status">{state.reason}</p> : !denied && <form className="party-chat-compose" onSubmit={event => { event.preventDefault(); void send(); }}><label htmlFor="party-chat-text">ข้อความถึงทีม</label><textarea id="party-chat-text" value={text} onChange={event => setText(event.target.value)} onKeyDown={keyDown} maxLength={1000} rows={2} disabled={!state} readOnly={sending} placeholder="พิมพ์ข้อความ…" /><div><small>{text.length}/1,000 · กดส่ง หรือ Enter บนคอมพิวเตอร์ · Shift+Enter ขึ้นบรรทัดใหม่</small><button className="kh-button kh-dark" disabled={sending || !state || !text.trim()} type="submit"><Send size={16} />{sending ? 'กำลังส่ง…' : 'ส่ง'}</button></div></form>}
   </section>;
 }
