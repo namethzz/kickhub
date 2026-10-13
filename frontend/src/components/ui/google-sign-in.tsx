@@ -29,20 +29,25 @@ export function GoogleSignIn({ clientId, disabled, onCredential }: { clientId: s
   useEffect(() => {
     let active = true;
     let observer: ResizeObserver | undefined;
+    let themeObserver: MutationObserver | undefined;
     const host = element.current;
     loadGoogle().then(identity => {
       if (!active || !host) return;
       identity.initialize({ client_id: clientId, callback: response => { if (active && !blocked.current && response.credential) callback.current(response.credential); }, auto_select: false, ux_mode: 'popup' });
       let previousWidth = 0;
+      let previousTheme = '';
       const render = () => {
         const width = Math.min(400, Math.floor(host.getBoundingClientRect().width));
-        if (width < 1 || width === previousWidth) return;
-        previousWidth = width; host.replaceChildren();
-        identity.renderButton(host, { type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill', width, locale: 'th' });
+        const theme = document.documentElement.dataset.theme === 'dark' ? 'filled_black' : 'outline';
+        if (width < 1 || (width === previousWidth && theme === previousTheme)) return;
+        previousWidth = width; previousTheme = theme; host.replaceChildren();
+        identity.renderButton(host, { type: 'standard', theme, size: 'large', text: 'continue_with', shape: 'pill', width, locale: 'th' });
       };
       render(); observer = new ResizeObserver(render); observer.observe(host); setNote('');
+      themeObserver = new MutationObserver(render);
+      themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     }).catch(error => { if (active) setNote((error as Error).message); });
-    return () => { active = false; observer?.disconnect(); host?.replaceChildren(); };
+    return () => { active = false; observer?.disconnect(); themeObserver?.disconnect(); host?.replaceChildren(); };
   }, [clientId]);
   return <div className="kh-auth-google-wrap"><div className="kh-auth-google" ref={element} inert={disabled} aria-busy={disabled} />{note && <p className="kh-auth-note" role="status">{note}</p>}</div>;
 }
