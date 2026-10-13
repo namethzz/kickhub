@@ -37,10 +37,10 @@ export default function Navbar() {
       </div>
     </header>
     <nav className="kh-mobile-nav" aria-label="เมนูมือถือ" hidden={keyboardOpen}>
-      {items.slice(0, 3).map(({ icon: Icon, ...item }) => <NavLink key={item.path} to={item.path}><Icon /><span>{item.name}</span></NavLink>)}
+      {items.slice(0, 3).map(({ icon: Icon, ...item }) => <NavLink key={item.path} className={item.path === '/create-party' ? 'kh-nav-create' : undefined} to={item.path}><span className="kh-nav-icon"><Icon aria-hidden="true" /></span><span className="kh-nav-text">{item.name}</span></NavLink>)}
       <NavLink className="kh-nav-mine" to={myParties.path} aria-label={mineLabel}><span className="kh-nav-icon"><MineIcon aria-hidden="true" />{badge}</span><span className="kh-nav-text" aria-hidden="true">{myParties.short}</span></NavLink>
-      {items.slice(3).map(({ icon: Icon, ...item }) => <NavLink key={item.path} to={item.path}><Icon /><span>{item.name}</span></NavLink>)}
-      <NavLink to="/profile"><FiUser /><span>โปรไฟล์</span></NavLink>
+      {items.slice(3).map(({ icon: Icon, ...item }) => <NavLink key={item.path} to={item.path}><span className="kh-nav-icon"><Icon aria-hidden="true" /></span><span className="kh-nav-text">{item.name}</span></NavLink>)}
+      <NavLink to="/profile"><span className="kh-nav-icon"><FiUser aria-hidden="true" /></span><span className="kh-nav-text">โปรไฟล์</span></NavLink>
     </nav>
   </>;
 }
