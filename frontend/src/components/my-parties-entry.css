@@ -71,16 +71,47 @@ html[data-theme="dark"] {
 }
 
 /* ---------- Mobile bottom tab ---------- */
-/* Equal-width tabs so six items fit on 360px phones; labels truncate instead of colliding. */
-.kh-app .kh-mobile-nav { padding-left: max(4px, env(safe-area-inset-left)); padding-right: max(4px, env(safe-area-inset-right)); gap: 0; }
-.kh-app .kh-mobile-nav a { flex: 1 1 0; min-width: 0; padding-left: 2px; padding-right: 2px; text-align: center; }
-.kh-app .kh-mobile-nav a > span:last-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.kh-mobile-nav .kh-nav-icon { position: relative; display: grid; place-items: center; box-sizing: border-box; width: 42px; height: 26px; margin: -2px 0 -3px; border-radius: 13px; background: var(--kh-mine-tint); color: var(--kh-mine-ink); transition: background-color .18s ease, color .18s ease; }
-.kh-mobile-nav .kh-nav-icon svg { width: 20px; height: 20px; font-size: 20px; }
-.kh-mobile-nav .kh-nav-mine .kh-nav-text { color: var(--kh-mine-ink); font-weight: 750; }
-.kh-mobile-nav a.kh-nav-mine.active .kh-nav-icon { background: var(--kh-mine-solid); color: var(--kh-mine-solid-ink); }
-.kh-mobile-nav .kh-nav-icon .kh-nav-badge { position: absolute; top: -7px; right: -5px; min-width: 16px; height: 16px; padding: 0 4px; font-size: 9px; }
-.kh-mobile-nav a.kh-nav-mine:focus-visible { outline: 3px solid var(--kh-mine-focus); outline-offset: 2px; border-radius: 10px; }
+/* Every tab shares one anatomy (a 52x30 icon pill over a label) so icons and labels line up on one baseline.
+   Only the current page gets the tinted pill; "my parties" no longer looks selected when it is not.
+   Equal-width tabs so six items fit on 360px phones; labels truncate instead of colliding. */
+:root {
+  --kh-tab-ink: #56635a;
+  --kh-tab-ink-on: #173c2b;
+  --kh-tab-pill: #e2f2b6;
+}
+html[data-theme="dark"] {
+  --kh-tab-ink: #a8b5ab;
+  --kh-tab-ink-on: #cdf46c;
+  --kh-tab-pill: rgba(205, 244, 108, 0.2);
+}
+.kh-app nav.kh-mobile-nav { align-items: flex-start; gap: 0; padding-top: 8px; padding-left: max(4px, env(safe-area-inset-left)); padding-right: max(4px, env(safe-area-inset-right)); }
+.kh-app nav.kh-mobile-nav a { flex: 1 1 0; min-width: 0; gap: 3px; padding: 0 1px; font-size: 11px; font-weight: 500; line-height: 1.35; color: var(--kh-tab-ink); text-align: center; -webkit-tap-highlight-color: transparent; }
+.kh-app nav.kh-mobile-nav a.active { color: var(--kh-tab-ink-on); font-weight: 750; }
+.kh-mobile-nav .kh-nav-text { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kh-mobile-nav .kh-nav-icon { position: relative; display: grid; place-items: center; box-sizing: border-box; width: 52px; height: 30px; margin: 0; border-radius: 15px; background: transparent; color: inherit; transition: background-color .18s ease, color .18s ease; }
+.kh-mobile-nav .kh-nav-icon svg { width: 22px; height: 22px; font-size: 22px; }
+.kh-app nav.kh-mobile-nav a.active .kh-nav-icon { background: var(--kh-tab-pill); }
+.kh-mobile-nav .kh-nav-icon .kh-nav-badge { position: absolute; top: -5px; right: 0; min-width: 17px; height: 17px; padding: 0 4px; font-size: 10px; }
+/* Create stays the one filled action, but inside the same 30px row so its label lines up with the others. */
+.kh-app nav.kh-mobile-nav a.kh-nav-create .kh-nav-icon { width: 46px; background: var(--kh-mine-solid); color: var(--kh-mine-solid-ink); }
+.kh-app nav.kh-mobile-nav a.kh-nav-create.active .kh-nav-icon { background: var(--kh-mine-solid); box-shadow: 0 0 0 3px var(--kh-mine-edge); }
+.kh-app nav.kh-mobile-nav a:focus-visible { outline: 3px solid var(--kh-mine-focus); outline-offset: 2px; border-radius: 10px; }
+
+/* ---------- Header controls: desktop ---------- */
+/* Pill, theme, bell and account button were 40/40/40/45px with three different corner radii.
+   From 900px up they share one height and radius; the iPad range (761-899px) is left exactly as it was. */
+@media (min-width: 900px) {
+  .kh-app .kh-header .kh-header-actions { gap: 12px; }
+  .kh-app .kh-header .kh-nav-mine,
+  .kh-app .kh-header .kh-theme-toggle,
+  .kh-app .kh-header .kh-notification-bell,
+  .kh-app .kh-header .kh-login { box-sizing: border-box; height: 42px; min-height: 42px; border-radius: 12px; }
+  .kh-app .kh-header .kh-theme-toggle,
+  .kh-app .kh-header .kh-notification-bell { min-width: 42px; }
+  .kh-app .kh-header .kh-login { padding: 0 16px; gap: 8px; font-size: 14px; font-weight: 650; }
+  .kh-app .kh-header .kh-nav-mine { padding: 0 12px 0 12px; gap: 8px; font-size: 14px; }
+  .kh-app .kh-header .kh-nav-mine .kh-nav-badge { min-width: 22px; height: 22px; font-size: 12px; }
+}
 
 /* ---------- Home shortcut strip ---------- */
 /* Width and centring come from `.kh-main--home > :not(.parallax)`, so it lines up with the rest of the page. */
