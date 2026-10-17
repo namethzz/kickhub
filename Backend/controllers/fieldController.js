@@ -11,29 +11,9 @@ const addField = async (fieldData) => {
   }
 };
 
-const getAllFields = async () => {
-  try {
-    const fields = await Field.find();
-    return { success: true, data: fields };
-  } catch (error) {
-    console.error("Error fetching fields:", error);
-    return { success: false, error };
-  }
-};
-
 const getFieldbyownerID = async (id) => {
   try {
     const fields = await Field.find({ owner_id: id });
-    return { success: true, data: fields };
-  } catch (error) {
-    console.error("Error fetching fields:", error);
-    return { success: false, error };
-  }
-};
-
-const getFieldbyID = async (id) => {
-  try {
-    const fields = await Field.findById(id);
     return { success: true, data: fields };
   } catch (error) {
     console.error("Error fetching fields:", error);
@@ -66,9 +46,7 @@ const deleteField = async (id) => {
 
 module.exports = {
   addField,
-  getAllFields,
   updateField,
   deleteField,
   getFieldbyownerID,
-  getFieldbyID,
 };

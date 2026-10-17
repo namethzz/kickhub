@@ -13,6 +13,9 @@ services:
         value: 22
       - key: NODE_ENV
         value: production
+      # Render's proxy adds one X-Forwarded-For hop; login rate limits need the real client IP.
+      - key: TRUST_PROXY
+        value: 1
       - key: SECRET_KEY
         generateValue: true
       - key: MONGODB_URI
