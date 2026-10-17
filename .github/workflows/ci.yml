@@ -36,6 +36,8 @@ jobs:
           TEST_MONGODB_URI: mongodb://127.0.0.1:27017/kickhub_test
       - run: npm ci
         working-directory: frontend
+      - run: npm run lint
+        working-directory: frontend
       - run: npm test
         working-directory: frontend
       - run: npm run build

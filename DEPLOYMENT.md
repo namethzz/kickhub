@@ -29,6 +29,7 @@ Blueprint สร้าง `SECRET_KEY` ให้โดยอัตโนมั�
 | Backend | `SECRET_KEY` | สุ่มอย่างน้อย 32 ตัวอักษร (Blueprint สร้างให้) |
 | Backend | `MONGODB_URI` | Atlas URI ของ database `kickhub` |
 | Backend | `CLIENT_ORIGIN` | HTTPS origin ของ frontend ไม่มี `/` ท้าย ไม่มี path; หลาย origin คั่น comma |
+| Backend | `TRUST_PROXY` | `1` (Blueprint ตั้งให้) จำนวน proxy ด้านหน้า API ใช้ให้ rate limit ของหน้าเข้าสู่ระบบเห็น IP จริงของผู้ใช้ |
 | frontend | `VITE_API_URL` | HTTPS origin ของ Backend ไม่มี `/` ท้าย ไม่มี `/api` |
 
 ตัวอย่างรูปแบบเท่านั้น: frontend `https://your-web.onrender.com`, API `https://your-api.onrender.com` ต้องแทนด้วย URL จริงที่ได้รับ
@@ -96,7 +97,9 @@ npm run test:integration
 
 Integration tests ใช้ MongoDB ชั่วคราวหรือ `TEST_MONGODB_URI` local ของ `kickhub_test` เท่านั้น ห้ามใช้ Atlas production ชุด GitHub Actions ที่มีอยู่จะรันฐานข้อมูล MongoDB service แยก
 
-Legacy routes เช่น `/partybuffet/:id`, `/partyrole/:id`, `/legacy/field` ยังมี LAN URL เก่า ให้ทดสอบ live routes `/team`, `/create-party`, `/parties/:id`, `/field`, `/Owner` สำหรับ deployment รอบนี้
+หลัง deploy ให้ทดสอบ live routes `/team`, `/create-party`, `/parties/:id`, `/field`, `/Owner`
+
+API เข้าสู่ระบบและสมัครสมาชิกมี rate limit ต่อ IP: เข้าสู่ระบบผิดได้ 20 ครั้งใน 15 นาที และ POST สมัคร/เข้าสู่ระบบด้วย Google หรือ Facebook ได้ 30 ครั้งใน 15 นาที เกินแล้วจะได้ `429` ถ้าทุกคนโดนจำกัดพร้อมกัน ให้ตรวจว่า `TRUST_PROXY` ตรงกับจำนวน proxy จริง
 
 อ้างอิงโฮสติ้ง/ฐานข้อมูล:
 - https://render.com/docs/blueprint-spec

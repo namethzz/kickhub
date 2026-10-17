@@ -16,6 +16,7 @@ export function shareSummary(party) {
 }
 
 // RFC 5545 TEXT escaping and byte-aware line folding preserve Thai and emoji.
+// eslint-disable-next-line no-control-regex -- stripping control characters is the point of this pattern.
 const escapeText = value => String(value).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').replace(/\\/g, '\\\\').replace(/\r\n|\r|\n/g, '\\n').replace(/;/g, '\\;').replace(/,/g, '\\,');
 function foldLine(line) {
   const encoder = new TextEncoder(); let folded = '', bytes = 0;

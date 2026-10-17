@@ -15,7 +15,7 @@ export function facilityLabels(value) {
     if (typeof input === 'string') {
       const text = input.trim();
       if (!text) return [];
-      if (/^[\[{\"]/.test(text)) {
+      if (/^[[{"]/.test(text)) {
         try { return read(JSON.parse(text), depth + 1); } catch { return []; }
       }
       return text.split(/[,\n]/);
