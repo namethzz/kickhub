@@ -87,6 +87,7 @@ Google Cloud Console → Google Auth Platform → Clients → OAuth client ช�
 ```bash
 cd frontend
 npm ci
+npm run lint
 npm test
 npm run build
 cd ../Backend
