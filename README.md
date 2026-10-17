@@ -34,7 +34,7 @@ KickHub เป็นเว็บสำหรับคนที่อยากห
 
 ### 1. ตั้งค่า Backend
 
-คัดลอกไฟล์ `Backend/.env.example` เป็น `Backend/.env` แล้วกำหนดค่าอย่างน้อยสองรายการนี้:
+คัดลอกไฟล์ `Backend/.env.example` เป็น `Backend/.env` แล้วกำหนดค่าตามตัวอย่างนี้ ค่าที่ขาดไม่ได้คือ `SECRET_KEY` เพราะ API จะไม่ยอมเริ่มทำงานถ้าไม่มี ส่วนค่าอื่นมีค่าเริ่มต้นตรงกับตัวอย่างอยู่แล้ว:
 
 ```env
 MONGODB_URI=mongodb://127.0.0.1:27017/kickhub
@@ -50,6 +50,32 @@ cd Backend
 npm ci
 npm run dev
 ```
+
+ถ้าเห็นข้อความ `KickHub API ready` แปลว่า API พร้อมแล้ว ลองเปิด `http://localhost:3000/api/health` ต้องได้ `{"status":"ok"}`
+
+#### MongoDB ในเครื่องกับการลบบัญชี
+
+ฟีเจอร์ลบบัญชี (`/account/delete`) ใช้ MongoDB transaction เพื่อลบข้อมูลทุกส่วนพร้อมกันหรือไม่ลบเลย transaction ทำงานได้เฉพาะ replica set ถ้าคุณรัน `mongod` แบบปกติ (standalone) ฟีเจอร์อื่นใช้ได้ครบ แต่การลบบัญชีจะล้มเหลว MongoDB Atlas เป็น replica set อยู่แล้วจึงไม่มีปัญหานี้
+
+ถ้าต้องการทดสอบการลบบัญชีในเครื่อง ให้เปิด MongoDB เป็น replica set แบบเครื่องเดียว:
+
+```bash
+mongod --replSet rs0 --dbpath <โฟลเดอร์ข้อมูล>
+mongosh --eval "rs.initiate()"
+```
+
+แล้วตั้ง `MONGODB_URI=mongodb://127.0.0.1:27017/kickhub?replicaSet=rs0`
+
+#### ข้อมูลตั้งต้น (ไม่บังคับ)
+
+ฐานข้อมูลใหม่จะว่างเปล่า ถ้าอยากได้บัญชีเจ้าของสนามพร้อมสนามตัวอย่างจาก `Backend/data/initial-fields.json` ให้รัน:
+
+```bash
+cd Backend
+npm run db:reset -- --confirm=kickhub
+```
+
+สคริปต์จะถามชื่อและอีเมลของบัญชีเจ้าของสนาม แล้วพิมพ์รหัสผ่านสุ่มออกมาครั้งเดียว ให้จดเก็บไว้ คำสั่งนี้**ลบข้อมูลทั้งหมด**ในฐานข้อมูล `kickhub` หลังสำรองไฟล์ไว้ที่โฟลเดอร์ `.backups/` และยอมทำงานเฉพาะเมื่อ `MONGODB_URI` ชี้ไปที่ `localhost` หรือ `127.0.0.1` กับฐานข้อมูลชื่อ `kickhub` ห้ามใช้กับฐานข้อมูลออนไลน์
 
 ### 2. ตั้งค่า Frontend
 
@@ -86,10 +112,72 @@ npm run dev
 | `/my-parties` | ดูปาร์ตี้ที่จัด เข้าร่วม หรือส่งคำขอไว้ |
 | `/field`, `/fields/:fieldId` | ค้นหาและดูรายละเอียดสนาม |
 | `/profile` | โปรไฟล์ของตัวเอง |
+| `/players/:playerId` | โปรไฟล์สาธารณะของผู้เล่นคนอื่น |
 | `/notifications` | การแจ้งเตือน |
 | `/Owner` | จัดการสนามสำหรับเจ้าของสนาม |
+| `/account/delete` | ลบบัญชีของตัวเอง (ต้องเข้าสู่ระบบภายใน 10 นาทีล่าสุด) |
+| `/privacy`, `/terms`, `/data-deletion` | นโยบายความเป็นส่วนตัว ข้อกำหนด และวิธีขอลบข้อมูล ซึ่ง Facebook Login ใช้ตรวจสอบ |
 
 ยังมีหน้า `/demo/*` สำหรับข้อมูลตัวอย่าง ซึ่งไม่ใช่เส้นทางหลักของการใช้งานปัจจุบัน
+
+## โครงสร้างโปรเจกต์
+
+```text
+kickhub/
+├── Backend/                 API (Express + Mongoose)
+│   ├── server.js            ตรวจค่า .env เชื่อมฐานข้อมูล แล้วเปิดพอร์ต
+│   ├── app.js               รวม route, CORS, rate limit และตัวจัดการ error
+│   ├── routes/              endpoint แยกตามกลุ่ม
+│   ├── services/            logic ของปาร์ตี้ คำขอ แชต แจ้งเตือน รูปภาพ และการลบบัญชี
+│   ├── models/              Mongoose schema (User, Field, Post = ปาร์ตี้, Reservation, รูปภาพ)
+│   ├── data/                ข้อมูลสนามตั้งต้นและรูปสนาม
+│   ├── scripts/             reset-data.js สำหรับล้างและเติมข้อมูลในเครื่อง
+│   └── test/                unit test และ integration test
+├── frontend/                เว็บ (React + Vite)
+│   ├── src/features/        หน้าจอแยกตามเรื่อง: live (ปาร์ตี้ แชต แจ้งเตือน), fields, parties, profiles, owner, policies
+│   ├── src/lib/api.ts       ตัวเรียก API และแนบ token
+│   ├── scripts/             render-policies.mjs สร้างไฟล์ HTML ของหน้านโยบายตอน build
+│   └── test/                test ของ helper ฝั่งเว็บ
+├── render.yaml              Blueprint สำหรับ deploy บน Render
+└── .github/workflows/ci.yml ตรวจ lint, test และ build ทุก pull request
+```
+
+## กลุ่ม API
+
+| Path | ใช้ทำอะไร |
+| --- | --- |
+| `GET /api/health` | ตรวจว่า API ต่อฐานข้อมูลได้ (200 = พร้อม, 503 = ฐานข้อมูลหลุด) |
+| `/api/auth/*` | สมัคร เข้าสู่ระบบด้วยอีเมล Google และ Facebook มี rate limit ต่อ IP |
+| `/api/v2/*` | ปาร์ตี้ คำขอเข้าร่วม แชต แจ้งเตือน โปรไฟล์ และข้อมูลสนามฝั่งผู้เล่น |
+| `/api/add-fields`, `/api/owner-fields`, `/api/update-fields/:id`, `/api/delete-fields/:id` | จัดการสนาม ใช้ได้เฉพาะบัญชี role `owner` และแก้ได้เฉพาะสนามของตัวเอง |
+| `DELETE /api/account` | ลบบัญชีและข้อมูลที่ผูกกับบัญชี |
+
+route ที่ต้องเข้าสู่ระบบรับ JWT ผ่าน header `Authorization: Bearer <token>`
+
+## การทำงานเบื้องหลังที่ควรรู้
+
+- **รูปภาพเก็บใน MongoDB** รูปโปรไฟล์ รูปปก และรูปปาร์ตี้ถูกเก็บเป็นข้อมูลไบนารีในฐานข้อมูล (`ProfileImage`, `PartyImage`) จึงไม่ต้องตั้งค่าบริการเก็บไฟล์เพิ่ม รับเฉพาะ JPG, PNG, WebP ขนาดไม่เกิน 2 MB
+- **แชตและแจ้งเตือนใช้ polling** หน้าแชตดึงข้อความใหม่ทุก 10 วินาที กระดิ่งแจ้งเตือนดึงทุก 15 วินาที ไม่มี WebSocket หรือ push notification ผู้ใช้จะเห็นข้อความใหม่เมื่อเปิดหน้าเว็บค้างไว้เท่านั้น
+- **รูปสนามจาก directory** ทุกครั้งที่ API เริ่มทำงาน ระบบจะเติมรูปให้สนามที่นำเข้ามาและยังไม่มีเจ้าของ โดยใช้รายการใน `Backend/data/directory-field-photos.json` รูปที่เจ้าของสนามอัปโหลดเองจะไม่ถูกเขียนทับ
+
+## การทดสอบ
+
+```bash
+# Backend
+cd Backend
+npm test                  # unit test ไม่ต้องใช้ฐานข้อมูล
+npm run test:integration  # ทดสอบ API กับ MongoDB จริง
+
+# Frontend
+cd frontend
+npm run lint
+npm test
+npm run build             # รวม typecheck ด้วย
+```
+
+`test:integration` ใช้ `mongodb-memory-server` ซึ่งดาวน์โหลด MongoDB 7.0.24 ในการรันครั้งแรก เครื่องต้องต่ออินเทอร์เน็ตได้ ถ้าต้องการใช้ MongoDB ในเครื่องแทนสำหรับ `parties.test.js` ให้ตั้ง `TEST_MONGODB_URI=mongodb://127.0.0.1:27017/kickhub_test` ชุดทดสอบจะลบฐานข้อมูลนี้ทุกครั้ง จึงยอมรับเฉพาะชื่อ `kickhub_test` บน localhost ส่วนชุดทดสอบการลบบัญชีใช้ replica set ในหน่วยความจำเสมอ
+
+GitHub Actions รันทุกคำสั่งข้างบนเมื่อ push เข้า `main` และเมื่อเปิด pull request
 
 ## หมายเหตุ
 
