@@ -23,7 +23,7 @@ export default function Navbar() {
   return <>
     <header className="kh-header">
       <div className="kh-header-inner">
-        <Link to="/home" className="kh-brand" aria-label="Kickhub หน้าหลัก"><BrandMark />kick<span>hub</span><i /></Link>
+        <Link to="/home" className="kh-brand" aria-label="Kickhub หน้าหลัก"><BrandMark /></Link>
         <nav className="kh-desktop-nav" aria-label="เมนูหลัก">{items.map(item => <NavLink key={item.path} to={item.path}>{item.name}</NavLink>)}</nav>
         <div className="kh-header-actions">
           <NavLink className="kh-nav-mine" to={myParties.path} aria-label={mineLabel} title={myParties.name}>

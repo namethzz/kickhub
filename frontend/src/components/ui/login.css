@@ -43,8 +43,6 @@
   color: #142b22;
   text-decoration: none;
 }
-.kh-auth-logo span { color: #49753b; }
-.kh-auth-logo i { width: 7px; height: 7px; border-radius: 50%; background: #a9d94f; margin: 16px 0 0 5px; }
 .kh-auth-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: #68815b; }
 .kh-auth-content h1 { font-size: clamp(27px, 2.5vw, 34px); font-weight: 750; letter-spacing: -.8px; line-height: 1.4; margin: 8px 0; }
 .kh-auth-description { font-size: 13px; line-height: 1.8; color: #657567; margin: 0; }

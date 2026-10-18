@@ -5,6 +5,7 @@ import { loadFacebook, facebookLogin } from '@/lib/facebook';
 import { AuthFormSplitScreen, type AuthFormValues } from '@/components/ui/login';
 import { safeReturnPath } from './auth-return';
 import SocialRoleChoice from './SocialRoleChoice';
+import BrandMark from '@/components/BrandMark';
 type SocialResult = { status: 'ok'; token: string; role?: 'user' | 'owner' } | { status: 'role_required'; signupToken: string; name: string };
 type PendingSignup = { signupToken: string; name: string; provider: 'google' | 'facebook'; rememberMe: boolean };
 
@@ -67,5 +68,5 @@ export default function AuthPage({ signup = false }: { signup?: boolean }) {
   if (ownerIntent) switchParams.set('role', 'owner');
   const switchHref = `${signup ? '/login' : '/signup'}${switchParams.size ? `?${switchParams}` : ''}`;
   if (pending) return <SocialRoleChoice name={pending.name} provider={pending.provider} initialRole={ownerIntent ? 'owner' : undefined} onComplete={finishSignup} onCancel={() => setPending(null)} />;
-  return <AuthFormSplitScreen key={`${signup ? 'signup' : 'login'}-${ownerIntent ? 'owner' : 'user'}`} signup={signup} initialRole={signup && ownerIntent ? 'owner' : 'user'} logo={<Link to="/home">kick<span>hub</span><i /></Link>} title={signup ? (ownerIntent ? 'สนามของคุณ เริ่มตรงนี้' : 'ทีมใหม่ เริ่มจากคุณ') : 'ยินดีต้อนรับกลับ'} description={ownerIntent ? (signup ? 'สมัครบัญชีเจ้าของสนาม แล้วเพิ่มสนามให้ผู้เล่นค้นพบ' : 'เข้าสู่ระบบด้วยบัญชีเจ้าของสนาม เพื่อจัดการข้อมูลสนามของคุณ') : signup ? 'สร้างบัญชี แล้วเจอเพื่อนร่วมสนามที่ชอบฟุตบอลเหมือนกัน' : 'เข้าสู่ระบบ แล้วไปต่อกับเกมที่คุณรัก'} imageSrc={`${import.meta.env.BASE_URL}auth-football.webp`} imageAlt="ลูกฟุตบอลบนสนามหญ้า" onSubmit={submit} createAccountHref={switchHref} onFacebook={social} facebookReady={facebookReady} facebookNote={facebookNote} googleClientId={googleClientId} googleNote={googleNote} onGoogle={google} />;
+  return <AuthFormSplitScreen key={`${signup ? 'signup' : 'login'}-${ownerIntent ? 'owner' : 'user'}`} signup={signup} initialRole={signup && ownerIntent ? 'owner' : 'user'} logo={<Link to="/home" aria-label="KickHub หน้าหลัก"><BrandMark /></Link>} title={signup ? (ownerIntent ? 'สนามของคุณ เริ่มตรงนี้' : 'ทีมใหม่ เริ่มจากคุณ') : 'ยินดีต้อนรับกลับ'} description={ownerIntent ? (signup ? 'สมัครบัญชีเจ้าของสนาม แล้วเพิ่มสนามให้ผู้เล่นค้นพบ' : 'เข้าสู่ระบบด้วยบัญชีเจ้าของสนาม เพื่อจัดการข้อมูลสนามของคุณ') : signup ? 'สร้างบัญชี แล้วเจอเพื่อนร่วมสนามที่ชอบฟุตบอลเหมือนกัน' : 'เข้าสู่ระบบ แล้วไปต่อกับเกมที่คุณรัก'} imageSrc={`${import.meta.env.BASE_URL}auth-football.webp`} imageAlt="ลูกฟุตบอลบนสนามหญ้า" onSubmit={submit} createAccountHref={switchHref} onFacebook={social} facebookReady={facebookReady} facebookNote={facebookNote} googleClientId={googleClientId} googleNote={googleNote} onGoogle={google} />;
 }

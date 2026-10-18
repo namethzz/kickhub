@@ -1,0 +1,13 @@
+.kh-brand-icon{width:40px;height:40px;border-radius:11px;margin-right:10px;flex-shrink:0;box-shadow:0 0 0 1px #ffffff1f;transition:transform .25s ease}
+.kh-brand:hover .kh-brand-icon{transform:rotate(-6deg) scale(1.05)}
+.kh-brand-word{display:block;line-height:0}
+.kh-brand-word img{display:block;height:22px;width:auto}
+.kh-brand-word .kh-brand-word-dark{display:none}
+/* Dark theme, and the home header that sits over the dark hero photo */
+:root[data-theme="dark"] .kh-brand-word .kh-brand-word-light,.kh-app--home .kh-header .kh-brand-word .kh-brand-word-light{display:none}
+:root[data-theme="dark"] .kh-brand-word .kh-brand-word-dark,.kh-app--home .kh-header .kh-brand-word .kh-brand-word-dark{display:block}
+@media(max-width:420px){.kh-brand-icon{width:36px;height:36px;margin-right:8px}.kh-brand-word img{height:18px}}
+/* Below 360px the header actions leave no room for the wordmark; the app icon alone still reads as KickHub. */
+@media(max-width:359px){.kh-header .kh-brand-word{display:none}.kh-header .kh-brand-icon{margin-right:0}}
+.kh-auth-logo .kh-brand-icon{width:46px;height:46px;border-radius:13px}
+.kh-auth-logo .kh-brand-word img{height:26px}
