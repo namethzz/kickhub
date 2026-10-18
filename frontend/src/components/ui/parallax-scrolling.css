@@ -38,7 +38,6 @@ html.lenis{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}.lenis
 .kh-main--home > :not(.parallax):not(dialog){max-width:1176px;width:calc(100% - 64px);margin-left:auto;margin-right:auto}
 .kh-app--home .kh-header{position:absolute;inset:0 0 auto;z-index:40;background:linear-gradient(#071726a8,transparent);border-bottom:1px solid #ffffff18;color:white}
 .kh-app--home .kh-header-inner{max-width:1440px}
-.kh-app--home .kh-brand>span:not(.kh-brand-icon){color:#cdf46c}
 .kh-app--home .kh-desktop-nav a{color:#d6e2d4}
 .kh-app--home .kh-desktop-nav a.active{color:white}
 .kh-app--home .kh-desktop-nav a.active:after{background:#cdf46c}
